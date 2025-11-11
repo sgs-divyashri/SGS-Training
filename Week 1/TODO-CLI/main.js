@@ -26,17 +26,7 @@ function exitApp() {
 }
 
 function createTask(){
-    taskid = 'T001'
-    console.log(taskid)
-    rl.question('Enter the task name: ', (name1) => {
-  const name = String(name1); // Convert input to number
 
-  if (isNull(name)) {
-    console.log('Please enter a valid text!');
-    rl.close();
-    return;
-  }
-})
 }
 
 // Ask for user input
@@ -77,48 +67,3 @@ rl.question('Enter your option: ', (answer) => {
 });
 
 
-
-
-
-
-
-
-
-// const readline = require('readline');
-
-// console.log("TO-DO Application")
-// console.log("\n")
-
-// console.log("Menu")
-// console.log("1. Create a Task")
-// console.log("2. Update a Task")
-// console.log("3. Get all Tasks")
-// console.log("4. Get a task by ID")
-// console.log("5. Delete a task")
-// console.log("6. Exit")
-// console.log("\n")
-
-
-// // Create readline interface
-// const rl = readline.createInterface({
-//   input: process.stdin,
-//   output: process.stdout
-// });
-
-// // Ask for user input
-// rl.question('Enter your option: ', (answer) => {
-//   const option = Number(answer); // Convert input to number
-
-//   if (isNaN(option)) {
-//     console.log('Please enter a valid number!');
-//   } else {
-//     console.log(`You entered: ${option}`);
-//   }
-
-//   rl.close(); // Close input stream
-// });
-
-
-// exit = () => {
-
-// }
