@@ -1,0 +1,28 @@
+TypeScript:
+Similar to JS
+TypeScript is a syntactic superset of JavaScript which adds static typing.
+TypeScript being a Syntactic Superset means it shares the same base syntax as JavaScript, but adds something to it.
+A common way to use TypeScript is to use the official TypeScript compiler, which transpiles TypeScript code into JavaScript.
+Advanced concepts in TypeScript
+ - Strong Typing (including data types)
+ - Object-oriented features
+ - Compile time errors
+TypeScript code -> Converts into -> JavaScript code
+
+Installing TypeScript:
+cmd > cd file location > npm install -g typescript
+
+Create a .ts file -> write down the code -> cmd -> cd file location -> tsc file_name.ts (to convert .ts into .js) -> run node file_name.js to execute the .js file
+
+Concepts:
+1. Data types, var declaration, 
+2. loops, conditions
+3. Inference
+5. Arrays, dict, set, Tuple
+5. Objects (null, undefined)
+6. Enums
+7. Interfaces
+8. Functions, in-built functions (map, filter, find etc)
+9. Arrow functions
+10. Casting
+11. Classes
