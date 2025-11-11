@@ -14,6 +14,8 @@ cmd > cd file location > npm install -g typescript
 
 Create a .ts file -> write down the code -> cmd -> cd file location -> tsc file_name.ts (to convert .ts into .js) -> run node file_name.js to execute the .js file
 
+Or npx tsx interfaces.ts - for compiling and run use tis cmd
+
 Concepts:
 1. Data types, var declaration, 
 2. loops, conditions

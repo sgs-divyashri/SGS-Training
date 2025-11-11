@@ -1,0 +1,25 @@
+//version check
+node -v
+npm -v
+
+//create directory
+mkdir my-node-app
+cd my-node-app
+
+// initialize npm, install packages
+npm init
+or
+npm init -y
+
+// Create a .js file via CLI
+echo "console.log('Hello, Node.js!')" > index.js
+or
+// Create a .js file manually and type the code
+console.log('Hello, Node.js!')
+
+// Modify in package.json file
+"start": "node file-name with .js extension",
+under "scripts" attribute
+
+// run the code
+npm start
