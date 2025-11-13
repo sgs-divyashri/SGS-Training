@@ -1,6 +1,8 @@
 import * as readline from 'readline';
 
 // Define the Task interface for strong typing
+// to define a blueprint or structure for objects.
+// It describes what properties a “Task” object must have and what type each property is.
 interface Task {
     ID: string;
     TaskName: string;
@@ -24,7 +26,7 @@ async function askQuestion(rl: readline.Interface, question: string): Promise<st
 }
 
 // Declare variables with types
-const tasks: Task[] = [];
+const tasks: Task[] = []; // initialize in-memory array to store all the tasks as objects
 let taskCounter: number = 1;
 let option: string;
 const allowedStatuses: string[] = ["To-Do", "In Progress", "Review", "Completed"];

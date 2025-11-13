@@ -127,21 +127,24 @@ async function updateTask() {
 
     if (statusChoice) {   // if status choice is entered,
         const statusIndex = Number(statusChoice) - 1; // holding index position of the status choice
+        // guarded assignment   
+        // Ensures statusIndex is not negative & statusIndex is less than allowedStatuses.length
         if (statusIndex >= 0 && statusIndex < allowedStatuses.length) { 
-            task.Status = allowedStatuses[statusIndex];
+            task.Status = allowedStatuses[statusIndex]; // allowedStatuses[statusIndex] accesses the element at position statusIndex in the allowedStatuses array.
         } else {
             console.log("Invalid status choice. Keeping previous status.");
         }
     }
 
-    task.UpdatedAt = getCurrentDateTime();
+    task.UpdatedAt = getCurrentDateTime();   // updates the date & time while updating the task
 
     console.log("\nTask updated successfully!");
-    console.table([task]);
+    console.table([task]);  // displays task[] in a table - only that task object
 }
 
+// To Retrieve a single task from task ID
 async function getSpecificTask() {
-    if (tasks.length === 0) {
+    if (tasks.length === 0) { 
         console.log("\nNo tasks available.");
         return;
     }
@@ -152,22 +155,29 @@ async function getSpecificTask() {
     // Use .find() to get the task object directly
     const task = tasks.find(task => task.ID === t_id);
 
-    if (task) {
+    if (task) { // if task found
         console.log(`\nTask Details for ID ${t_id}:`);
-        console.table([tasks[tasks.length - 1]]);
+        console.table([tasks[tasks.length - 1]]);  // displays a single task object into array in a table format
     } else {
         console.log(`Task ID '${t_id}' not found.\n`);
     }
 }
 
+// delete a task from task Id
 async function deleteTask() {
     console.log("\nCurrent Tasks:");
     console.table(tasks)
     const t_id = await askQuestion(rl, "Enter the task ID: ");
-    const index = tasks.findIndex(task => task.ID === t_id);
-    if (index !== -1) {
+    // find the position (index) of a specific task object in an array, based on a matching condition.
+    // returns -1, if not found
+    const index = tasks.findIndex(task => task.ID === t_id); // It loops through each element of the array and returns the index (number) of the first element that satisfies a given condition.
+    if (index !== -1) {  // if index found
         // Remove that task from the array
-        const deletedTask = tasks.splice(index, 1);
+        /* Array.prototype.splice(start, deleteCount, ...itemsToAdd)   
+              start — index at which to start changing the array.
+              deleteCount — number of elements to remove starting from start.
+              Returns an array of the removed elements.*/
+        const deletedTask = tasks.splice(index, 1);  // stores deleted task as object
         console.log(`Task ${deletedTask[0].ID} deleted successfully.`);
     } else {
         console.log(`Task ID '${t_id}' not found.`);
@@ -178,10 +188,13 @@ async function deleteTask() {
 function exitApp() {
     console.log("Exiting the application...");
     rl.close(); // closes the readline interface
-    process.exit(0); // exits the Node.js process
+    // process is a global object in Node.js that represents the current running process.
+    // 0 is the usual convention for successful / normal termination.
+    process.exit(0); // exits the Node.js process and return the integer code to the operating system.
 }
 
-async function main() {
+// Driver function of the application
+async function main() { 
     do {
         console.log("TO-DO Application");
         console.log("\n");
@@ -195,25 +208,25 @@ async function main() {
         console.log("6. Exit");
         console.log("\n");
 
-        option = await askQuestion(rl, "Please enter your option: ");
+        option = await askQuestion(rl, "Please enter your option: ");   // user input
 
-        switch (Number(option)) {
-            case 1: await createTask();
+        switch (Number(option)) {   // enter only numbers as input
+            case 1: await createTask();  // function call
                     break;
-            case 2: await updateTask();
+            case 2: await updateTask();  // function call
                     break;
-            case 3: await getAllTasks();
+            case 3: await getAllTasks();  // function call
                     break;
-            case 4: await getSpecificTask();
+            case 4: await getSpecificTask();  // function call
                     break;
-            case 5: await deleteTask()
+            case 5: await deleteTask()  // function call
                     break;
             case 6: exitApp(); // Call the exit function
                     return;
             default: console.log("Invalid option! Please choose between 1–6.");
         }
-    } while (option != 6)
+    } while (option != 6)  // executes until option == 6
 }
 
-main()
+main()   // calls main () - driver function 
 
