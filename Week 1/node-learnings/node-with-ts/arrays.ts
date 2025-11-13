@@ -15,9 +15,9 @@ let names = ['renu', 'tofu', 'heena', 'dhanya']  // same dt
 names.push('reetha')
 console.log(names)
 
-let num = [1, 34, 67, 87]   // same dt
-num.pop()
-console.log(num)
+let numerical = [1, 34, 67, 87]   // same dt
+numerical.pop()
+console.log(numerical)
 
 let mixed = [1, 'hi', true, 'sandra', 45, 8.9]    // diff dt while declaration
 mixed.push('hema')
@@ -41,3 +41,43 @@ console.log(numb)
 // Read-Only Arrays
 let fruits:readonly String[] = ['apple', 'orange', 'mango']
 // fruits.push('lemon')  // push() do not exist in readonly array
+
+// Array Methods
+
+// concat() - returns a new array comprised of this array joined with two or more arrays.
+
+// every()
+
+// filter()
+
+// forEach()
+
+// indexOf()
+
+// join()
+
+// lastIndexOf()
+
+// map()
+
+// pop()
+
+// push()
+
+// reduce()
+
+// reduceRight()
+
+// shift()
+
+// slice()
+
+// some()
+
+// sort()
+
+// splice()
+
+// toString()
+
+// unshift()
