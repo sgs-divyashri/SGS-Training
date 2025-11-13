@@ -14,7 +14,11 @@ function askQuestion(rl, question) {
 const tasks = []
 var taskCounter = 1;
 let option;
+const allowedStatuses = ["To-Do", "In Progress", "Review", "Completed"];
 
+function getCurrentDateTime() {
+    return new Date().toLocaleString(); 
+}
 
 function generateTaskId() {
     const prefix = "T";
@@ -36,7 +40,11 @@ async function createTask() {
 
     const t_name = await askQuestion(rl, "Enter the task name: ");
     const t_desc = await askQuestion(rl, "Enter the task description: ");
-    tasks.push({ ID: taskId, TaskName: t_name, Description: t_desc, Status: status })
+    const createdAt = getCurrentDateTime();
+    const updatedAt = createdAt;
+    tasks.push({ ID: taskId, TaskName: t_name, Description: t_desc, Status: status, CreatedAt: createdAt, UpdatedAt: updatedAt })
+    console.log("\nTask created successfully!");
+    console.table([tasks[tasks.length - 1]]);
 }
 
 async function getAllTasks() {
@@ -49,17 +57,82 @@ async function getAllTasks() {
     }
 }
 
+async function updateTask() {
+    if (tasks.length === 0) {
+    console.log("\nNo tasks available to update.");
+    return;
+    }
+    
+    console.table(tasks);
+    const t_id = await askQuestion(rl, "\nEnter the Task ID to update: ");
+
+    // find the task
+    const task = tasks.find(t => t.ID === t_id);
+
+    if (!task) {
+        console.log(`Task ID '${t_id}' not found.`);
+        return;
+    }
+
+    console.log(`\nCurrent Task Details for ${t_id}:`);
+    console.table([task]);
+
+    const newName = await askQuestion(rl, "Enter new Task Name (press Enter to skip): ");
+    const newDesc = await askQuestion(rl, "Enter new Description (press Enter to skip): ");
+    console.log("\nSelect new Status (press Enter to skip):");
+    allowedStatuses.forEach((status, index) => console.log(`${index + 1}. ${status}`));
+
+    const statusChoice = await askQuestion(rl, "Choose status (1–4) or press Enter to keep existing: ");
+    if (newName) task.TaskName = newName;
+    if (newDesc) task.Description = newDesc;
+
+    if (statusChoice) {
+        const statusIndex = Number(statusChoice) - 1;
+        if (statusIndex >= 0 && statusIndex < allowedStatuses.length) {
+            task.Status = allowedStatuses[statusIndex];
+        } else {
+            console.log("Invalid status choice. Keeping previous status.");
+        }
+    }
+
+    task.UpdatedAt = getCurrentDateTime();
+
+    console.log("\nTask updated successfully!");
+    console.table([task]);
+}
+
+async function getSpecificTask() {
+    if (tasks.length === 0) {
+        console.log("\nNo tasks available.");
+        return;
+    }
+
+    console.table(tasks);
+    const t_id = await askQuestion(rl, "Enter the Task ID to view: ");
+
+    // Use .find() to get the task object directly
+    const task = tasks.find(task => task.ID === t_id);
+
+    if (task) {
+        console.log(`\nTask Details for ID ${t_id}:`);
+        console.table([tasks[tasks.length - 1]]);
+    } else {
+        console.log(`Task ID '${t_id}' not found.\n`);
+    }
+}
+
 async function deleteTask() {
-    console.log("\nCurrent Tasks:", tasks);
+    console.log("\nCurrent Tasks:");
+    console.table(tasks)
     const t_id = await askQuestion(rl, "Enter the task ID: ");
-    const index = tasks.findIndex(x => x.taskId === t_id);
+    const index = tasks.findIndex(task => task.ID === t_id);
     if (index !== -1) {
+        // Remove that task from the array
         const deletedTask = tasks.splice(index, 1);
-        console.log(`Task ${deletedTask[0].taskId} deleted successfully.`);
+        console.log(`Task ${deletedTask[0].ID} deleted successfully.`);
     } else {
         console.log(`Task ID '${t_id}' not found.`);
     }
-    console.log("Task Deleted")
 }
 
 // Exit function
@@ -87,22 +160,19 @@ async function main() {
 
         switch (Number(option)) {
             case 1: await createTask();
-                break;
-            case 2: console.log("Update a Task");
-                break;
+                    break;
+            case 2: await updateTask();
+                    break;
             case 3: await getAllTasks();
-                break;
-            case 4: console.log("Get a Task by ID");
-                break;
+                    break;
+            case 4: await getSpecificTask();
+                    break;
             case 5: await deleteTask()
-                break;
+                    break;
             case 6: exitApp(); // Call the exit function
-                return;
+                    return;
             default: console.log("Invalid option! Please choose between 1–6.");
         }
-
-        // rl.close();
-
     } while (option != 6)
 }
 
