@@ -10,6 +10,7 @@ interface Task {
     Status: string;
     CreatedAt: string;
     UpdatedAt: string;
+    isActive: boolean; //
 }
 
 // Type for readline interface
@@ -44,7 +45,7 @@ function generateTaskId(): string {    // String dt
     // .length property gives the number of characters in a string.
     // Math.max() is a built-in JavaScript function that returns the larger of the two numbers given.
     // Take whichever is larger — the actual number of digits in taskCounter, or the minimum number of digits required — and store it in digits.
-    const digits = Math.max(String(taskCounter).length, minDigits);  
+    const digits = Math.max(String(taskCounter).length, minDigits);
 
     // create ID based on current counter
     // The String() function converts the number into a string, so that string methods (like .padStart()) can be used.
@@ -58,7 +59,7 @@ function generateTaskId(): string {    // String dt
     return taskId;  // return the task Id
 }
 
-async function createTask(){
+async function createTask() {
     const taskId = generateTaskId();   // call generateTaskId()
     const status = "To-Do";  // default status
     console.log(`\nCreating new task...`);
@@ -69,7 +70,7 @@ async function createTask(){
     const t_desc = await askQuestion(rl, "Enter the task description: ");
     const createdAt = getCurrentDateTime();  // calls getCurrentDateTime()
     const updatedAt = createdAt;  // initially assigning createdAt value into updatedAt variable
-    
+
     // new Task object using the Task interface
     const newTask: Task = {
         ID: taskId,
@@ -78,6 +79,7 @@ async function createTask(){
         Status: status,
         CreatedAt: createdAt,
         UpdatedAt: updatedAt,
+        isActive: true,
     };
 
     tasks.push(newTask);   // push task objects into tasks[]
@@ -85,12 +87,15 @@ async function createTask(){
     console.table([newTask]); // display only the task object as array in table format
 }
 
-async function getAllTasks(){
+async function getAllTasks() {
     if (tasks.length === 0) {
         console.log("No Tasks found..");
     } else {
         console.log("All Tasks..");
-        console.table(tasks);   // display all the tasks in table format
+        // forEach(index => tasks.isActive === true)
+        // if(taisActive == true)
+        console.table(tasks.filter((task) => task.isActive === true))
+        // console.table(tasks);   // display all the tasks in table format
     }
 }
 
@@ -114,14 +119,14 @@ async function updateTask() {
     For each t (each task object) inside the tasks array:
        It checks whether that task’s ID property matches the given t_id.
        When a match is found, .find() stops searching and returns that object.*/
-    const task = tasks.find(t => t.ID === t_id);
+    const task = tasks.find(t => t.ID === t_id && t.isActive === true);
+
 
     // If t.ID !== t_id, not found
     if (!task) {
         console.log(`Task ID '${t_id}' not found.`);
         return;
     }
-
     console.log(`\nCurrent Task Details for ${t_id}:`);
     // creating a new array
     console.table([task]);  // task refers to a single task object that was found in the array tasks.
@@ -137,7 +142,7 @@ async function updateTask() {
        index → the index (position) of that element in the array (starts from 0).
        array → the entire array (optional parameter).
     */
-   // not return anything
+    // not return anything
     allowedStatuses.forEach((status, index) => console.log(`${index + 1}. ${status}`));  // index start at 0
 
     const statusChoice = await askQuestion(rl, "Choose status (1–4) or press Enter to keep existing: ");  // user input for status attribute
@@ -169,6 +174,7 @@ async function updateTask() {
 
     console.log("\nTask updated successfully!");
     console.table([task]);  // displays task[] in a table - only that task object
+
 }
 
 // To Retrieve a single task from task ID
@@ -219,6 +225,16 @@ async function deleteTask() {
     }
 }
 
+async function activeToInactive(){
+    const t_id = await askQuestion(rl, "Enter the task ID: ");
+    const task = tasks.find((t) => t.ID === t_id && t.isActive===true)
+    if(!task){
+        console.log("Task not found")
+        return
+    }
+    task.isActive=false
+}
+
 // This means the function does not return anything.
 function exitApp(): void {
     console.log("Exiting the application...");
@@ -258,7 +274,8 @@ async function main() {
             case 5:
                 await deleteTask();
                 break;
-            case 6:
+            case 6: await activeToInactive();
+            case 7:
                 exitApp();
                 return;
             default:
@@ -268,3 +285,19 @@ async function main() {
 }
 
 main(); // calls the main() - driver function
+
+
+// when created task shld be Active (default), while get() - returen only active tasks
+// update only active tasks
+// function toInactive() - from active to inactive
+
+// taskID
+
+// task?.isActive - getting error above if stmt, not error in if stamt
+
+
+// functions parameterized
+// get input and pass into func 
+// type 
+// new project for typescript
+
