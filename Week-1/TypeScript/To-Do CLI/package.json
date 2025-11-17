@@ -1,0 +1,19 @@
+{
+  "name": "todo-cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "build": "tsc",
+    "dev": "ts-node src/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.6.0"
+  }
+}
