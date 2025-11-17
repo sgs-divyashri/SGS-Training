@@ -125,8 +125,6 @@ console.log("Converted array to string: ", my_arr.toString())
 
 // every()
 
-// filter()
-
 // forEach() - executes the function once for each array element - takes function as parameter 
 // syntax: array.forEach(function(currValue, index, array){})
 /*
@@ -176,7 +174,6 @@ let arr1: number[] = [3, 5, 1, 7, 9, 2, 4, 6, 1, 4, 2, 5, 8, 9, 7]
 let greater_num = arr1.filter((num) => num>5)
 console.log("Greater than 5: ", greater_num)
 
-// some()
 
 // reduce() - applies a function on every element of an array and returns a single value
 // Syntax: array.reduce(function(accumulator, currValue, index, array) { })
@@ -192,6 +189,26 @@ console.log("Sum of all numbers in array using for loop: ", total)
 // Using reduce()
 let arr2 = number.reduce((total, element) => { return total+element; }, 0) // initialize default value for accumulator
 console.log("Sum of the elements in an array using reduce() method: ", arr2)
+
+
+// some() - checks if any element satisfies the condition
+// returns true if atleast one element satisfies the condition, else false (boolean value)
+// syntax: array.some(function(currValue, index, array){})
+// Ex 1: Check array contains negative num or not
+let arrr: number[] = [1, 3, -2, 7, -4, 8, 9, 3]
+let neg_num = arrr.some((elem) => elem<0)  
+console.log("Does array contain negative number? ", neg_num) // true
+
+
+
+// every - checks if all the elements stisfy the condition
+// returns true if all the elements satisfy the condition, else false
+// syntax: array.every(function(currValue, index, array){})
+// Ex 1: 
+let all_even = number.every((elem) => elem%2===0);
+console.log("Are all numbers even? ", all_even)  // false
+
+
 
 // reduceRight()
 
