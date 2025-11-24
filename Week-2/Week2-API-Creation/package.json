@@ -1,0 +1,29 @@
+{
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  },
+  "name": "week2-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "@hapi/hapi": "^21.4.4",
+    "@types/bcrypt": "^6.0.0",
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.3",
+    "esbuild": "^0.25.12",
+    "get-tsconfig": "^4.13.0",
+    "resolve-pkg-maps": "^1.0.0",
+    "undici-types": "^7.16.0"
+  },
+  "scripts": {
+    "start": "npx ts-node src/server.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
