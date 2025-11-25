@@ -1,4 +1,4 @@
-import { CreateUserDto, LoginDto, User } from './user.model';
+import { CreateUser, Login, User } from './user.model';
 import { hashPassword, verifyPassword } from '../auth/auth.service';
 
 // In-memory storage
@@ -21,7 +21,7 @@ export class UserService {
   }
 
   // Create new user (synchronous)
-  static create(userData: CreateUserDto): Omit<User, 'password'> {
+  static create(userData: CreateUser): Omit<User, 'password'> {
     // Check if user already exists
     const existingUser = this.findByEmail(userData.email);
     if (existingUser) {
@@ -34,19 +34,19 @@ export class UserService {
       name: userData.name,
       email: userData.email,
       password: hashPassword(userData.password),
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: new Date().toLocaleString(),
+      updatedAt: new Date().toLocaleString(),
     };
 
     users.push(newUser);
 
     // Return user without password
-    const { password, ...userWithoutPassword } = newUser;
-    return userWithoutPassword;
+    const { password, ...userWithoutPassword } = newUser; // split newUser into parts - password, remaining properties
+    return userWithoutPassword; // return all the properties except password
   }
 
   // Validate user credentials (synchronous)
-  static validateCredentials(loginData: LoginDto): Omit<User, 'password'> | null {
+  static validateCredentials(loginData: Login): Omit<User, 'password'> | null {
     const user = this.findByEmail(loginData.email);
     if (!user) return null;
 

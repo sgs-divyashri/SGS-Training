@@ -10,16 +10,16 @@ const init = async () => {
             host: 'localhost',
         });
 
-        // Register JWT plugin ONLY HERE
+        // Register JWT plugin
         await server.register(Jwt);
 
-        // Configure JWT auth strategy (without registration)
+        // Configure JWT auth strategy
         configureAuthStrategy(server);
 
         // Register routes
         server.route(authRoutes);
 
-        // Add a simple test route
+        // simple test route
         server.route({
             method: 'GET',
             path: '/',

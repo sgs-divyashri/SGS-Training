@@ -1,13 +1,13 @@
 import { Request, ResponseToolkit } from '@hapi/hapi';
 import { UserService } from './user.service';
 import { AuthService } from '../auth/auth.service';
-import { CreateUserDto, LoginDto, AuthResponse } from './user.model';
+import { CreateUser, Login, AuthResponse } from './user.model';
 
 export class UserController {
   // Register new user (synchronous)
   static register(request: Request, h: ResponseToolkit) {
     try {
-      const payload = request.payload as CreateUserDto;
+      const payload = request.payload as CreateUser;
 
       // Basic validation
       if (!payload.name || !payload.email || !payload.password) {
@@ -48,7 +48,7 @@ export class UserController {
   // Login user (synchronous)
   static login(request: Request, h: ResponseToolkit) {
     try {
-      const payload = request.payload as LoginDto;
+      const payload = request.payload as Login;
 
       // Basic validation
       if (!payload.email || !payload.password) {

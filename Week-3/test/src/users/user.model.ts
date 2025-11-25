@@ -3,17 +3,17 @@ export interface User {
   name: string;
   email: string;
   password: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface CreateUserDto {
+export interface CreateUser {
   name: string;
   email: string;
   password: string;
 }
 
-export interface LoginDto {
+export interface Login {
   email: string;
   password: string;
 }
