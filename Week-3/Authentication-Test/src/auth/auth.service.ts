@@ -19,7 +19,7 @@ export class AuthService {
   }
 
   // Generate JWT token
-  static generateToken(payload: JWTPayload): string {
+  static  generateToken(payload: JWTPayload): string {
     return Jwt.token.generate(
       {
         ...payload,  // copies all properties from the payload object into this new object.

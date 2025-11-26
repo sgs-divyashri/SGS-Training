@@ -53,3 +53,57 @@ console.log(getAge)
 // Sort array of objects by age (ascending).
 const sorting = users.sort((x, y) => x.age - y.age)
 console.log(sorting)
+
+// Update age of an object inside an array.
+users[2]!.age = 24;
+console.log(users[2])
+
+// add new property to all objects in an array
+const arr = [
+  {name: "phone"},
+  {name: "laptop"}
+];
+const updated_arr = arr.map(x => ({...x, inStock: true}))
+console.log(updated_arr)
+
+// count admin users
+const users1 = [
+  {name: "Divya", role: "admin"},
+  {name: "Hari", role: "user"},
+  {name: "Kumar", role: "admin"}
+];
+const count_admin = users1.filter(x => (x.role==='admin')).length
+console.log(count_admin)
+
+// Given an object, return a new object where all values are doubled (only if the values are numbers).
+const doubled = {'a': 1, 'b': 3}
+const doubled_obj = Object.fromEntries(
+    Object.entries(doubled).map(([key, val]) => {
+        return [key, val*2]
+    })
+)
+console.log(doubled_obj)
+
+// Convert an array of key–value pairs into an object.
+const array =  [["name", "Divy"], ["age", 15]]
+const convert = Object.fromEntries(array)
+console.log(convert)
+
+type User = {
+  readonly id: number;
+  name?: string;
+  email: string;
+  age?: number;
+}
+
+type PublicUser = Pick<User, "id"|"name">
+type HiddenData = Omit<User, "email">
+type OptionalData = Partial<User>
+type AllData = Required<User>
+type Read = Readonly<User> 
+
+// Make a type that picks "email" and "password" from User but makes them optional.
+type Combine = Pick<User, "id"|"email"> | Partial<User>
+
+// Create a type that removes "email" and "age" from User and makes the rest readonly.
+type Remove = Exclude<User, "email"|"age">

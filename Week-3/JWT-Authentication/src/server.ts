@@ -1,48 +1,29 @@
-import Hapi from '@hapi/hapi';
+'use strict';
+import apiRoutes from "./api/index"
 import Jwt from '@hapi/jwt';
-import { authRoutes } from './routes/auth.routes';
-import { configureAuthStrategy } from './auth/auth.strategy';
+import Hapi from '@hapi/hapi'
+import { configureAuthStrategy } from "./auth/auth.strategy";
 
 const init = async () => {
-    try {
-        const server = Hapi.server({
-            port: 3000,
-            host: 'localhost',
-        });
+    const server = Hapi.server({
+        port: 3000,
+        host: 'localhost',
+    });
 
-        // Register JWT plugin
-        await server.register(Jwt);
+    // Register JWT plugin
+    await server.register(Jwt);
+    
+    // Configure JWT auth strategy
+    configureAuthStrategy(server);
 
-        // Configure JWT auth strategy
-        configureAuthStrategy(server);
+    server.route(apiRoutes)
 
-        // Register routes
-        server.route(authRoutes);
-
-        // simple test route
-        server.route({
-            method: 'GET',
-            path: '/',
-            handler: (request, h) => {
-                return { message: 'Server is running!' };
-            },
-            options: {
-                auth: false,
-            },
-        });
-
-        // Start server
-        await server.start();
-        console.log('Server running on %s', server.info.uri);
-
-    } catch (error) {
-        console.error('Failed to start server:', error);
-        process.exit(1);
-    }
+    server.start();
+    console.log('Server running on %s', server.info.uri);
 };
 
-process.on('unhandledRejection', (err) => {
-    console.log('Unhandled rejection:', err);
+process.on('unhandledRejection', (err: any) => {
+    console.log(err);
     process.exit(1);
 });
 
