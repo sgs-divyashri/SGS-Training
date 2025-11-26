@@ -36,16 +36,4 @@ export const getSpecificUserHandler = (request: Request, h: ResponseToolkit): Re
     return h.response({ error: "Invalid or expired token" }).code(401);
   }
 
-  // const id = parseInt(request.params.id);
-  // const user = userServices.getSpecificUser(id);
-
-  // if (!user) {
-  //   return h.response({ error: 'User not found' }).code(404);
-  // }
-  // // Generate JWT token for this specific user
-  // const token = generateToken({
-  //   userId: user.id!,
-  //   email: user.email,
-  // });
-  // return h.response({ message: `Retrived User ID ${user.id}`, token, user }).code(200);
 }

@@ -24,7 +24,7 @@ export const loginUserHandler = (request: Request, h: ResponseToolkit) => {
     });
 
     return h.response({
-      message: "Login successful",
+      message: "Login successful...",
       token,
       userLogin: user,
     }).code(200);

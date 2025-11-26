@@ -28,13 +28,13 @@ export const softDeleteTaskHandler = (request: Request, h: ResponseToolkit): Res
 
 
         return h.response({
-            message: "Retrieved Users successfully",
+            message: "Soft Deleted Task successfully",
             token,
             task: task,
         }).code(200);
 
     } catch (err) {
-        console.error("ERROR IN fullUpdateTaskHandler:", err);
+        console.error("ERROR IN softDeleteTaskHandler:", err);
         return h.response({ error: "Invalid token" }).code(401);
     }
 

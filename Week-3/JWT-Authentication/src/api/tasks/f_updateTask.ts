@@ -36,7 +36,7 @@ export const fullUpdateTaskHandler = (request: Request, h: ResponseToolkit): Res
     }
 
     return h.response({
-      message: "Retrieved Users successfully",
+      message: "Fully updated task successfully",
       token,
       task: task,
     }).code(200);

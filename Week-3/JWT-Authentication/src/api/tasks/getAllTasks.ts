@@ -22,7 +22,7 @@ export const getTaskHandler = (request: Request, h: ResponseToolkit): ResponseOb
         const allTasks: Task[] = taskServices.getAllTasks();
     
         return h.response({
-          message: "Retrieved Users successfully",
+          message: "Retrieved All Tasks successfully",
           token,
           users: allTasks,
         }).code(200);

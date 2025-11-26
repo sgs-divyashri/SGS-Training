@@ -13,9 +13,9 @@ export const getSpecificTaskHandler = (request: Request, h: ResponseToolkit): Re
     }
 
     const token = authHeader.replace("Bearer ", "");
-    const user = verifyToken(token);   // <-- VERIFY TOKEN HERE
+    const user = verifyToken(token);   
 
-    // After verification, fetch the task
+    
     const id = request.params.id;
     const specificTask = taskServices.getSpecificTask(id);
 
@@ -23,7 +23,7 @@ export const getSpecificTaskHandler = (request: Request, h: ResponseToolkit): Re
       return h.response({ error: "Task not found" }).code(404);
     }
 
-    // Return the task (NO NEW TOKEN)
+    // Return the task 
     return h
       .response({
         message: `Task ID ${id} retrieved successfully`,
@@ -36,17 +36,3 @@ export const getSpecificTaskHandler = (request: Request, h: ResponseToolkit): Re
     return h.response({ error: "Invalid or expired token" }).code(401);
   }
 };
-  
-  // const id = request.params.id;
-  // const specficTask = taskServices.getSpecificTask(id)
-
-  // if (!specficTask) {
-  //   return h.response({ error: 'Task not found' }).code(404);
-  // }
-
-  // const token = generateToken({
-  //   id: specficTask.id!
-  // });
-
-  // return h.response({ message: `Task ID ${id} retrieved...`, token, specficTask }).code(200);
-

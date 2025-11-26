@@ -32,7 +32,7 @@ export const partialUpdateTaskHandler = (request: Request, h: ResponseToolkit): 
         }
     
         return h.response({
-          message: "Retrieved Users successfully",
+          message: "Partially Updated Task successfully",
           token,
           task: task,
         }).code(200);
@@ -41,27 +41,4 @@ export const partialUpdateTaskHandler = (request: Request, h: ResponseToolkit): 
         console.error("ERROR IN partialUpdateTaskHandler:", err);
         return h.response({ error: "Invalid token" }).code(401);
       }
-    
-    // const id = request.params.id;
-    // const payload = request.payload as Partial<Task>;
-
-    // const result = taskServices.partialUpdateTask(id, payload);
-
-    // if (result === null) {
-    //     return h.response({ error: "Task not found" }).code(404);
-    // }
-
-    // if (result === "INVALID_STATUS") {
-    //     return h.response({ error: "Invalid status value" }).code(400);
-    // }
-
-    // const token = generateToken({
-    //     id: result.id!
-    // });
-
-    // return h.response({
-    //     message: "Task updated successfully",
-    //     token,
-    //     result
-    // }).code(200);
 }

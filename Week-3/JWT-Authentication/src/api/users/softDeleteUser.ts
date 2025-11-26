@@ -28,7 +28,7 @@ export const softDeleteUserHandler = (request: Request, h: ResponseToolkit): Res
 
 
     return h.response({
-      message: "Retrieved Users successfully",
+      message: "Soft Deleted User successfully",
       token,
       task: task,
     }).code(200);
@@ -37,16 +37,4 @@ export const softDeleteUserHandler = (request: Request, h: ResponseToolkit): Res
     console.error("ERROR IN fullUpdateTaskHandler:", err);
     return h.response({ error: "Invalid token" }).code(401);
   }
-
-  // const id = parseInt(request.params.id);
-  // const user = userServices.softDeleteUser(id);
-  // if (user===null) {
-  //     return h.response({ error: 'User not found' }).code(404);
-  // }
-  // // Generate JWT token for this specific user
-  //   const token = generateToken({
-  //     userId: user.id!,
-  //     email: user.email,
-  //   });
-  // return h.response({ message: "User deleted successfully", token, user: user.id, active: user.isActive }).code(200);
 }

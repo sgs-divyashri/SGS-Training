@@ -27,7 +27,7 @@ export const getSpecificUserTaskHandler = (request: Request, h: ResponseToolkit)
         }
 
         return h.response({
-            message: "Retrieved Users successfully",
+            message: "Retrieved specific user's tasks successfully",
             token,
             task: userTasks,
         }).code(200);
