@@ -106,7 +106,7 @@ export const userServices = {
     user.isActive = false
     user.updatedAt = new Date().toLocaleString();
     return user
-  }
+  },
 
 };
 
