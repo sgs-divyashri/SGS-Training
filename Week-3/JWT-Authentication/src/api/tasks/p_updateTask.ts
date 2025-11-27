@@ -9,17 +9,17 @@ export const partialUpdateTaskHandler = (request: Request, h: ResponseToolkit): 
         const id = request.params.id;
         const payload = request.payload as Task;
         // Read Authorization header
-        const authHeader = request.headers.authorization;
+        // const authHeader = request.headers.authorization;
     
-        if (!authHeader) {
-          return h.response({ error: "Unauthorized" }).code(401);
-        }
+        // if (!authHeader) {
+        //   return h.response({ error: "Unauthorized" }).code(401);
+        // }
     
-        // Extract token
-        const token = authHeader.replace("Bearer ", "");
+        // // Extract token
+        // const token = authHeader.replace("Bearer ", "");
     
-        // Verify token
-        const check = verifyToken(token);
+        // // Verify token
+        // const check = verifyToken(token);
     
         const task = taskServices.partialUpdateTask(id, payload);
     
@@ -33,7 +33,6 @@ export const partialUpdateTaskHandler = (request: Request, h: ResponseToolkit): 
     
         return h.response({
           message: "Partially Updated Task successfully",
-          token,
           task: task,
         }).code(200);
     

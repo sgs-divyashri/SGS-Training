@@ -9,18 +9,18 @@ export const fullUpdateUserHandler = (request: Request, h: ResponseToolkit): Res
 
     const id = Number(request.params.id);
     const payload = request.payload as User;
-    // Read Authorization header
-    const authHeader = request.headers.authorization;
+    // // Read Authorization header
+    // const authHeader = request.headers.authorization;
 
-    if (!authHeader) {
-      return h.response({ error: "Unauthorized" }).code(401);
-    }
+    // if (!authHeader) {
+    //   return h.response({ error: "Unauthorized" }).code(401);
+    // }
 
-    // Extract token
-    const token = authHeader.replace("Bearer ", "");
+    // // Extract token
+    // const token = authHeader.replace("Bearer ", "");
 
-    // Verify token
-    const check = verifyToken(token);
+    // // Verify token
+    // const check = verifyToken(token);
 
     const task = userServices.fullUpdateUser(id, payload);
 
@@ -38,7 +38,6 @@ export const fullUpdateUserHandler = (request: Request, h: ResponseToolkit): Res
 
     return h.response({
       message: " Fully Updated Users successfully",
-      token,
       task: task,
     }).code(200);
 

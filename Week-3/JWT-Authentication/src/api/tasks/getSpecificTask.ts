@@ -7,13 +7,13 @@ import { verifyToken } from "./taskAuthentication";
 export const getSpecificTaskHandler = (request: Request, h: ResponseToolkit): ResponseObject => {
   try {
     // Authenticate user
-    const authHeader = request.headers.authorization;
-    if (!authHeader) {
-      return h.response({ error: "Missing Authorization Header" }).code(401);
-    }
+    // const authHeader = request.headers.authorization;
+    // if (!authHeader) {
+    //   return h.response({ error: "Missing Authorization Header" }).code(401);
+    // }
 
-    const token = authHeader.replace("Bearer ", "");
-    const user = verifyToken(token);   
+    // const token = authHeader.replace("Bearer ", "");
+    // const user = verifyToken(token);   
 
     
     const id = request.params.id;
@@ -27,7 +27,6 @@ export const getSpecificTaskHandler = (request: Request, h: ResponseToolkit): Re
     return h
       .response({
         message: `Task ID ${id} retrieved successfully`,
-        token,
         task: specificTask
       })
       .code(200);

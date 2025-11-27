@@ -1,5 +1,5 @@
 import Jwt from '@hapi/jwt';
-import { JWT_SECRET } from '../config/constants';
+import { JWT_SECRET } from '../../config/constants';
 import { Task } from '../../services/taskServices';
 
 // Generate JWT token

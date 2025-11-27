@@ -41,8 +41,8 @@ export const userServices = {
     return newUser;
   },
 
-  loginUser: (loginData: Pick<User, "email"|"password">) => {
-    const user = users.find(user => user.email === loginData.email)
+  loginUser: (loginData: Pick<User, "email"|"password">): User | null => {
+    const user = users.find(user => user.email === loginData.email && user.isActive===true)
     if (!user) return null;
 
     const isValidPassword = verifyPassword(loginData.password, user.password);

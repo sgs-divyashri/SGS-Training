@@ -6,20 +6,20 @@ import { verifyToken } from "./authentication";
 export const softDeleteUserHandler = (request: Request, h: ResponseToolkit): ResponseObject => {
   try {
 
-    const id = Number(request.params.id);
+    const id = Number(request.params.userID);
 
-    // Read Authorization header
-    const authHeader = request.headers.authorization;
+    // // Read Authorization header
+    // const authHeader = request.headers.authorization;
 
-    if (!authHeader) {
-      return h.response({ error: "Unauthorized" }).code(401);
-    }
+    // if (!authHeader) {
+    //   return h.response({ error: "Unauthorized" }).code(401);
+    // }
 
-    // Extract token
-    const token = authHeader.replace("Bearer ", "");
+    // // Extract token
+    // const token = authHeader.replace("Bearer ", "");
 
-    // Verify token
-    const check = verifyToken(token);
+    // // Verify token
+    // const check = verifyToken(token);
 
     const task = userServices.softDeleteUser(id);
     if (task === null) {
@@ -29,7 +29,6 @@ export const softDeleteUserHandler = (request: Request, h: ResponseToolkit): Res
 
     return h.response({
       message: "Soft Deleted User successfully",
-      token,
       task: task,
     }).code(200);
 

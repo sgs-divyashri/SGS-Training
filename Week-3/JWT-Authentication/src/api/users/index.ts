@@ -63,7 +63,7 @@ export const userRoutes: ServerRoute[] = [
 
     {
         method: 'DELETE',
-        path: '/users/{id}',
+        path: '/users/{userID}',
         handler: softDeleteUserHandler,
         options: {
             auth: 'jwt',

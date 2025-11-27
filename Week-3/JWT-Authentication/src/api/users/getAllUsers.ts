@@ -5,24 +5,23 @@ import { User } from "../../services/userServices";
 
 export const getUserHandler = (request: Request,h: ResponseToolkit): ResponseObject => {
   try {
-    // Read Authorization header
-    const authHeader = request.headers.authorization;
+    // // Read Authorization header
+    // const authHeader = request.headers.authorization;
 
-    if (!authHeader) {
-      return h.response({ error: "Unauthorized" }).code(401);
-    }
+    // if (!authHeader) {
+    //   return h.response({ error: "Unauthorized" }).code(401);
+    // }
 
-    // Extract token
-    const token = authHeader.replace("Bearer ", "");
+    // // Extract token
+    // const token = authHeader.replace("Bearer ", "");
 
-    // Verify token
-    const payload = verifyToken(token);
+    // // Verify token
+    // const payload = verifyToken(token);
 
     const allUsers: User[] = userServices.getAllUsers();
 
     return h.response({
       message: "Retrieved All Users successfully",
-      token,
       users: allUsers,
     }).code(200);
 

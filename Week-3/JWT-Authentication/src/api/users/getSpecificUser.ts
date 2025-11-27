@@ -5,14 +5,14 @@ import { verifyToken } from "./authentication";
 
 export const getSpecificUserHandler = (request: Request, h: ResponseToolkit): ResponseObject => {
   try {
-    // Authenticate user
-    const authHeader = request.headers.authorization;
-    if (!authHeader) {
-      return h.response({ error: "Missing Authorization Header" }).code(401);
-    }
+    // // Authenticate user
+    // const authHeader = request.headers.authorization;
+    // if (!authHeader) {
+    //   return h.response({ error: "Missing Authorization Header" }).code(401);
+    // }
 
-    const token = authHeader.replace("Bearer ", "");
-    const user = verifyToken(token);   // <-- VERIFY TOKEN HERE
+    // const token = authHeader.replace("Bearer ", "");
+    // const user = verifyToken(token);   // <-- VERIFY TOKEN HERE
 
     // After verification, fetch the task
     const id = Number(request.params.id);
@@ -27,7 +27,6 @@ export const getSpecificUserHandler = (request: Request, h: ResponseToolkit): Re
     return h
       .response({
         message: `User ID ${id} retrieved successfully`,
-        token,
         user: specificUser
       })
       .code(200);

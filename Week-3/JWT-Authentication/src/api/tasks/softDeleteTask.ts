@@ -8,18 +8,18 @@ export const softDeleteTaskHandler = (request: Request, h: ResponseToolkit): Res
 
         const id = request.params.id;
 
-        // Read Authorization header
-        const authHeader = request.headers.authorization;
+        // // Read Authorization header
+        // const authHeader = request.headers.authorization;
 
-        if (!authHeader) {
-            return h.response({ error: "Unauthorized" }).code(401);
-        }
+        // if (!authHeader) {
+        //     return h.response({ error: "Unauthorized" }).code(401);
+        // }
 
-        // Extract token
-        const token = authHeader.replace("Bearer ", "");
+        // // Extract token
+        // const token = authHeader.replace("Bearer ", "");
 
-        // Verify token
-        const check = verifyToken(token);
+        // // Verify token
+        // const check = verifyToken(token);
 
         const task = taskServices.softDeleteTask(id);
         if (task === null) {
@@ -29,7 +29,6 @@ export const softDeleteTaskHandler = (request: Request, h: ResponseToolkit): Res
 
         return h.response({
             message: "Soft Deleted Task successfully",
-            token,
             task: task,
         }).code(200);
 

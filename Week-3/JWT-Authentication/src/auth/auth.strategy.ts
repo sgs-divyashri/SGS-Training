@@ -1,5 +1,5 @@
 import { Server } from '@hapi/hapi';
-import { JWT_SECRET } from '../api/config/constants';
+import { JWT_SECRET } from '../config/constants';
 
 export const configureAuthStrategy = (server: Server) => {   // server instance as parameter
     // configure the strategy

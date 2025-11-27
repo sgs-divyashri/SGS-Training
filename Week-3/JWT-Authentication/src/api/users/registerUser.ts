@@ -25,17 +25,7 @@ export const registerUserHandler = (request: Request, h: ResponseToolkit): Respo
 
   const newUser: User = userServices.createUser(payload)
 
-  // Generate JWT token
-  const token = generateToken({
-    userId: newUser.id!,
-    email: newUser.email,
-  });
-
-  const response: AuthResponse = {
-    token,
-    user: newUser,
-  };
-
-  return h.response({ message: 'User added successfully', ...response }).code(201);
+  return h.response({ message: 'User added successfully', userID: newUser.id}).code(201);
 
 }
+

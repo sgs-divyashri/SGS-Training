@@ -25,8 +25,7 @@ export const loginUserHandler = (request: Request, h: ResponseToolkit) => {
 
     return h.response({
       message: "Login successful...",
-      token,
-      userLogin: user,
+      token
     }).code(200);
 
   } catch (err) {
