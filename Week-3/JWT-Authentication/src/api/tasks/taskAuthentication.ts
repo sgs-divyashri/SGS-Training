@@ -1,9 +1,9 @@
 import Jwt from '@hapi/jwt';
 import { JWT_SECRET } from '../../config/constants';
-import { Task } from '../../services/taskServices';
+import { TaskPayload } from '../../services/taskServices';
 
 // Generate JWT token
-export const generateToken = (payload: Pick<Task, "id">): string => {
+export const generateToken = (payload: Pick<TaskPayload, "taskID">): string => {
     return Jwt.token.generate(
         {
             ...payload,  // copies all properties from the payload object into this new object.
@@ -18,11 +18,4 @@ export const generateToken = (payload: Pick<Task, "id">): string => {
             ttlSec: 7 * 24 * 60 * 60, // time-to-live - expire in 7 days
         }
     );
-}
-
-// Verify JWT token
-export const verifyToken = (token: string): Pick<Task, "id"> => {
-    const artifacts = Jwt.token.decode(token);
-    Jwt.token.verify(artifacts, JWT_SECRET);
-    return artifacts.decoded.payload as Pick<Task, "id">;
 }

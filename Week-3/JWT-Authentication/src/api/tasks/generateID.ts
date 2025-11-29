@@ -1,10 +1,20 @@
-let taskCounter: number = 1;  
+import { Task } from "./taskTableDefinition";
+import { Model } from "sequelize";
 
-export function generateTaskId(): string {    
-    const prefix = "T";   
-    const minDigits = 3;  
-    const digits = Math.max(String(taskCounter).length, minDigits);
-    const taskId = prefix + String(taskCounter).padStart(digits, "0");
-    taskCounter++; 
-    return taskId;  
+export async function generateTaskId(): Promise<string> {
+    const lastTask = await Task.findOne({ order: [['createdAt', 'DESC']] });
+    if (lastTask === null) {
+        throw new Error("No last tasks found!");
+    }
+    else {
+        const taskData = lastTask.toJSON();
+        const lastId = parseInt(taskData.taskId.replace('T', ''));
+
+        // const lastId = lastTask ? parseInt(lastTask.taskId.replace('T', '')) : 0;
+        const nextId = lastId + 1;
+        const taskId = `T${String(nextId).padStart(3, '0')}`
+        return taskId;
+    }
 }
+
+

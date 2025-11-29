@@ -4,7 +4,7 @@ import { getTaskHandler } from "./getAllTasks";
 import { getSpecificTaskHandler } from "./getSpecificTask";
 import { getSpecificUserTaskHandler } from "./getSpecificUserTasks";
 import { fullUpdateTaskHandler } from "./f_updateTask";
-import { partialUpdateTaskHandler } from "./p_updateTask";
+// import { partialUpdateTaskHandler } from "./p_updateTask";
 import { softDeleteTaskHandler } from "./softDeleteTask";
 
 
@@ -25,7 +25,7 @@ export const taskRoutes: ServerRoute[] = [
         path: '/tasks',
         handler: getTaskHandler,
         options: {
-            auth: 'jwt'  
+            auth: false,
         },
     },
 
@@ -34,7 +34,7 @@ export const taskRoutes: ServerRoute[] = [
         path: '/tasks/{id}',
         handler: getSpecificTaskHandler,
         options: {
-            auth: 'jwt',
+            auth: false,
         },
     },
 
@@ -43,35 +43,34 @@ export const taskRoutes: ServerRoute[] = [
         path: '/tasks/user/{id}',
         handler: getSpecificUserTaskHandler,
         options: {
-            auth: 'jwt',
+            auth: false,
         },
     },
-
 
     {
         method: "PUT",
         path: "/tasks/f_update/{id}",
         handler: fullUpdateTaskHandler,
         options: {
-            auth: 'jwt',
+            auth: false,
         },
     },
 
-    {
-        method: "PATCH",
-        path: "/tasks/p_update/{id}",
-        handler: partialUpdateTaskHandler,
-        options: {
-            auth: 'jwt',
-        },
-    },
+    // {
+    //     method: "PATCH",
+    //     path: "/tasks/p_update/{id}",
+    //     handler: partialUpdateTaskHandler,
+    //     options: {
+    //         auth: false,
+    //     },
+    // },
 
     {
         method: 'DELETE',
         path: '/tasks/{id}',
         handler: softDeleteTaskHandler,
         options: {
-            auth: 'jwt',
+            auth: false,
         },
     }
 ]

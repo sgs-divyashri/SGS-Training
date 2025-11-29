@@ -1,49 +1,28 @@
 import type { Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
 import { userServices } from "../../services/userServices";
-import { User } from "../../services/userServices";
-import { generateToken } from "./authentication";
-import { verifyToken } from "./authentication";
+import { UserPayload } from "../../services/userServices";
 
-export const fullUpdateUserHandler = (request: Request, h: ResponseToolkit): ResponseObject => {
+export const fullUpdateUserHandler = async (request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
   try {
 
     const id = Number(request.params.id);
-    const payload = request.payload as User;
-    // // Read Authorization header
-    // const authHeader = request.headers.authorization;
+    const payload = request.payload as Pick<UserPayload, "name" | "email" | "password" | "age">;
 
-    // if (!authHeader) {
-    //   return h.response({ error: "Unauthorized" }).code(401);
-    // }
+    const user = await userServices.fullUpdateUser(id, payload);
 
-    // // Extract token
-    // const token = authHeader.replace("Bearer ", "");
-
-    // // Verify token
-    // const check = verifyToken(token);
-
-    const task = userServices.fullUpdateUser(id, payload);
-
-    if (task === null) {
-      return h.response({ error: "Task not found" }).code(404); // Fixed: User → Task
-    }
-
-    if (task === "MISSING_FIELDS") {
-      return h.response({ error: "All fields are required for full update" }).code(400);
-    }
-
-    if (task === "INVALID_STATUS") {
-      return h.response({ error: "Invalid status value" }).code(400); // Fixed error message
+    if (user === null) {
+      return h.response({ error: "User not found" }).code(404); // Fixed: User → Task
     }
 
     return h.response({
       message: " Fully Updated Users successfully",
-      task: task,
+      user: user,
     }).code(200);
 
-  } catch (err) {
-    console.error("ERROR IN fullUpdateUserHandler:", err);
-    return h.response({ error: "Invalid token" }).code(401);
+  }
+  catch (err: any) {
+    console.error(err);
+    return h.response({ error: err.message }).code(400);
   }
 
 }

@@ -23,9 +23,9 @@ export const generateToken = (payload: JWTPayload): string => {
     );
 }
 
-// Verify JWT token
-export const verifyToken = (token: string): JWTPayload => {
-    const artifacts = Jwt.token.decode(token);
-    Jwt.token.verify(artifacts, JWT_SECRET);
-    return artifacts.decoded.payload as JWTPayload;
-}
+// // Verify JWT token
+// export const verifyToken = (token: string): JWTPayload => {
+//     const artifacts = Jwt.token.decode(token);
+//     Jwt.token.verify(artifacts, JWT_SECRET);
+//     return artifacts.decoded.payload as JWTPayload;
+// }

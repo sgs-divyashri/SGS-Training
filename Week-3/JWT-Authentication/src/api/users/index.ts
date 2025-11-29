@@ -4,7 +4,7 @@ import { loginUserHandler } from "./userLogin";
 import { getUserHandler } from "./getAllUsers";
 import { getSpecificUserHandler } from "./getSpecificUser";
 import { fullUpdateUserHandler } from "./f_updateUser";
-import { partialUpdateUserHandler } from "./p_updateUser";
+// import { partialUpdateUserHandler } from "./p_updateUser";
 import { softDeleteUserHandler } from "./softDeleteUser";
 
 export const userRoutes: ServerRoute[] = [
@@ -30,7 +30,7 @@ export const userRoutes: ServerRoute[] = [
         path: '/users',
         handler: getUserHandler,
         options: {
-            auth: 'jwt',
+            auth: false,
         },
     },
 
@@ -39,7 +39,7 @@ export const userRoutes: ServerRoute[] = [
         path: '/users/{id}',
         handler: getSpecificUserHandler,
         options: {
-            auth: 'jwt',
+            auth: false,
         },
     },
 
@@ -48,25 +48,25 @@ export const userRoutes: ServerRoute[] = [
         path: "/users/f_update/{id}",
         handler: fullUpdateUserHandler,
         options: {
-            auth: 'jwt',
+            auth: false,
         },
     },
 
-    {
-        method: "PATCH",
-        path: "/users/p_update/{id}",
-        handler: partialUpdateUserHandler,
-        options: {
-            auth: 'jwt',
-        },
-    },
+    // {
+    //     method: "PATCH",
+    //     path: "/users/p_update/{id}",
+    //     handler: partialUpdateUserHandler,
+    //     options: {
+    //         auth: 'jwt',
+    //     },
+    // },
 
     {
         method: 'DELETE',
         path: '/users/{userID}',
         handler: softDeleteUserHandler,
         options: {
-            auth: 'jwt',
+            auth: false,
         },
     }
 ]

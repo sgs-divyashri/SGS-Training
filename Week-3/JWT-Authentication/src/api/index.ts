@@ -1,6 +1,4 @@
-// import { taskRoutes } from "./tasks/index";
-import { taskRoutes } from "./tasks";
-import { testRoutes } from "./test";
+import { taskRoutes } from "./tasks/index";
 import { userRoutes } from "./users/index";
 
-export default [...userRoutes, ...taskRoutes, ...testRoutes]
+export default [...userRoutes, ...taskRoutes]

@@ -3,17 +3,30 @@ import apiRoutes from "./api/index"
 import Jwt from '@hapi/jwt';
 import Hapi from '@hapi/hapi'
 import { configureAuthStrategy } from "./auth/auth.strategy";
-import { sequelize, Test } from "./api/test/testdb";
+import { sequelize } from "./sequelize.ts/sequelize";
+import { User } from "./api/users/userTableDefinition";
+import { Task } from "./api/tasks/taskTableDefinition";
 
 const init = async () => {
+
     try {
         await sequelize.authenticate();
         console.log('Connection has been established successfully.');
     } catch (error) {
         console.error('Unable to connect to the database:', error);
     }
+    
+    User.hasMany(Task, {
+        foreignKey: 'createdBy', // Task table column
+        sourceKey: 'userId'
+    });
 
-    await Test.sync();  // table creation
+    Task.belongsTo(User, {
+        foreignKey: 'createdBy', // Task table column
+        targetKey: 'userId'
+    });
+
+    await sequelize.sync({ alter: true });
 
     const server = Hapi.server({
         port: 3000,

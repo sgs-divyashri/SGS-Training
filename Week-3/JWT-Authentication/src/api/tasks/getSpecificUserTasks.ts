@@ -1,28 +1,13 @@
 import { Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
-import { Task, taskServices } from "../../services/taskServices";
-import { generateToken } from "./taskAuthentication";
-import { verifyToken } from "./taskAuthentication";
+import { taskServices } from "../../services/taskServices";
 
-export const getSpecificUserTaskHandler = (request: Request, h: ResponseToolkit): ResponseObject => {
+export const getSpecificUserTaskHandler = async (request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
     try {
 
-        const id = Number(request.params.id);
+        const userID = Number(request.params.id);
 
-        // Read Authorization header
-        // const authHeader = request.headers.authorization;
-
-        // if (!authHeader) {
-        //     return h.response({ error: "Unauthorized" }).code(401);
-        // }
-
-        // // Extract token
-        // const token = authHeader.replace("Bearer ", "");
-
-        // // Verify token
-        // const check = verifyToken(token);
-
-        const userTasks = taskServices.getSpecificUserTasks(id);
-        if (userTasks.length === 0) {
+        const userTasks = await taskServices.getSpecificUserTasks(userID);
+        if (!userTasks) {
             return h.response({ error: "No tasks found for this user" }).code(404);
         }
 
@@ -31,25 +16,8 @@ export const getSpecificUserTaskHandler = (request: Request, h: ResponseToolkit)
             task: userTasks,
         }).code(200);
 
-    } catch (err) {
-        console.error("ERROR IN partialUpdateTaskHandler:", err);
-        return h.response({ error: "Invalid token" }).code(401);
+    } catch (err: any) {
+        console.error(err);
+        return h.response({ error: err.message }).code(400);
     }
-
-    // const userId = Number(request.params.id);
-    // const userTasks = taskServices.getSpecificUserTasks(userId);
-    // if (userTasks.length === 0) {
-    //     return h.response({ error: "No tasks found for this user" }).code(404);
-    // }
-
-    // // Generate JWT token
-    // const tasks = userTasks.map(t => {
-
-    //     const token = generateToken({
-    //         id: t.id!
-    //     });
-
-    //     return { ...t, token };
-    // });
-    // return h.response({ message: `Tasks of User ID ${userId} retrieved...`, tasks }).code(200);
 }
