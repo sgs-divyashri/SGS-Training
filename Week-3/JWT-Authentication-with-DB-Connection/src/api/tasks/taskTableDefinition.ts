@@ -1,4 +1,4 @@
-import { sequelize } from "../../sequelize.ts/sequelize"
+import { sequelize } from "../../sequelize/sequelize"
 import { DataTypes } from "sequelize"
 
 export const Task = sequelize.define("task", {

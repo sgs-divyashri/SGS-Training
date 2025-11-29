@@ -3,8 +3,7 @@
 // insert into table
 
 import { DataTypes } from "sequelize";
-import { sequelize } from "../../sequelize.ts/sequelize";
-import { Task } from "../tasks/taskTableDefinition";
+import { sequelize } from "../../sequelize/sequelize";
 
 /*commonjs module syntax
 set module.exports to any JavaScript value: an object, function, class, string, number — anything.
