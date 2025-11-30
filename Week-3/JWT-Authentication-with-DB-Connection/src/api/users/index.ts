@@ -30,7 +30,7 @@ export const userRoutes: ServerRoute[] = [
         path: '/users',
         handler: getUserHandler,
         options: {
-            auth: false,
+            auth: 'jwt',
         },
     },
 
@@ -39,7 +39,7 @@ export const userRoutes: ServerRoute[] = [
         path: '/users/{id}',
         handler: getSpecificUserHandler,
         options: {
-            auth: false,
+            auth: 'jwt',
         },
     },
 
@@ -48,7 +48,7 @@ export const userRoutes: ServerRoute[] = [
         path: "/users/f_update/{id}",
         handler: fullUpdateUserHandler,
         options: {
-            auth: false,
+            auth: 'jwt',
         },
     },
 
@@ -66,7 +66,7 @@ export const userRoutes: ServerRoute[] = [
         path: '/users/{userID}',
         handler: softDeleteUserHandler,
         options: {
-            auth: false,
+            auth: 'jwt',
         },
     }
 ]

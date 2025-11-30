@@ -1,5 +1,5 @@
 import Jwt from '@hapi/jwt';
-import { JWT_SECRET } from '../../config/constants';
+import { JWT_SECRET } from '../config/constants';
 
 export interface JWTPayload {
   userId: number;
@@ -22,10 +22,3 @@ export const generateToken = (payload: JWTPayload): string => {
         }
     );
 }
-
-// // Verify JWT token
-// export const verifyToken = (token: string): JWTPayload => {
-//     const artifacts = Jwt.token.decode(token);
-//     Jwt.token.verify(artifacts, JWT_SECRET);
-//     return artifacts.decoded.payload as JWTPayload;
-// }

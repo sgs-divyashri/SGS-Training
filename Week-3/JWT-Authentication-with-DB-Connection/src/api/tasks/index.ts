@@ -25,7 +25,7 @@ export const taskRoutes: ServerRoute[] = [
         path: '/tasks',
         handler: getTaskHandler,
         options: {
-            auth: false,
+            auth: 'jwt',
         },
     },
 
@@ -34,7 +34,7 @@ export const taskRoutes: ServerRoute[] = [
         path: '/tasks/{id}',
         handler: getSpecificTaskHandler,
         options: {
-            auth: false,
+            auth: 'jwt',
         },
     },
 
@@ -43,7 +43,7 @@ export const taskRoutes: ServerRoute[] = [
         path: '/tasks/user/{id}',
         handler: getSpecificUserTaskHandler,
         options: {
-            auth: false,
+            auth: 'jwt',
         },
     },
 
@@ -52,7 +52,7 @@ export const taskRoutes: ServerRoute[] = [
         path: "/tasks/f_update/{id}",
         handler: fullUpdateTaskHandler,
         options: {
-            auth: false,
+            auth: 'jwt',
         },
     },
 
@@ -70,7 +70,7 @@ export const taskRoutes: ServerRoute[] = [
         path: '/tasks/{id}',
         handler: softDeleteTaskHandler,
         options: {
-            auth: false,
+            auth: 'jwt',
         },
     }
 ]
