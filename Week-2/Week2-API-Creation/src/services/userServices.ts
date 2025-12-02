@@ -19,7 +19,7 @@ export const userServices = {
     return users.some(u => u.email === email);
   },
   
-  createUser: (user: Partial<User>): number => {
+  createUser: (user: Pick<User, "name"|"email"|"password"|"age">): number => {
     const newUser: User = {
       id: nextId++,
       name: user.name!,
@@ -46,7 +46,7 @@ export const userServices = {
   fullUpdateUser: (id: number, payload: User): null | string | User => {
     const user = users.find(t => t.id === id && t.isActive);
     if (!user) {
-      return null;  // service should not return an Hapi response
+      return null;  
     }
 
     // Validate full update: All fields required

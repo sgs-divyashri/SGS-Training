@@ -4,7 +4,7 @@ import { loginUserHandler } from "./userLogin";
 import { getUserHandler } from "./getAllUsers";
 import { getSpecificUserHandler } from "./getSpecificUser";
 import { fullUpdateUserHandler } from "./f_updateUser";
-// import { partialUpdateUserHandler } from "./p_updateUser";
+import { partialUpdateUserHandler } from "./p_updateUser";
 import { softDeleteUserHandler } from "./softDeleteUser";
 
 export const userRoutes: ServerRoute[] = [
@@ -52,14 +52,14 @@ export const userRoutes: ServerRoute[] = [
         },
     },
 
-    // {
-    //     method: "PATCH",
-    //     path: "/users/p_update/{id}",
-    //     handler: partialUpdateUserHandler,
-    //     options: {
-    //         auth: 'jwt',
-    //     },
-    // },
+    {
+        method: "PATCH",
+        path: "/users/p_update/{id}",
+        handler: partialUpdateUserHandler,
+        options: {
+            auth: 'jwt',
+        },
+    },
 
     {
         method: 'DELETE',

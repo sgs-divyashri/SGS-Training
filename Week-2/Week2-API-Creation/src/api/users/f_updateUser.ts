@@ -3,7 +3,7 @@ import { userServices } from "../../services/userServices";
 import { User } from "../../services/userServices";
 
 export const fullUpdateUserHandler = (request: Request, h: ResponseToolkit): ResponseObject => {
-    const id = request.params.id as number;
+    const id = Number(request.params.id);
     const payload = request.payload as User;
 
     const result = userServices.fullUpdateUser(id, payload);

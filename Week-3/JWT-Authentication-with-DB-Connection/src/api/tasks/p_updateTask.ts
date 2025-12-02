@@ -1,43 +1,27 @@
-// import { Task, taskServices } from "../../services/taskServices";
-// import { Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
-// import { generateToken } from "./taskAuthentication";
-// import { verifyToken } from "./taskAuthentication";
+import { TaskPayload, taskServices } from "../../services/taskServices";
+import { Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
+import { generateToken } from "./taskAuthentication";
 
-// export const partialUpdateTaskHandler = (request: Request, h: ResponseToolkit): ResponseObject => {
-//     try {
+
+export const partialUpdateTaskHandler = async (request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
+    try {
     
-//         const id = request.params.id;
-//         const payload = request.payload as Task;
-//         // Read Authorization header
-//         // const authHeader = request.headers.authorization;
+        const id = request.params.id;
+        const payload = request.payload as Partial<{ taskName: string, description: string, createdBy: number, status: string }>;
     
-//         // if (!authHeader) {
-//         //   return h.response({ error: "Unauthorized" }).code(401);
-//         // }
+        const task = await taskServices.partialUpdateTask(id, payload);
     
-//         // // Extract token
-//         // const token = authHeader.replace("Bearer ", "");
+        if (task === null) {
+          return h.response({ error: "Task not found" }).code(404); // Fixed: User → Task
+        }
     
-//         // // Verify token
-//         // const check = verifyToken(token);
+        return h.response({
+          message: "Partially Updated Task successfully",
+          task: task,
+        }).code(200);
     
-//         const task = taskServices.partialUpdateTask(id, payload);
-    
-//         if (task === null) {
-//           return h.response({ error: "Task not found" }).code(404); // Fixed: User → Task
-//         }
-    
-//         if (task === "INVALID_STATUS") {
-//           return h.response({ error: "Invalid status value" }).code(400); // Fixed error message
-//         }
-    
-//         return h.response({
-//           message: "Partially Updated Task successfully",
-//           task: task,
-//         }).code(200);
-    
-//       } catch (err) {
-//         console.error("ERROR IN partialUpdateTaskHandler:", err);
-//         return h.response({ error: "Invalid token" }).code(401);
-//       }
-// }
+      } catch (err) {
+        console.error("ERROR IN partialUpdateTaskHandler:", err);
+        return h.response({ error: "Invalid token" }).code(401);
+      }
+}

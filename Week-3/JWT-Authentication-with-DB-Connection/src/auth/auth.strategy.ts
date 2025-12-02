@@ -26,5 +26,5 @@ export const configureAuthStrategy = (server: Server) => {   // server instance 
         },
     });
 
-    // server.auth.default('jwt');
+    server.auth.default('jwt');
 };

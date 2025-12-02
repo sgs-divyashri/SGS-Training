@@ -34,6 +34,10 @@ export const taskServices = {
     return await taskRepository.fullUpdateTask(id, payload)
   },
 
+  partialUpdateTask: async (id: number, payload: Partial<{taskName: string, description: string, createdBy: number, status: string}>) => {
+    return await taskRepository.partialUpdateTask(id, payload)
+  },
+
   // partialUpdateTask: (id: string, payload: Partial<Task>): Task | "INVALID_STATUS" | null => {
   //   const task = tasks.find(t => t.id === id && t.isActive);
   //   if (!task) {

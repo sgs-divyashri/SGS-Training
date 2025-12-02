@@ -12,15 +12,15 @@ export const taskRepository = {
             throw new Error("Invalid createdBy userId");
         }
 
-        if (!payload.taskName || !payload.description) {
-            throw new Error("Missing required fields");
-        }
+        // if (!payload.taskName || !payload.description) {
+        //     throw new Error("Missing required fields");
+        // }
 
         const newUser = await Task.create({
-            ...payload,
             taskId: await generateTaskId(),
-            status: "To-Do",
-            isActive: true
+            ...payload,
+            // status: "To-Do",
+            // isActive: true
         });
 
         return newUser
@@ -39,7 +39,7 @@ export const taskRepository = {
     getSpecificUserTasks: async (userId: number) => {
         const user = await User.findOne({
             where: { userId: userId, isActive: true },
-            // include: [Task]
+            include: [Task]
         });
         return user
     },
@@ -61,6 +61,28 @@ export const taskRepository = {
         }
         return updatedUser
     },
+
+    partialUpdateTask: async (id: number, payload: Partial<TaskPayload>) => {
+        const task = await Task.findOne({ where: { taskId: id, isActive: true } });
+        if (!task) return null;
+
+        if (payload.taskName !== undefined) task.set('taskName', payload.taskName);
+        if (payload.description !== undefined) task.set('description', payload.description);
+        if (payload.status !== undefined) task.set('status', payload.status);
+        if (payload.isActive !== undefined) task.set('isActive', payload.isActive);
+
+        await task.save();
+        return task.get();
+    },
+
+    // partialUpdateTask: async (id: number, payload: Partial<TaskPayload>) => {
+    //     const [rowsUpdated, [updatedTask]] = await Task.update(payload, {
+    //         where: { taskId: id, isActive: true },
+    //         returning: true,
+    //     });
+
+    //     return rowsUpdated > 0 ? updatedTask : null;
+    // },
 
     softDeleteTask: async (id: string) => {
         const [affectedRows] = await Task.update({ isActive: false }, { where: { taskId: id, isActive: true } });

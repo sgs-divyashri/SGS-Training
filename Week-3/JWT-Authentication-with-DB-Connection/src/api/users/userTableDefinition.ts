@@ -31,6 +31,10 @@ export const User = sequelize.define("user", {
         type: DataTypes.TEXT,
         allowNull: false
     },
+    age: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
     isActive: {
         type: DataTypes.BOOLEAN,
         defaultValue: true
@@ -46,4 +50,3 @@ export const User = sequelize.define("user", {
     ]
 },
 );
-

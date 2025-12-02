@@ -45,21 +45,26 @@ export const userServices = {
     return user
   },
 
+  partialUpdateUser: async (id: number, payload: Partial<UserPayload>) => {
+    const user = await userRepository.partialUpdateUser(id, payload)
+    return user
+  },
+
   // partialUpdateUser: (id: number, payload: Partial<User>): null | User => {
-  //   const user = users.find(t => t.id === id && t.isActive);
-  //   if (!user) {
-  //     return null
-  //   }
+    // const user = users.find(t => t.id === id && t.isActive);
+    // if (!user) {
+    //   return null
+    // }
 
-  //   // PARTIAL UPDATE (update only fields sent)
-  //   if (payload.name !== undefined) user.name = payload.name;
-  //   if (payload.email !== undefined) user.email = payload.email;
-  //   if (payload.password !== undefined) user.password = hashPassword(payload.password);
-  //   if (payload.age !== undefined) user.age = payload.age;
+    // // PARTIAL UPDATE (update only fields sent)
+    // if (payload.name !== undefined) user.name = payload.name;
+    // if (payload.email !== undefined) user.email = payload.email;
+    // if (payload.password !== undefined) user.password = hashPassword(payload.password);
+    // if (payload.age !== undefined) user.age = payload.age;
 
-  //   user.updatedAt = new Date().toLocaleString();
+    // user.updatedAt = new Date().toLocaleString();
 
-  //   return user
+    // return user
   // },
 
 

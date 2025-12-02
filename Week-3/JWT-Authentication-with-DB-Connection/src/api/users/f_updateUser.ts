@@ -11,7 +11,7 @@ export const fullUpdateUserHandler = async (request: Request, h: ResponseToolkit
     const user = await userServices.fullUpdateUser(id, payload);
 
     if (user === null) {
-      return h.response({ error: "User not found" }).code(404); // Fixed: User → Task
+      return h.response({ error: "User not found" }).code(404); 
     }
 
     return h.response({

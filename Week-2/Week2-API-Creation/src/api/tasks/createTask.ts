@@ -2,7 +2,7 @@ import type { Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
 import { Task, taskServices } from "../../services/taskServices";
 
 export const createTaskHandler = (request: Request, h: ResponseToolkit): ResponseObject => {
-    const payload = request.payload as Task;
+    const payload = request.payload as Pick<Task, 'taskName'|"description"|"createdBy">;
     
     // Basic validation
     if (!payload.taskName || !payload.description || !payload.createdBy) {

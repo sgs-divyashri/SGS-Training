@@ -122,9 +122,6 @@ console.log("Converted array to string: ", my_arr.toString())
 
 
 // Advanced Functions - every method takes a function as parameter
-
-// every()
-
 // forEach() - executes the function once for each array element - takes function as parameter 
 // syntax: array.forEach(function(currValue, index, array){})
 /*

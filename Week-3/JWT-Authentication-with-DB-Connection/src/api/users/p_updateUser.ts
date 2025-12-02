@@ -1,28 +1,29 @@
-// import type { Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
-// import { UserPayload, userServices } from "../../services/userServices";
-// import { generateToken } from "./authentication";
-// import { verifyToken } from "./authentication";
+  import type { Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
+  import { UserPayload, userServices } from "../../services/userServices";
 
+  export const partialUpdateUserHandler = async (request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
+    try {
 
-// export const partialUpdateUserHandler = (request: Request, h: ResponseToolkit): ResponseObject => {
-//   try {
+      const id = Number(request.params.id);
+      const payload = request.payload as Partial<UserPayload>;
 
-//     const id = Number(request.params.id);
-//     const payload = request.payload as UserPayload;
+      console.log("Payload: ", payload)
 
-//     const task = userServices.partialUpdateUser(id, payload);
+      const user = await userServices.partialUpdateUser(id, payload);
 
-//     if (task === null) {
-//       return h.response({ error: "Task not found" }).code(404); // Fixed: User → Task
-//     }
+      if (user === null) {
+        return h.response({ error: "User not found" }).code(404); 
+      }
 
-//     return h.response({
-//       message: "Partially Updated Users successfully",
-//       task: task,
-//     }).code(200);
+      console.log(user)
 
-//   } catch (err) {
-//     console.error("ERROR IN partialUpdateTaskHandler:", err);
-//     return h.response({ error: "Invalid token" }).code(401);
-//   }
-// }
+      return h.response({
+        message: "Partially Updated Users successfully",
+        user: user,
+      }).code(200);
+
+    } catch (err) {
+      console.error("ERROR IN partialUpdateTaskHandler:", err);
+      return h.response({ error: "Invalid token" }).code(401);
+    }
+  }

@@ -9,7 +9,7 @@ export interface JWTPayload {
 export const generateToken = (payload: JWTPayload): string => {
     return Jwt.token.generate(
         {
-            ...payload,  // copies all properties from the payload object into this new object.
+            ...payload,  // copies all properties from the payload object (id, name) into this new object.
             aud: 'urn:audience:test', // audience
             iss: 'urn:issuer:test', // issuer
         },

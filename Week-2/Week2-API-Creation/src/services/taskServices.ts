@@ -1,21 +1,21 @@
 import { generateTaskId } from "../api/tasks/generateID";
 import { allowedStatuses } from "../api/tasks";
 export interface Task {
-  id?: string;
+  id: string;
   taskName: string;
   description: string;
-  status?: string;
+  status: string;
   createdBy: number;
-  createdAt?: string;
-  updatedAt?: string;
-  isActive?: boolean;
+  createdAt: string;
+  updatedAt: string;
+  isActive: boolean;
 }
 
 
 export const tasks: Task[] = [];
 
 export const taskServices = {
-  createTask: (task: Task): Task => {
+  createTask: (task: Pick<Task, 'taskName'|"description"|"createdBy">): Task => {
     const newTask: Task = {
       id: generateTaskId(),
       taskName: task.taskName,
@@ -43,7 +43,7 @@ export const taskServices = {
     return tasks.filter(t => t.createdBy === userId && t.isActive === true);
   },
 
-  fullUpdateTask: (id: string, payload: Task): Task | "MISSING_FIELDS" | "INVALID_STATUS" | null => {
+  fullUpdateTask: (id: string, payload: Pick<Task, 'taskName'|"description"|"status"|"createdBy">): Task | "MISSING_FIELDS" | "INVALID_STATUS" | null => {
     const task = tasks.find(t => t.id === id && t.isActive);
     if (!task) {
       return null

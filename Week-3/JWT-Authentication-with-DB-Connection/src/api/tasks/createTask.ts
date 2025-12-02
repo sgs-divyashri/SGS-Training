@@ -12,17 +12,6 @@ export const createTaskHandler = async (request: Request, h: ResponseToolkit): P
         }).code(400);
     }
 
-
-    console.log("Final data for Task.create:", {
-        taskId: generateTaskId(),
-        taskName: payload.taskName,
-        description: payload.description,
-        createdBy: Number(payload.createdBy),
-        status: "To-Do",
-        isActive: true
-    });
-
-
     try {
         const newTask = await taskServices.createTask({
             taskName: payload.taskName,

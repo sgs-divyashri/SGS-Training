@@ -3,8 +3,7 @@ import { User, userServices } from "../../services/userServices"
 import { normalizedEmail, validateEmail } from "./emailValidation";
 
 export const createUserHandler = (request: Request, h: ResponseToolkit): ResponseObject => {
-    const payload = request.payload as User
-    // const {name, email, password, age} = request.payload as {name: string, email: string, password: string, age: number};
+    const payload = request.payload as Pick<User, "name"|"email"|"password"|"age">
     // Basic validation
     if (!payload.name || !payload.email || !payload.password || !payload.age) {
         return h.response({error: 'Name, Email, Password and Age are required'}).code(400);

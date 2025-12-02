@@ -8,7 +8,6 @@ import { User } from "./api/users/userTableDefinition";
 import { Task } from "./api/tasks/taskTableDefinition";
 
 const init = async () => {
-
     try {
         await sequelize.authenticate();
         console.log('Connection has been established successfully.');
