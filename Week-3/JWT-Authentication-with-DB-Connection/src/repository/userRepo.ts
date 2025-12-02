@@ -54,45 +54,6 @@ export const userRepository = {
         await user.save();
         return user.get();
     },
-    // partialUpdateUser: async (id: number, payload: Partial<UserPayload>) => {
-    //     const user = User.findOne({where: {userId: id, isActive: true}})
-    //     if (!user) return null
-
-    //     // const user = users.find(t => t.id === id && t.isActive);
-    //     // if (!user) {
-    //     //     return null
-    //     // }
-
-    //     // PARTIAL UPDATE (update only fields sent)
-    //     if (payload.name !== undefined)  = payload.name;
-    //     if (payload.email !== undefined) user.email = payload.email;
-    //     if (payload.password !== undefined) user.password = hashPassword(payload.password);
-    //     if (payload.age !== undefined) user.age = payload.age;
-
-    //     // user.updatedAt = new Date().toLocaleString();
-
-    //     return user
-    //     // const userExists = await userServices.findByEmail(payload.email!)
-
-    //     // if (payload.password) {
-    //     //     payload.password = hashPassword(payload.password);
-    //     // }
-
-    //     const [rowsUpdated, updatedUsers] = await User.update(payload, {
-    //         where: { userId: id, isActive: true },
-    //         returning: true,
-    //     });
-
-    //     []
-
-    //     console.log("rows updated: ", rowsUpdated)
-    //     if (rowsUpdated > 0) {
-    //         return updatedUsers ? updatedUsers[0] : await User.findOne({ where: { userId: id } });
-    //     }
-
-    //     return null;
-
-    // },
 
     softDeleteUser: async (id: number) => {
         const [affectedRows] = await User.update({ isActive: false }, { where: { userId: id, isActive: true } });
