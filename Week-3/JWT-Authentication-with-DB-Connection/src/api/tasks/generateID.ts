@@ -1,9 +1,6 @@
-import { Task } from "./taskTableDefinition";
-import { Model } from "sequelize";
+import { Task } from "../../models/taskTableDefinition";
 
-let taskCounter: number = 1;
-
-export async function generateTaskId(): Promise<string | undefined> {
+export async function generateTaskId(): Promise<string> {
     const lastTask = await Task.findOne({ order: [['createdAt', 'DESC']] });
     if (lastTask === null) {
         return 'T001'
