@@ -7,9 +7,9 @@ export const initModels = (sequelize: Sequelize) => {
   const UserModel = userFactory(sequelize);
   const TaskModel = taskFactory(sequelize);
 
-  // Associations
-  UserModel.hasMany(TaskModel, { foreignKey: "userId", sourceKey: 'userId' });
-  TaskModel.belongsTo(UserModel, { foreignKey: "userId", targetKey: 'userId' });
+  // Run Associations
+  UserModel.associate?.(sequelize);
+  TaskModel.associate?.(sequelize)
 
   return { User: UserModel, Task: TaskModel };
 };
