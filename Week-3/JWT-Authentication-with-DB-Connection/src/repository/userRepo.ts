@@ -1,11 +1,12 @@
-import { UserPayload, userServices } from "../services/userServices";
-import { User } from "../api/users/userTableDefinition";
+import { userServices } from "../services/userServices";
+import { User } from "../models/userTableDefinition";
 import { hashPassword } from "../api/users/passwordHashing";
 import { verifyPassword } from "../api/users/passwordHashing";
 import { Model } from "sequelize";
+import { UserPayload } from "../models/userTableDefinition";
 
 export const userRepository = {
-    createUser: async (payload: Partial<UserPayload>) => {
+    createUser: async (payload: Pick<UserPayload, "name"|"email"|"password"|"age">) => {
         const newUser = await User.create({ ...payload, password: hashPassword(payload.password!) });
         return newUser
     },
@@ -15,7 +16,7 @@ export const userRepository = {
         if (!user) return null;
 
         // Access password safely
-        const hashedPassword = user.getDataValue("password");
+        const hashedPassword: string = user.getDataValue("password");
         const isValidPassword = await verifyPassword(loginData.password, hashedPassword);
         if (!isValidPassword) return null;
 
@@ -27,15 +28,15 @@ export const userRepository = {
         return users
     },
 
-    getSpecificUser: (id: number): Promise<Model<any, any> | null> => {
-        const user = User.findOne({ where: { userId: id, isActive: true } })
+    getSpecificUser: async (id: number): Promise<User | null> => {
+        const user = await User.findOne({ where: { userId: id, isActive: true } })
         return user
     },
 
     fullUpdateUser: async (id: number, payload: Pick<UserPayload, "name" | "email" | "password" | "age">) => {
         const [rowsUpdated, [updatedUser]] = await User.update({ ...payload, password: hashPassword(payload.password) }, { where: { userId: id, isActive: true }, returning: true })
         if (rowsUpdated === 0) {
-            return null;  // service should not return an Hapi response
+            return null; 
         }
 
         return updatedUser
