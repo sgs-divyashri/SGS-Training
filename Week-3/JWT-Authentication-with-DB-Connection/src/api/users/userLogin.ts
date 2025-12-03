@@ -1,6 +1,7 @@
 import { Request, ResponseToolkit } from "@hapi/hapi";
-import { UserPayload, userServices } from "../../services/userServices";
+import { userServices } from "../../services/userServices";
 import { generateToken } from "../../auth/authentication";
+import { UserPayload } from "../../models/userTableDefinition";
 
 export const loginUserHandler = async (request: Request, h: ResponseToolkit) => {
   try {
