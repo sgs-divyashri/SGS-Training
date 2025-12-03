@@ -6,6 +6,7 @@
 
 
 import { DataTypes, Model, Optional, Sequelize } from "sequelize";
+import { Task } from "./taskTableDefinition";
 
 export interface UserPayload {
   userId?: number;
@@ -82,6 +83,11 @@ export default (sequelize: Sequelize) => {
     }
   );
 
-  return User;
+  return {
+    User,
+    associate: (sequelize: Sequelize) => {
+      User.hasMany(Task, { foreignKey: "createdBy", sourceKey: 'userId' });
+    }
+  };
 };
 
