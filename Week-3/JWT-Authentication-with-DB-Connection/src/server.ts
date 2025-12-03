@@ -4,8 +4,7 @@ import Jwt from '@hapi/jwt';
 import Hapi from '@hapi/hapi'
 import { configureAuthStrategy } from "./auth/auth.strategy";
 import { sequelize } from "./sequelize/sequelize";
-import { User } from "./api/users/userTableDefinition";
-import { Task } from "./api/tasks/taskTableDefinition";
+import { initModels } from "./models";
 
 const init = async () => {
     try {
@@ -15,15 +14,10 @@ const init = async () => {
         console.error('Unable to connect to the database:', error);
     }
 
-    User.hasMany(Task, {   // one-to-many, 1 user - many tasks
-        foreignKey: 'createdBy', // from Task model - primary key of Task model, used in User model as foreign key
-        sourceKey: 'userId' // from User model - primary key of User model
-    });
 
-    Task.belongsTo(User, { // one-to-one, 1 task - 1 user
-        foreignKey: 'createdBy', // foreign key of Task from primary key of User
-        targetKey: 'userId' // from User - primary key
-    });
+    // Initialize models and associations
+    initModels(sequelize);
+
 
     await sequelize.sync({ alter: true }); // create table schema and modify the structure like column, no data loss
 
