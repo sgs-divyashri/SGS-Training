@@ -1,6 +1,6 @@
 import type { Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
 import { userServices } from "../../services/userServices";
-import { UserPayload } from "../../services/userServices";
+import { UserPayload } from "../../models/userTableDefinition";
 
 export const fullUpdateUserHandler = async (request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
   try {
