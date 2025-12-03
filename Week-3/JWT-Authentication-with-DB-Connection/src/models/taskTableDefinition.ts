@@ -1,5 +1,6 @@
 
 import { DataTypes, Model, Optional, Sequelize } from "sequelize";
+import { User } from "./userTableDefinition";
 
 export interface TaskPayload {
   taskId: string;
@@ -51,7 +52,7 @@ export default (sequelize: Sequelize) => {
       createdBy: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        field: "user_id",
+        // field: "user_id",
       },
       isActive: {
         type: DataTypes.BOOLEAN,
@@ -67,6 +68,11 @@ export default (sequelize: Sequelize) => {
     }
   );
 
-  return Task;
+  return {
+    Task,
+    associate: (sequelize: Sequelize) => {
+        Task.belongsTo(User, { foreignKey: "createdBy", targetKey: 'userId' });
+    }
+  };
 };
 
