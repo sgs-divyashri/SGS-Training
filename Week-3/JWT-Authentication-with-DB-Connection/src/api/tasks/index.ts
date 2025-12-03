@@ -22,54 +22,36 @@ export const taskRoutes: ServerRoute[] = [
     {
         method: 'GET',
         path: '/tasks',
-        handler: getTaskHandler,
-        options: {
-            auth: 'jwt',
-        },
+        handler: getTaskHandler
     },
 
     {
         method: 'GET',
         path: '/tasks/{id}',
-        handler: getSpecificTaskHandler,
-        options: {
-            auth: 'jwt',
-        },
+        handler: getSpecificTaskHandler
     },
 
     {
         method: 'GET',
         path: '/tasks/user/{id}',
-        handler: getSpecificUserTaskHandler,
-        options: {
-            auth: 'jwt',
-        },
+        handler: getSpecificUserTaskHandler
     },
 
     {
         method: "PUT",
         path: "/tasks/f_update/{id}",
-        handler: fullUpdateTaskHandler,
-        options: {
-            auth: 'jwt',
-        },
+        handler: fullUpdateTaskHandler
     },
 
     {
         method: "PATCH",
         path: "/tasks/p_update/{id}",
-        handler: partialUpdateTaskHandler,
-        options: {
-            auth: 'jwt',
-        },
+        handler: partialUpdateTaskHandler
     },
 
     {
         method: 'DELETE',
         path: '/tasks/{id}',
-        handler: softDeleteTaskHandler,
-        options: {
-            auth: 'jwt',
-        },
+        handler: softDeleteTaskHandler
     }
 ]
