@@ -29,44 +29,29 @@ export const userRoutes: ServerRoute[] = [
         method: 'GET',
         path: '/users',
         handler: getUserHandler,
-        options: {
-            auth: 'jwt',
-        },
     },
 
     {
         method: 'GET',
         path: '/users/{id}',
-        handler: getSpecificUserHandler,
-        options: {
-            auth: 'jwt',
-        },
+        handler: getSpecificUserHandler
     },
 
     {
         method: "PUT",
         path: "/users/f_update/{id}",
-        handler: fullUpdateUserHandler,
-        options: {
-            auth: 'jwt',
-        },
+        handler: fullUpdateUserHandler
     },
 
     {
         method: "PATCH",
         path: "/users/p_update/{id}",
-        handler: partialUpdateUserHandler,
-        options: {
-            auth: 'jwt',
-        },
+        handler: partialUpdateUserHandler
     },
 
     {
         method: 'DELETE',
         path: '/users/{userID}',
         handler: softDeleteUserHandler,
-        options: {
-            auth: 'jwt',
-        },
     }
 ]
