@@ -7,17 +7,15 @@ import { sequelize } from "./sequelize/sequelize";
 import { initModels } from "./models";
 
 const init = async () => {
+    // Initialize models and associations
+    initModels(sequelize);
+    
     try {
         await sequelize.authenticate();
         console.log('Connection has been established successfully.');
     } catch (error) {
         console.error('Unable to connect to the database:', error);
     }
-
-
-    // Initialize models and associations
-    initModels(sequelize);
-
 
     await sequelize.sync({ alter: true }); // create table schema and modify the structure like column, no data loss
 
