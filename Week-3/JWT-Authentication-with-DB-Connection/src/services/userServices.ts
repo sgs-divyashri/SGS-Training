@@ -1,25 +1,25 @@
-import { User } from "../api/users/userTableDefinition";
-import { Model } from "sequelize";
+import { User } from "../models/userTableDefinition";
+import { Model, Optional } from "sequelize";
 import { userRepository } from "../repository/userRepo";
+import { UserPayload } from "../models/userTableDefinition";
 
-export interface UserPayload {
-  id: number,
-  name: string,
-  email: string,
-  password: string,
-  age: number,
-  createdAt: string,
-  updatedAt: string,
-  isActive: boolean,
-  deletedAt?: string | null;
-}
+// export interface UserPayload {
+//   id: number,
+//   name: string,
+//   email: string,
+//   password: string,
+//   age: number,
+//   createdAt: string,
+//   updatedAt: string,
+//   isActive: boolean
+// }
 
 export const userServices = {
   findByEmail: async (email: string) => {
     return await User.findOne({ where: { email } });
   },
 
-  createUser: async (payload: Partial<UserPayload>) => {
+  createUser: async (payload: Pick<UserPayload, "name"|"email"|"password"|"age">) => {
     const newUser = await userRepository.createUser(payload)
     return newUser
   },
