@@ -1,19 +1,20 @@
 import { Model } from "sequelize";
 import { taskRepository } from "../repository/taskRepo";
+import { TaskPayload } from "../models/taskTableDefinition";
 
-export interface TaskPayload {
-  taskID: string;
-  taskName: string;
-  description: string;
-  status: string;
-  createdBy: number;
-  createdAt: string;
-  updatedAt: string;
-  isActive: boolean;
-}
+// export interface TaskPayload {
+//   taskID: string;
+//   taskName: string;
+//   description: string;
+//   status: string;
+//   createdBy: number;
+//   createdAt: string;
+//   updatedAt: string;
+//   isActive: boolean;
+// }
 
 export const taskServices = {
-  createTask: async (payload: Partial<TaskPayload>) => {
+  createTask: async (payload: Pick<TaskPayload, "taskName" | "description" | "createdBy">) => {
     const user = await taskRepository.createTask(payload)
     return user
   },
