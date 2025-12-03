@@ -1,6 +1,6 @@
-import { TaskPayload, taskServices } from "../../services/taskServices";
+import { taskServices } from "../../services/taskServices";
 import { Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
-import { generateToken } from "./taskAuthentication";
+import { TaskPayload } from "../../models/taskTableDefinition";
 
 
 export const partialUpdateTaskHandler = async (request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
