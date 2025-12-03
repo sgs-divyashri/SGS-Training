@@ -1,7 +1,7 @@
 import type { Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
-import { TaskPayload } from "../../services/taskServices";
+// import { TaskPayload } from "../../models/taskTableDefinition";
 import { taskServices } from "../../services/taskServices";
-import { generateToken } from "./taskAuthentication";
+// import { generateToken } from "./taskAuthentication";
 // import { verifyToken } from "./taskAuthentication";
 
 export const getSpecificTaskHandler = async (request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
