@@ -1,12 +1,12 @@
-import { TaskPayload } from "../services/taskServices";
-import { Task } from "../api/tasks/taskTableDefinition";
-import { User } from "../api/users/userTableDefinition";
+import { TaskPayload } from "../models/taskTableDefinition";
+import { Task } from "../models/taskTableDefinition";
+import { User } from "../models/userTableDefinition";
 import { generateTaskId } from "../api/tasks/generateID";
 import { Model, where } from "sequelize";
 import { allowedStatuses } from "../api/tasks";
 
 export const taskRepository = {
-    createTask: async (payload: Partial<TaskPayload>) => {
+    createTask: async (payload: Pick<TaskPayload, "taskName" | "description" | "createdBy">) => {
         const userExists = await User.findOne({ where: { userId: payload.createdBy, isActive: true } });
         if (!userExists) {
             throw new Error("Invalid createdBy userId");
@@ -52,7 +52,7 @@ export const taskRepository = {
             throw new Error("Invalid createdBy userId");
         }
         // Validate status
-        if (!allowedStatuses.includes(payload.status)) {
+        if (!allowedStatuses.includes(payload.status!)) {
             return "INVALID_STATUS";
         }
         const [rowsUpdated, [updatedUser]] = await Task.update({ ...payload }, { where: { taskId: id, isActive: true }, returning: true })
