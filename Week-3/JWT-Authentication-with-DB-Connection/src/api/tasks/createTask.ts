@@ -1,5 +1,6 @@
 import type { Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
-import { TaskPayload, taskServices } from "../../services/taskServices";
+import { taskServices } from "../../services/taskServices";
+import { TaskPayload } from "../../models/taskTableDefinition";
 import { generateTaskId } from "./generateID";
 
 export const createTaskHandler = async (request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
