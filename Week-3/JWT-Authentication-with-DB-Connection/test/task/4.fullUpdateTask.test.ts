@@ -295,8 +295,6 @@ describe('POST /users/login', () => {
         expect(f_update.statusCode).to.equal(404)
     })
 
-
-
     it('FULL UPDATE TASK - 401 Unauthorized, missing bearer token', async () => {
         const payload = {
             name: 'Divya',
