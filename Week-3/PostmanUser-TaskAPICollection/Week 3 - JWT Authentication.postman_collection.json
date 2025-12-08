@@ -26,12 +26,12 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"umar\",\r\n    \"email\": \"testbkjsq056@gmail.com\",\r\n    \"password\": \"Divy aa0301@@\",\r\n    \"age\": 22\r\n}"
+							"raw": "{\r\n    \"name\": \"umar\",\r\n    \"email\": \"testdbdqbkjn@gmail.com\",\r\n    \"password\": \"Divy%$#aa0301@@\",\r\n    \"age\": 22\r\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/users/register",
+							"raw": "{{base_url}}/users/register",
 							"host": [
-								"{{baseUrl}}"
+								"{{base_url}}"
 							],
 							"path": [
 								"users",
@@ -261,7 +261,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Deepa\",\r\n    \"email\": \"Deepsss@gmail.com\",\r\n    \"password\": \"Divya@0315@u\",\r\n    \"age\": 34\r\n}",
+							"raw": "{\r\n    \"name\": \"Deepa\",\r\n    \"email\": \"shridevi@gmail.com\",\r\n    \"password\": \"HD0315@u\",\r\n    \"age\": 34\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -269,7 +269,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/users/f_update/4",
+							"raw": "http://localhost:3000/users/f_update/8",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -278,7 +278,7 @@
 							"path": [
 								"users",
 								"f_update",
-								"4"
+								"8"
 							]
 						}
 					},
@@ -385,7 +385,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "http://localhost:3000/users/4",
+							"raw": "http://localhost:3000/users/10",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -393,7 +393,7 @@
 							"port": "3000",
 							"path": [
 								"users",
-								"4"
+								"10"
 							]
 						}
 					},
@@ -654,7 +654,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/tasks/f_update/T007",
+							"raw": "http://localhost:3000/tasks/f_update/T008",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -663,7 +663,7 @@
 							"path": [
 								"tasks",
 								"f_update",
-								"T007"
+								"T008"
 							]
 						}
 					},
@@ -770,7 +770,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "http://localhost:3000/tasks/T007",
+							"raw": "http://localhost:3000/tasks/T003",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -778,7 +778,7 @@
 							"port": "3000",
 							"path": [
 								"tasks",
-								"T007"
+								"T003"
 							]
 						}
 					},
