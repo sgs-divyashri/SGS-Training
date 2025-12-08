@@ -1,6 +1,6 @@
 import type { Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
 import { User, userServices } from "../../services/userServices"
-import { normalizedEmail, validateEmail } from "./emailValidation";
+import { validateEmail } from "./emailValidation";
 
 export const createUserHandler = (request: Request, h: ResponseToolkit): ResponseObject => {
     const payload = request.payload as Pick<User, "name"|"email"|"password"|"age">
@@ -10,19 +10,20 @@ export const createUserHandler = (request: Request, h: ResponseToolkit): Respons
     }
 
     // Email format validation
-    if (!validateEmail(payload.email)) {
-        return h.response({ error: "Invalid email format" }).code(400);
+    const validEmail = validateEmail(payload.email)
+    if (!validEmail) {
+      return h.response({ error: "Invalid email format" }).code(400);
     }
 
-    const cleanEmail = normalizedEmail(payload.email)
+    // const cleanEmail = normalizedEmail(payload.email)
 
-    if (userServices.emailExists(cleanEmail)) {
+    if (userServices.emailExists(validEmail)) {
         return h.response({ error: "Email already exists" }).code(409);
     }
 
     const newUserId: number = userServices.createUser({
         name: payload.name,
-        email: cleanEmail,
+        email: validEmail,
         password: payload.password,
         age: payload.age
     })

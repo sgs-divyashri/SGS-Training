@@ -1,0 +1,20 @@
+import { ResponseToolkit, ResponseObject, Request } from "@hapi/hapi";
+import { userServices } from "../../services/userServices";
+import { Model } from "sequelize";
+
+export const getUserHandler = async (request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
+  try {
+    const allUsers: Model<any, any>[] = await userServices.getAllUsers();
+
+    return h.response({
+      message: "Retrieved All Users successfully",
+      users: allUsers,
+    }).code(200);
+
+  } catch (err: any) {
+    console.error(err);
+    return h.response({ error: err.message }).code(400);
+  }
+};
+
+

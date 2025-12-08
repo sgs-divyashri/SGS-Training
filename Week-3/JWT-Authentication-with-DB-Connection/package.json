@@ -5,18 +5,22 @@
   "main": "server.js",
   "scripts": {
     "start": "npx ts-node src/server.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "lab -v --typescript test"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "@hapi/code": "^9.0.3",
     "@hapi/hapi": "^21.4.4",
     "@hapi/jwt": "^3.2.1",
+    "@hapi/lab": "^26.0.0",
     "@types/bcrypt": "^6.0.0",
     "@types/hapi": "^18.0.15",
-    "@types/node": "^24.10.1"
+    "@types/node": "^24.10.1",
+    "lab-transform-typescript": "^3.0.1",
+    "ts-node": "^10.9.2"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

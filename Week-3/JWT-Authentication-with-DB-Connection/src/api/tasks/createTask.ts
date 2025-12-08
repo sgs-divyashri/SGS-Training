@@ -2,6 +2,7 @@ import type { Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
 import { taskServices } from "../../services/taskServices";
 import { TaskPayload } from "../../models/taskTableDefinition";
 import { generateTaskId } from "./generateID";
+import { error } from "console";
 
 export const createTaskHandler = async (request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
     const payload = request.payload as Pick<TaskPayload, "taskName" | "description" | "createdBy">;
@@ -13,6 +14,10 @@ export const createTaskHandler = async (request: Request, h: ResponseToolkit): P
         }).code(400);
     }
 
+    if (isNaN(payload.createdBy)){
+        return h.response({error: "Invalid input type for createdBy"}).code(400)
+    }
+
     try {
         const newTask = await taskServices.createTask({
             taskName: payload.taskName,
@@ -22,10 +27,10 @@ export const createTaskHandler = async (request: Request, h: ResponseToolkit): P
 
         return h.response({
             message: 'User added successfully',
-            user: newTask
+            task: newTask
         }).code(201);
     } catch (err: any) {
         console.error(err);
-        return h.response({ error: err.message }).code(400);
+        return h.response({ error: err.message }).code(500);
     }
 }

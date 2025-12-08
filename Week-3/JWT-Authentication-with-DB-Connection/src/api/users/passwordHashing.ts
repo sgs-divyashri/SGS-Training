@@ -6,5 +6,13 @@ export const hashPassword = (password: string): string => {
 }
 
 export const verifyPassword = (password: string, hash: string): boolean => {
-    return bcrypt.compareSync(password, hash);
+    if (!password || !hash) {
+        return false;
+    }
+
+    try {
+        return bcrypt.compareSync(password, hash);
+    } catch {
+        return false;
+    }
 }

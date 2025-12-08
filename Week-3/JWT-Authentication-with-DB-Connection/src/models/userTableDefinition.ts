@@ -1,26 +1,19 @@
-// // endpoint 
-// // table name - test [id, name]
-// // insert into table
-
-
-
-
 import { DataTypes, Model, Optional, Sequelize } from "sequelize";
 import { Task } from "./taskTableDefinition";
 
 export interface UserPayload {
-  userId?: number;
+  userId: number;
   name: string;
   email: string;
   password: string;
   age: number,
-  isActive?: boolean;
+  isActive: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
 export interface UserCreationAttributes
-  extends Optional<UserPayload, "userId" | "isActive" | "createdAt" | "updatedAt"> {}
+  extends Optional<UserPayload, "userId" | "isActive" | "createdAt" | "updatedAt"> { }
 
 export class User extends Model<UserPayload, UserCreationAttributes>
   implements UserPayload {
@@ -32,6 +25,12 @@ export class User extends Model<UserPayload, UserCreationAttributes>
   public isActive!: boolean;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
+  toJSON() {
+    const values = { ...this.get() } as any;
+    delete values.password;
+    return values;
+  }
+
 }
 
 export default (sequelize: Sequelize) => {
@@ -51,7 +50,7 @@ export default (sequelize: Sequelize) => {
       email: {
         type: DataTypes.STRING(100),
         allowNull: false,
-        unique: true,
+        // unique: true,
       },
       password: {
         type: DataTypes.TEXT,
@@ -73,6 +72,9 @@ export default (sequelize: Sequelize) => {
       tableName: "users",
       timestamps: true,
       // underscored: true,
+      defaultScope: {
+        attributes: { exclude: ['password'] }
+      },
       indexes: [
         {
           unique: true,

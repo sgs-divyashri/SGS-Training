@@ -1,11 +1,15 @@
 import { ResponseToolkit, ResponseObject, Request } from "@hapi/hapi";
 import { userServices } from "../../services/userServices";
-import { UserPayload } from "../../models/userTableDefinition";
-import { Model } from "sequelize";
+import { User } from "../../models/userTableDefinition";
+import { error } from "console";
 
 export const getUserHandler = async (request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
   try {
-    const allUsers: Model<any, any>[] = await userServices.getAllUsers();
+    const allUsers: User[] = await userServices.getAllUsers();
+
+    if (!allUsers){
+      h.response({error: "All users not found"}).code(400)
+    }
 
     return h.response({
       message: "Retrieved All Users successfully",
@@ -14,7 +18,7 @@ export const getUserHandler = async (request: Request, h: ResponseToolkit): Prom
 
   } catch (err: any) {
     console.error(err);
-    return h.response({ error: err.message }).code(400);
+    return h.response({ error: err.message }).code(500);
   }
 };
 

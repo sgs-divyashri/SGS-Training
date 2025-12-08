@@ -2,13 +2,15 @@ import type { Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
 import { userServices } from "../../services/userServices"
 import { validateEmail } from "./emailValidation";
 import { UserPayload } from "../../models/userTableDefinition";
+import { validatePasswordPolicy } from "./passwordPolicy";
+import { hashPassword } from "./passwordHashing";
 
 export const registerUserHandler = async (request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
   try {
     const payload = request.payload as Pick<UserPayload, "name" | "email" | "password" | "age">;
 
     if (!payload.name || !payload.email || !payload.password || !payload.age) {
-      return h.response({ error: "All fields are required" }).code(400);
+      return h.response({ error: "Bad Request" }).code(400);
     }
 
     const validEmail = validateEmail(payload.email)
@@ -23,6 +25,12 @@ export const registerUserHandler = async (request: Request, h: ResponseToolkit):
       return h.response({ error: "Email already registered" }).code(409);
     }
 
+    const policy = validatePasswordPolicy(payload.password);
+
+    if (!policy.ok) {
+      return h.response({ error: 'Weak password', reasons: policy.errors }).code(400);
+    }
+
     const newUser = await userServices.createUser({
       name: payload.name,
       email: validEmail,
@@ -32,12 +40,12 @@ export const registerUserHandler = async (request: Request, h: ResponseToolkit):
 
     return h.response({
       message: "Inserted successfully!",
-      user: newUser
+      userID: newUser.userId
     }).code(201);
 
   } catch (err: any) {
     console.error(err);
-    return h.response({ error: err.message }).code(400);
+    return h.response({ error: err.message }).code(500);
   }
 };
 

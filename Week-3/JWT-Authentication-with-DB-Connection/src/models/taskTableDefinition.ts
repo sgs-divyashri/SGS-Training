@@ -14,7 +14,7 @@ export interface TaskPayload {
 }
 
 export interface TaskCreationAttributes
-  extends Optional<TaskPayload, "taskId" | "status" | "isActive" | "createdAt" | "updatedAt"> {}
+  extends Optional<TaskPayload, "taskId" | "status" | "isActive" | "createdAt" | "updatedAt"> { }
 
 export class Task extends Model<TaskPayload, TaskCreationAttributes>
   implements TaskPayload {
@@ -52,6 +52,12 @@ export default (sequelize: Sequelize) => {
       createdBy: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        references: {
+          model: 'users',
+          key: 'userId',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'RESTRICT',
         // field: "user_id",
       },
       isActive: {
@@ -71,7 +77,7 @@ export default (sequelize: Sequelize) => {
   return {
     Task,
     associate: (sequelize: Sequelize) => {
-        Task.belongsTo(User, { foreignKey: "createdBy", targetKey: 'userId' });
+      Task.belongsTo(User, { foreignKey: "createdBy", targetKey: 'userId' });
     }
   };
 };

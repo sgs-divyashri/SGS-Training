@@ -1,30 +1,42 @@
-  import type { Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
-  import { userServices } from "../../services/userServices";
-  import { UserPayload } from "../../models/userTableDefinition";
+import type { Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
+import { userServices } from "../../services/userServices";
+import { UserPayload } from "../../models/userTableDefinition";
+import { validatePasswordPolicy } from "./passwordPolicy";
+import { hashPassword } from "./passwordHashing";
 
-  export const partialUpdateUserHandler = async (request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
-    try {
+export const partialUpdateUserHandler = async (request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
+  try {
 
-      const id = Number(request.params.id);
-      const payload = request.payload as Partial<UserPayload>;
+    const id = Number(request.params.id);
+    const payload = request.payload as Partial<UserPayload>;
 
-      console.log("Payload: ", payload)
+    console.log("Payload: ", payload)
 
-      const user = await userServices.partialUpdateUser(id, payload);
 
-      if (user === null) {
-        return h.response({ error: "User not found" }).code(404); 
+    if (payload.password !== undefined) {
+      const policy = validatePasswordPolicy(payload.password);
+      if (!policy.ok) { 
+        return h.response({ error: 'Weak password', reasons: policy.errors }).code(400);
       }
-
-      console.log(user)
-
-      return h.response({
-        message: "Partially Updated Users successfully",
-        user: user,
-      }).code(200);
-
-    } catch (err) {
-      console.error("ERROR IN partialUpdateTaskHandler:", err);
-      return h.response({ error: "Invalid token" }).code(401);
+      payload.password = hashPassword(payload.password);
+      
     }
+
+    const user = await userServices.partialUpdateUser(id, payload);
+
+    if (user === null) {
+      return h.response({ error: "User not found or already deleted" }).code(404);
+    }
+
+    // console.log(user)
+
+    return h.response({
+      message: "Partially Updated Users successfully",
+      user: user,
+    }).code(200);
+
+  } catch (err) {
+    console.error("ERROR IN partialUpdateTaskHandler:", err);
+    return h.response({ error: "Invalid token" }).code(401);
   }
+}
