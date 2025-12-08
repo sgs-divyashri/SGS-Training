@@ -3,7 +3,6 @@ import { taskServices } from "../../services/taskServices";
 
 export const getSpecificUserTaskHandler = async (request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
     try {
-
         const userID = Number(request.params.id);
 
         const userTasks = await taskServices.getSpecificUserTasks(userID);
