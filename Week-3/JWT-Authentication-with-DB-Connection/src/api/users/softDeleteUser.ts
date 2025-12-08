@@ -15,7 +15,6 @@ export const softDeleteUserHandler = async (request: Request, h: ResponseToolkit
       return h.response({ error: 'User not found or already deleted' }).code(404);
     }
 
-
     return h.response({
       message: "Soft Deleted User successfully",
       user: user,
