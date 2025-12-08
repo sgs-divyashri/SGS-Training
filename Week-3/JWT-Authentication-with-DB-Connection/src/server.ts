@@ -11,6 +11,7 @@ const init = async () => {
     // Initialize models and associations
     let server: Server
     server = await create()
+    
     await server.start()
     console.log('Server running on %s', server.info.uri);
 
