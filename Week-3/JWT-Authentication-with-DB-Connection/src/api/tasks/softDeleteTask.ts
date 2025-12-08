@@ -3,7 +3,6 @@ import { taskServices } from "../../services/taskServices";
 
 export const softDeleteTaskHandler = async (request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
     try {
-
         const id: string = request.params.id;
 
         const task = await taskServices.softDeleteTask(id);
