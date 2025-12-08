@@ -4,7 +4,6 @@ import { taskServices } from "../../services/taskServices";
 export const getTaskHandler = async (request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
     try {
         const allTasks = await taskServices.getAllTasks();
-    
         return h.response({
           message: "Retrieved All Tasks successfully",
           users: allTasks,
