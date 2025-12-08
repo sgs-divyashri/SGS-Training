@@ -1,7 +1,6 @@
 import { ResponseToolkit, ResponseObject, Request } from "@hapi/hapi";
 import { userServices } from "../../services/userServices";
 import { User } from "../../models/userTableDefinition";
-import { error } from "console";
 
 export const getUserHandler = async (request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
   try {
