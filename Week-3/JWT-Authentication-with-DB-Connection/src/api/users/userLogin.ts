@@ -18,7 +18,6 @@ export const loginUserHandler = async (request: Request, h: ResponseToolkit) => 
       return h.response({ error: "Invalid email or password" }).code(401);
     }
 
-    // console.log(user)
     // Generate a new token
     const token = generateToken({
       userId: user.getDataValue("userId"),
