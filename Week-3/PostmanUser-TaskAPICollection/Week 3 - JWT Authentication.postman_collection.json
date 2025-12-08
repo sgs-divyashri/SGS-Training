@@ -1,0 +1,790 @@
+{
+	"info": {
+		"_postman_id": "a71e9663-5bf6-4d47-8b56-7e73882f61f4",
+		"name": "Week 3 - JWT Authentication",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "49788069",
+		"_collection_link": "https://divya0301shri-6245252.postman.co/workspace/e4f19084-566c-46e8-8199-8c3dd76b7c50/collection/49788069-a71e9663-5bf6-4d47-8b56-7e73882f61f4?action=share&source=collection_link&creator=49788069"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Register Users",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"umar\",\r\n    \"email\": \"testbkjsq056@gmail.com\",\r\n    \"password\": \"Divy aa0301@@\",\r\n    \"age\": 22\r\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"Login returns 200\", function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Generate JWT token\", function () {\r",
+									"  let json;\r",
+									"  try {\r",
+									"    json = pm.response.json();\r",
+									"  } catch (e) {\r",
+									"    pm.expect.fail(`Response is not valid JSON: ${pm.response.text()}`);\r",
+									"  }\r",
+									"\r",
+									"  // Adjust if your backend uses a different key (e.g., accessToken, data.token)\r",
+									"  const token =\r",
+									"    json.token ||\r",
+									"    json.accessToken;\r",
+									"\r",
+									"  pm.expect(token, \"JWT token should exist\").to.be.a(\"string\").that.is.not.empty;\r",
+									"\r",
+									"  pm.environment.set(\"token\", token);\r",
+									"  console.log(\"Saved token:\", token);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"test072@gmail.com\",\r\n    \"password\": \"StrongPass#9\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve a specific user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"\r",
+									"const token = pm.environment.get(\"token\");\r",
+									"\r",
+									"if (token) {\r",
+									"  pm.request.headers.upsert({\r",
+									"    key: \"Authorization\",\r",
+									"    value: `Bearer ${token}`\r",
+									"  });\r",
+									"} else {\r",
+									"  console.warn(\"No token in environment; Authorization not added.\");\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/users/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all users",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"\r",
+									"const token = pm.environment.get(\"token\");\r",
+									"\r",
+									"if (token) {\r",
+									"  pm.request.headers.upsert({\r",
+									"    key: \"Authorization\",\r",
+									"    value: `Bearer ${token}`\r",
+									"  });\r",
+									"} else {\r",
+									"  console.warn(\"No token in environment; Authorization not added.\");\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:3000/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Full Update User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"\r",
+									"const token = pm.environment.get(\"token\");\r",
+									"\r",
+									"if (token) {\r",
+									"  pm.request.headers.upsert({\r",
+									"    key: \"Authorization\",\r",
+									"    value: `Bearer ${token}`\r",
+									"  });\r",
+									"} else {\r",
+									"  console.warn(\"No token in environment; Authorization not added.\");\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Deepa\",\r\n    \"email\": \"Deepsss@gmail.com\",\r\n    \"password\": \"Divya@0315@u\",\r\n    \"age\": 34\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/users/f_update/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users",
+								"f_update",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Partial Update User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"\r",
+									"const token = pm.environment.get(\"token\");\r",
+									"\r",
+									"if (token) {\r",
+									"  pm.request.headers.upsert({\r",
+									"    key: \"Authorization\",\r",
+									"    value: `Bearer ${token}`\r",
+									"  });\r",
+									"} else {\r",
+									"  console.warn(\"No token in environment; Authorization not added.\");\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Dhanaaaa\",\r\n    \"email\": \"devishri20003@gmail.com\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/users/p_update/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users",
+								"p_update",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Soft Delete User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"\r",
+									"const token = pm.environment.get(\"token\");\r",
+									"\r",
+									"if (token) {\r",
+									"  pm.request.headers.upsert({\r",
+									"    key: \"Authorization\",\r",
+									"    value: `Bearer ${token}`\r",
+									"  });\r",
+									"} else {\r",
+									"  console.warn(\"No token in environment; Authorization not added.\");\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:3000/users/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users",
+								"4"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tasks",
+			"item": [
+				{
+					"name": "Create Task",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"taskName\": \"system engineering\",\r\n    \"description\": \"backend\",\r\n    \"createdBy\" : 2\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/tasks",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all tasks",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"\r",
+									"const token = pm.environment.get(\"token\");\r",
+									"\r",
+									"if (token) {\r",
+									"  pm.request.headers.upsert({\r",
+									"    key: \"Authorization\",\r",
+									"    value: `Bearer ${token}`\r",
+									"  });\r",
+									"} else {\r",
+									"  console.warn(\"No token in environment; Authorization not added.\");\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/tasks",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Specific Task",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"\r",
+									"const token = pm.environment.get(\"token\");\r",
+									"\r",
+									"if (token) {\r",
+									"  pm.request.headers.upsert({\r",
+									"    key: \"Authorization\",\r",
+									"    value: `Bearer ${token}`\r",
+									"  });\r",
+									"} else {\r",
+									"  console.warn(\"No token in environment; Authorization not added.\");\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tasks/T001",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tasks",
+								"T001"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User's Tasks",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"\r",
+									"const token = pm.environment.get(\"token\");\r",
+									"\r",
+									"if (token) {\r",
+									"  pm.request.headers.upsert({\r",
+									"    key: \"Authorization\",\r",
+									"    value: `Bearer ${token}`\r",
+									"  });\r",
+									"} else {\r",
+									"  console.warn(\"No token in environment; Authorization not added.\");\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "bearer:{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/tasks/user/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"tasks",
+								"user",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Full Update Task",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"\r",
+									"const token = pm.environment.get(\"token\");\r",
+									"\r",
+									"if (token) {\r",
+									"  pm.request.headers.upsert({\r",
+									"    key: \"Authorization\",\r",
+									"    value: `Bearer ${token}`\r",
+									"  });\r",
+									"} else {\r",
+									"  console.warn(\"No token in environment; Authorization not added.\");\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"taskName\": \"system testing\",\r\n    \"description\": \"automation\",\r\n    \"createdBy\" : 5,\r\n    \"status\": \"Review\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/tasks/f_update/T007",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"tasks",
+								"f_update",
+								"T007"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Partial Update Task",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"\r",
+									"const token = pm.environment.get(\"token\");\r",
+									"\r",
+									"if (token) {\r",
+									"  pm.request.headers.upsert({\r",
+									"    key: \"Authorization\",\r",
+									"    value: `Bearer ${token}`\r",
+									"  });\r",
+									"} else {\r",
+									"  console.warn(\"No token in environment; Authorization not added.\");\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"taskName\": \"data analytics\",\r\n    \"status\": \"In-Progress\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/tasks/p_update/T004",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"tasks",
+								"p_update",
+								"T004"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Soft Delete Task",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"\r",
+									"const token = pm.environment.get(\"token\");\r",
+									"\r",
+									"if (token) {\r",
+									"  pm.request.headers.upsert({\r",
+									"    key: \"Authorization\",\r",
+									"    value: `Bearer ${token}`\r",
+									"  });\r",
+									"} else {\r",
+									"  console.warn(\"No token in environment; Authorization not added.\");\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:3000/tasks/T007",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"tasks",
+								"T007"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
