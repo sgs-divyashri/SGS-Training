@@ -1,4 +1,3 @@
-
 export interface PasswordCheckResult {
   ok: boolean;
   errors: string;
