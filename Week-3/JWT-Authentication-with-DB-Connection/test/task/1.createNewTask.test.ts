@@ -46,7 +46,7 @@ describe('POST /tasks', () => {
     it('CREATE A NEW TASK fails with 400 when payload is invalid', async () => {
         const badPayload = {
             taskName: 'software'
-            // missing desc, createdBy
+            // missing description, createdBy
         };
 
         const res = await server.inject({
