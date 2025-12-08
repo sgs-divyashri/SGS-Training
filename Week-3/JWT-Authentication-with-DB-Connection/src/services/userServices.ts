@@ -3,17 +3,6 @@ import { Model, Optional } from "sequelize";
 import { userRepository } from "../repository/userRepo";
 import { UserPayload } from "../models/userTableDefinition";
 
-// export interface UserPayload {
-//   id: number,
-//   name: string,
-//   email: string,
-//   password: string,
-//   age: number,
-//   createdAt: string,
-//   updatedAt: string,
-//   isActive: boolean
-// }
-
 export const userServices = {
   findByEmail: async (email: string): Promise<User | null> => {
     return await User.findOne({ where: { email } });
@@ -54,6 +43,5 @@ export const userServices = {
     const user = await userRepository.softDeleteUser(id)
     return user
   }
-  
 }
 
