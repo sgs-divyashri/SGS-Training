@@ -7,7 +7,7 @@ export interface TaskPayload {
   taskName: string;
   description?: string;
   status?: string;
-  createdBy: number; // Foreign key
+  createdBy: number; 
   isActive: boolean,
   createdAt?: Date;
   updatedAt?: Date;
