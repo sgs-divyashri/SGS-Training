@@ -14,7 +14,6 @@ export const userRepository = {
     loginUser: async (loginData: Pick<UserPayload, "email" | "password">): Promise<User | null> => {
         const user = await User.findOne({ where: { email: loginData.email, isActive: true }, attributes: {include: ["password"]} });
         if (!user) return null;
-        // console.log(user)
 
         // Access password safely
         const hashedPassword: string = user.getDataValue("password");
