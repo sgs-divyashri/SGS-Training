@@ -348,66 +348,10 @@ describe('POST /users/login', () => {
             method: 'put',
             url: `/tasks/f_update/${taskID}`,
             payload: update_payload,
-            headers: {
-                authorization: `BEARER ${token}`
-            }
         })
 
         expect(f_update.statusCode).to.equal(401)
     })
-
-
-
-    
-
-
-    
-
-    // it('FULL UPDATE USER - 401 Unauthorized, missing bearer token ', async () => {
-    //     const payload = {
-    //         name: 'Devi',
-    //         email: await uniqueEmail(),
-    //         password: 'Divyaaa@Sheiii0315',
-    //         age: 22
-    //     } as UserPayload;
-
-    //     const res = await server.inject({
-    //         method: 'post',
-    //         url: '/users/register',
-    //         payload
-    //     });
-
-    //     expect(res.statusCode).to.equal(201);
-    //     const reg_body = JSON.parse(res.payload)
-    //     const userId: number = reg_body.userID;
-
-    //     const payload_login = { email: payload.email, password: payload.password }
-
-    //     const login = await server.inject({
-    //         method: 'post',
-    //         url: '/users/login',
-    //         payload: payload_login
-    //     })
-
-    //     expect(login.statusCode).to.equal(200)
-    //     const response = JSON.parse(login.payload)
-    //     expect(response.token).to.exist();
-
-    //     const fUpdate_payload = {
-    //         name: 'Devi',
-    //         email: uniqueEmail(),
-    //         password: 'deviii0315@u',
-    //         age: 22
-    //     } 
-
-    //     const f_update = await server.inject({
-    //         method: 'put',
-    //         url: `/users/f_update/${userId}`,
-    //         payload: fUpdate_payload
-    //     })
-
-    //     expect(f_update.statusCode).to.equal(401)
-    // })
 
 
     // // it('500 Internal server Error with invalid path parameter', async () => {
