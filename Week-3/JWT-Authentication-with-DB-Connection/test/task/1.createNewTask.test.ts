@@ -37,8 +37,8 @@ describe('POST /tasks', () => {
 
         expect(res.statusCode).to.equal(201);
         const body = JSON.parse(res.payload);
-        expect(body.task.taskId).to.exist()
-        expect(body.task.taskId).to.be.a.string();
+        expect(body.taskId).to.exist()
+        expect(body.taskId).to.be.a.string();
     });
 
 

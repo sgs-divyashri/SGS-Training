@@ -25,7 +25,7 @@ export const createTaskHandler = async (request: Request, h: ResponseToolkit): P
 
         return h.response({
             message: 'User added successfully',
-            task: newTask
+            taskId: newTask.taskId
         }).code(201);
     } catch (err: any) {
         console.error(err);

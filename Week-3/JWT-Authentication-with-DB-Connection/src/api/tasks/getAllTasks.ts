@@ -6,7 +6,7 @@ export const getTaskHandler = async (request: Request, h: ResponseToolkit): Prom
         const allTasks = await taskServices.getAllTasks();
         return h.response({
           message: "Retrieved All Tasks successfully",
-          users: allTasks,
+          tasks: allTasks,
         }).code(200);
     
       } catch (err: any) {
