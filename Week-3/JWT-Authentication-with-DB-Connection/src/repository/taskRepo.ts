@@ -6,37 +6,31 @@ import { Model, where } from "sequelize";
 import { allowedStatuses } from "../api/tasks";
 
 export const taskRepository = {
-    createTask: async (payload: Pick<TaskPayload, "taskName" | "description" | "createdBy">) => {
+    createTask: async (payload: Pick<TaskPayload, "taskName" | "description" | "createdBy">): Promise<Task> => {
         const userExists = await User.findOne({ where: { userId: payload.createdBy, isActive: true } });
         if (!userExists) {
             throw new Error("Invalid createdBy userId");
         }
 
-        // if (!payload.taskName || !payload.description) {
-        //     throw new Error("Missing required fields");
-        // }
-
         const newUser = await Task.create({
             taskId: await generateTaskId(),
             ...payload,
-            // status: "To-Do",
-            // isActive: true
         });
 
         return newUser
     },
 
-    getAllTasks: (): Promise<Model<any, any>[]> => {
+    getAllTasks: (): Promise<Task[]> => {
         const users = Task.findAll({ where: { isActive: true } });
         return users
     },
 
-    getSpecificTask: (id: number): Promise<Model<any, any> | null> => {
+    getSpecificTask: (id: number): Promise<Task | null> => {
         const user = Task.findOne({ where: { taskId: id, isActive: true } })
         return user
     },
 
-    getSpecificUserTasks: async (userId: number) => {
+    getSpecificUserTasks: async (userId: number): Promise<User | null> => {
         const user = await User.findOne({
             where: { userId: userId, isActive: true },
             include: [Task]
@@ -44,7 +38,7 @@ export const taskRepository = {
         return user
     },
 
-    fullUpdateTask: async (id: number, payload: Pick<TaskPayload, "taskName" | "description" | "createdBy" | "status">) => {
+    fullUpdateTask: async (id: number, payload: Pick<TaskPayload, "taskName" | "description" | "createdBy" | "status">): Promise<Task | "INVALID_STATUS" | null | undefined> => {
         const userExists = await User.findOne({
             where: { userId: payload.createdBy, isActive: true }
         });
@@ -62,7 +56,7 @@ export const taskRepository = {
         return updatedUser
     },
 
-    partialUpdateTask: async (id: number, payload: Partial<TaskPayload>) => {
+    partialUpdateTask: async (id: number, payload: Partial<TaskPayload>): Promise<TaskPayload | null> => {
         const task = await Task.findOne({ where: { taskId: id, isActive: true } });
         if (!task) return null;
 
@@ -75,16 +69,7 @@ export const taskRepository = {
         return task.get();
     },
 
-    // partialUpdateTask: async (id: number, payload: Partial<TaskPayload>) => {
-    //     const [rowsUpdated, [updatedTask]] = await Task.update(payload, {
-    //         where: { taskId: id, isActive: true },
-    //         returning: true,
-    //     });
-
-    //     return rowsUpdated > 0 ? updatedTask : null;
-    // },
-
-    softDeleteTask: async (id: string) => {
+    softDeleteTask: async (id: string): Promise<string> => {
         const [affectedRows] = await Task.update({ isActive: false }, { where: { taskId: id, isActive: true } });
 
         if (affectedRows === 0) {
