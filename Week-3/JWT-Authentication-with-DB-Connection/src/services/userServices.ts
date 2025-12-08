@@ -54,5 +54,6 @@ export const userServices = {
     const user = await userRepository.softDeleteUser(id)
     return user
   }
+  
 }
 
