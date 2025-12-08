@@ -34,9 +34,7 @@ export default (sequelize: Sequelize) => {
       taskId: {
         type: DataTypes.STRING,
         primaryKey: true,
-        // autoIncrement: true,
         allowNull: false,
-        // field: "task_id",
       },
       taskName: {
         type: DataTypes.STRING(100),
@@ -58,7 +56,6 @@ export default (sequelize: Sequelize) => {
         },
         onUpdate: 'CASCADE',
         onDelete: 'RESTRICT',
-        // field: "user_id",
       },
       isActive: {
         type: DataTypes.BOOLEAN,
@@ -70,7 +67,6 @@ export default (sequelize: Sequelize) => {
       sequelize,
       tableName: "tasks",
       timestamps: true,
-      // underscored: true,
     }
   );
 

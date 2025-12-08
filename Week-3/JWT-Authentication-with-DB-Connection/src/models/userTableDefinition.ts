@@ -41,7 +41,6 @@ export default (sequelize: Sequelize) => {
         primaryKey: true,
         autoIncrement: true,
         allowNull: false,
-        // field: "user_id",
       },
       name: {
         type: DataTypes.STRING(50),
@@ -50,7 +49,6 @@ export default (sequelize: Sequelize) => {
       email: {
         type: DataTypes.STRING(100),
         allowNull: false,
-        // unique: true,
       },
       password: {
         type: DataTypes.TEXT,
@@ -64,14 +62,12 @@ export default (sequelize: Sequelize) => {
         type: DataTypes.BOOLEAN,
         defaultValue: true,
         allowNull: false
-        // field: "is_active",
       },
     },
     {
       sequelize,
       tableName: "users",
       timestamps: true,
-      // underscored: true,
       defaultScope: {
         attributes: { exclude: ['password'] }
       },
