@@ -67,14 +67,15 @@ describe('POST /users/login', () => {
 
         expect(task_res.statusCode).to.equal(201);
         const task_body = JSON.parse(task_res.payload);
-        const taskID: string = task_body.taskID;
+        const taskID: string = task_body.taskId;
         expect(task_body.taskId).to.exist()
         expect(task_body.taskId).to.be.a.string();
 
         const update_payload = {
             taskName: 'develop',
             description: 'software',
-            createdBy: 7
+            createdBy: 7,
+            status: "Review"
         }
 
         const f_update = await server.inject({
@@ -142,7 +143,7 @@ describe('POST /users/login', () => {
 
         const update_payload = {
             taskName: 'develop',
-
+            status: "Review"
         }
 
         const f_update = await server.inject({
@@ -191,7 +192,8 @@ describe('POST /users/login', () => {
         const task_payload = {
             taskName: 'testing',
             description: 'manual',
-            createdBy: 3
+            createdBy: 3,
+            
         }
 
         const task_res = await server.inject({
@@ -208,7 +210,9 @@ describe('POST /users/login', () => {
 
         const update_payload = {
             taskName: 'develop',
-
+            description: 'manual',
+            createdBy: 3,
+            status: "Completed"
         }
 
         const f_update = await server.inject({
@@ -224,71 +228,72 @@ describe('POST /users/login', () => {
     })
 
 
-    // it('FULL UPDATE TASK - fails with 404 with invalid/deleted user ID', async () => {
-    //     const payload = {
-    //         name: 'Divya',
-    //         email: uniqueEmail(),
-    //         password: 'Divyaaa@Sheiii0315',
-    //         age: 25
-    //     } as UserPayload;
+    it('FULL UPDATE TASK - fails with 404 with invalid/deleted user ID', async () => {
+        const payload = {
+            name: 'Divya',
+            email: uniqueEmail(),
+            password: 'Divyaaa@Sheiii0315',
+            age: 25
+        } as UserPayload;
 
-    //     const res = await server.inject({
-    //         method: 'post',
-    //         url: '/users/register',
-    //         payload
-    //     });
+        const res = await server.inject({
+            method: 'post',
+            url: '/users/register',
+            payload
+        });
 
-    //     expect(res.statusCode).to.equal(201);
+        expect(res.statusCode).to.equal(201);
 
-    //     const payload_login = { email: payload.email, password: payload.password }
+        const payload_login = { email: payload.email, password: payload.password }
 
-    //     const login = await server.inject({
-    //         method: 'post',
-    //         url: '/users/login',
-    //         payload: payload_login
-    //     })
+        const login = await server.inject({
+            method: 'post',
+            url: '/users/login',
+            payload: payload_login
+        })
 
-    //     expect(login.statusCode).to.equal(200)
-    //     const response = JSON.parse(login.payload)
-    //     expect(response.token).to.exist();
+        expect(login.statusCode).to.equal(200)
+        const response = JSON.parse(login.payload)
+        expect(response.token).to.exist();
 
-    //     const token = response.token as string
+        const token = response.token as string
 
-    //     const task_payload = {
-    //         taskName: 'testing',
-    //         description: 'manual',
-    //         createdBy: 3
-    //     }
+        const task_payload = {
+            taskName: 'testing',
+            description: 'manual',
+            createdBy: 3
+        }
 
-    //     const task_res = await server.inject({
-    //         method: 'post',
-    //         url: '/tasks',
-    //         payload: task_payload
-    //     });
+        const task_res = await server.inject({
+            method: 'post',
+            url: '/tasks',
+            payload: task_payload
+        });
 
-    //     expect(task_res.statusCode).to.equal(201);
-    //     const task_body = JSON.parse(task_res.payload);
-    //     const taskID: string = task_body.taskID;
-    //     expect(task_body.taskId).to.exist()
-    //     expect(task_body.taskId).to.be.a.string();
+        expect(task_res.statusCode).to.equal(201);
+        const task_body = JSON.parse(task_res.payload);
+        const taskID: string = 'T220';
+        expect(task_body.taskId).to.exist()
+        expect(task_body.taskId).to.be.a.string();
 
-    //     const update_payload = {
-    //         taskName: 'develop',
-    //         description: 'dev',
-    //         createdBy: 4
-    //     }
+        const update_payload = {
+            taskName: 'develop',
+            description: 'dev',
+            createdBy: 4,
+            status: "Review"
+        }
 
-    //     const f_update = await server.inject({
-    //         method: 'put',
-    //         url: `/tasks/f_update/${taskID}`,
-    //         payload: update_payload,
-    //         headers: {
-    //             authorization: `BEARER ${token}`
-    //         }
-    //     })
+        const f_update = await server.inject({
+            method: 'put',
+            url: `/tasks/f_update/${taskID}`,
+            payload: update_payload,
+            headers: {
+                authorization: `BEARER ${token}`
+            }
+        })
 
-    //     expect(f_update.statusCode).to.equal(404)
-    // })
+        expect(f_update.statusCode).to.equal(404)
+    })
 
 
 
@@ -343,7 +348,8 @@ describe('POST /users/login', () => {
         const update_payload = {
             taskName: 'develop',
             description: 'dev',
-            createdBy: 4
+            createdBy: 4,
+            status: "Review"
         }
 
         const f_update = await server.inject({
