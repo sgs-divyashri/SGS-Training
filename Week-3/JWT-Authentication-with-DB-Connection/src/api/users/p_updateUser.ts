@@ -6,7 +6,6 @@ import { hashPassword } from "./passwordHashing";
 
 export const partialUpdateUserHandler = async (request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
   try {
-
     const id = Number(request.params.id);
     const payload = request.payload as Partial<UserPayload>;
 
