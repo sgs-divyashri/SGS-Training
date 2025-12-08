@@ -3,7 +3,6 @@ import { userServices } from "../../services/userServices"
 import { validateEmail } from "./emailValidation";
 import { UserPayload } from "../../models/userTableDefinition";
 import { validatePasswordPolicy } from "./passwordPolicy";
-import { hashPassword } from "./passwordHashing";
 
 export const registerUserHandler = async (request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
   try {
