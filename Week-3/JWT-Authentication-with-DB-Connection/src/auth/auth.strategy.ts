@@ -3,7 +3,6 @@ import { JWT_SECRET } from '../config/constants';
 
 export const configureAuthStrategy = (server: Server) => {   // server instance as parameter
     // configure the strategy
-    
     server.auth.strategy('jwt', 'jwt', {
         keys: JWT_SECRET,
         verify: {
