@@ -1,55 +1,36 @@
 import { Model } from "sequelize";
 import { taskRepository } from "../repository/taskRepo";
 import { TaskPayload } from "../models/taskTableDefinition";
+import { Task } from "../models/taskTableDefinition";
+import { User } from "../models/userTableDefinition";
 
 export const taskServices = {
-  createTask: async (payload: Pick<TaskPayload, "taskName" | "description" | "createdBy">) => {
+  createTask: async (payload: Pick<TaskPayload, "taskName" | "description" | "createdBy">): Promise<Task> => {
     const user = await taskRepository.createTask(payload)
     return user
   },
 
-  getAllTasks: async (): Promise<Model<any, any>[]> => {
+  getAllTasks: async (): Promise<Task[]> => {
     return await taskRepository.getAllTasks()
   },
 
-  getSpecificTask: async (id: number): Promise<Model<any, any> | null> => {
+  getSpecificTask: async (id: number): Promise<Task | null> => {
     return await taskRepository.getSpecificTask(id)
   },
 
-  getSpecificUserTasks: async (userId: number) => {
+  getSpecificUserTasks: async (userId: number): Promise<User | null> => {
     return await taskRepository.getSpecificUserTasks(userId)
   },
 
-  fullUpdateTask: async (id: number, payload: Pick<TaskPayload, "taskName" | "description" | "createdBy" | "status">) => {
+  fullUpdateTask: async (id: number, payload: Pick<TaskPayload, "taskName" | "description" | "createdBy" | "status">): Promise<Task | "INVALID_STATUS" | null | undefined> => {
     return await taskRepository.fullUpdateTask(id, payload)
   },
 
-  partialUpdateTask: async (id: number, payload: Partial<{taskName: string, description: string, createdBy: number, status: string}>) => {
+  partialUpdateTask: async (id: number, payload: Partial<{taskName: string, description: string, createdBy: number, status: string}>): Promise<TaskPayload | null> => {
     return await taskRepository.partialUpdateTask(id, payload)
   },
 
-  // partialUpdateTask: (id: string, payload: Partial<Task>): Task | "INVALID_STATUS" | null => {
-  //   const task = tasks.find(t => t.id === id && t.isActive);
-  //   if (!task) {
-  //     return null
-  //   }
-  //   // PARTIAL UPDATE (update only fields sent)
-  //   if (payload.taskName !== undefined) task.taskName = payload.taskName;
-  //   if (payload.description !== undefined) task.description = payload.description;
-  //   if (payload.createdBy !== undefined) task.createdBy = payload.createdBy;
-  //   // Validate status, but do NOT use h.response here
-  //   if (payload.status !== undefined && !allowedStatuses.includes(payload.status)) {
-  //     return "INVALID_STATUS";
-  //   }
-  //   if (payload.status !== undefined) task.status = payload.status;
-
-  //   task.updatedAt = new Date().toLocaleString();
-
-  //   return task
-
-  // },
-
-  softDeleteTask: async (id: string) => {
+  softDeleteTask: async (id: string): Promise<string> => {
     return await taskRepository.softDeleteTask(id)
   }
 };
