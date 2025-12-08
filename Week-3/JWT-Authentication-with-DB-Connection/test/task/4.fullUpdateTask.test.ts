@@ -272,7 +272,7 @@ describe('POST /users/login', () => {
 
         expect(task_res.statusCode).to.equal(201);
         const task_body = JSON.parse(task_res.payload);
-        const taskID: string = 'T220';
+        // const taskID: string = 'T220';
         expect(task_body.taskId).to.exist()
         expect(task_body.taskId).to.be.a.string();
 
@@ -285,10 +285,10 @@ describe('POST /users/login', () => {
 
         const f_update = await server.inject({
             method: 'put',
-            url: `/tasks/f_update/${taskID}`,
+            url: `/tasks/f_update/T220`,
             payload: update_payload,
             headers: {
-                authorization: `BEARER ${token}`
+                authorization: `Bearer ${token}`
             }
         })
 
