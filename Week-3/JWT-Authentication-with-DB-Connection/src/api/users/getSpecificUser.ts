@@ -1,6 +1,5 @@
 import type { Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
 import { userServices } from "../../services/userServices";
-import { Model } from "sequelize";
 import { User } from "../../models/userTableDefinition";
 
 export const getSpecificUserHandler = async (request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
