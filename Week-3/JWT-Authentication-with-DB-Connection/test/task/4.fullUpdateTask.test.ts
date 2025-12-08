@@ -82,7 +82,7 @@ describe('POST /users/login', () => {
             url: `/tasks/f_update/${taskID}`,
             payload: update_payload,
             headers: {
-                authorization: `BEARER ${token}`
+                authorization: `Bearer ${token}`
             }
         })
 
@@ -134,7 +134,9 @@ describe('POST /users/login', () => {
 
         expect(task_res.statusCode).to.equal(201);
         const task_body = JSON.parse(task_res.payload);
-        const taskID: string = task_body.taskID;
+        const taskID: string = task_body.taskId;
+        console.log("task body: ",task_body)
+        console.log("task id: ",task_body.taskId)
         expect(task_body.taskId).to.exist()
         expect(task_body.taskId).to.be.a.string();
 
@@ -148,7 +150,7 @@ describe('POST /users/login', () => {
             url: `/tasks/f_update/${taskID}`,
             payload: update_payload,
             headers: {
-                authorization: `BEARER ${token}`
+                authorization: `Bearer ${token}`
             }
         })
 
