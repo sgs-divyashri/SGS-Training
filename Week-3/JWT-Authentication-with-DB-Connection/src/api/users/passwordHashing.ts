@@ -9,7 +9,6 @@ export const verifyPassword = (password: string, hash: string): boolean => {
     if (!password || !hash) {
         return false;
     }
-
     try {
         return bcrypt.compareSync(password, hash);
     } catch {
