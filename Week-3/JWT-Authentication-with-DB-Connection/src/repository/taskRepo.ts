@@ -2,7 +2,6 @@ import { TaskPayload } from "../models/taskTableDefinition";
 import { Task } from "../models/taskTableDefinition";
 import { User } from "../models/userTableDefinition";
 import { generateTaskId } from "../api/tasks/generateID";
-import { Model, where } from "sequelize";
 import { allowedStatuses } from "../api/tasks";
 
 export const taskRepository = {
