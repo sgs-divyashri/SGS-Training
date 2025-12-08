@@ -30,7 +30,6 @@ export class User extends Model<UserPayload, UserCreationAttributes>
     delete values.password;
     return values;
   }
-
 }
 
 export default (sequelize: Sequelize) => {
