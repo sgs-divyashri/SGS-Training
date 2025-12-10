@@ -1,35 +1,25 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import HelloWorld from "./core-concepts/01-helloWorld/helloWorld"
+import Greeting from "./core-concepts/02-components/greeting"
+import GreetingClass from "./core-concepts/02-components/greetingClass"
+import JSXExample from "./core-concepts/03-jsx/jsxExample"
+import PropsExample from "./core-concepts/04-props/propsExample"
+import StateExample from "./core-concepts/05-state/stateExample"
+import EventHandling from "./core-concepts/06-eventHandling/eventListeners"
+import SimpleForm from "./core-concepts/06-eventHandling/simpleForm"
+import Lists from "./core-concepts/07-lists&Keys/lists"
+import TaskManager from "./TaskManager/taskManager"
 
 function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+  return <TaskManager/>
+  // return <Lists/>
+  // return <SimpleForm/>
+  // return <EventHandling/>
+  // return <StateExample/>
+  // return <PropsExample title="Welcome to React Tutorial"/>
+  // return <JSXExample/>
+  // return <GreetingClass/>
+  // return < Greeting />
+  // return < HelloWorld />
 }
 
 export default App

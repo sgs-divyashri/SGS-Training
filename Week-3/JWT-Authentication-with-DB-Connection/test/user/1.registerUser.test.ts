@@ -5,6 +5,7 @@ import { init_test } from '../../src/server';
 import { Server } from '@hapi/hapi';
 import { User, UserPayload } from '../../src/models/userTableDefinition';
 import { sequelize } from '../../src/sequelize/sequelize';
+import { userRepository } from '../../src/repository/userRepo';
 
 export const lab = Lab.script();
 const { describe, it, beforeEach, afterEach } = lab;  // BDD - Behavior driven development
@@ -54,6 +55,8 @@ describe('POST /users/register', () => {
     const body = JSON.parse(res.payload);
     expect(body.userID).to.exist()
     expect(body.userID).to.be.a.number();
+    const user = await userRepository.getSpecificUser(body.userID)
+    expect(user).to.exist()
   });
 
 

@@ -8,6 +8,9 @@ export const fullUpdateTaskHandler = async (request: Request, h: ResponseToolkit
     const id = request.params.id;
     const payload = request.payload as Pick<TaskPayload, "taskName" | "description" | "createdBy" | "status">;
 
+     if (!payload.taskName || !payload.description || !payload.createdBy || !payload.status) {
+      return h.response({ error: "Invalid payload" }).code(400)
+    }
     const task = await taskServices.fullUpdateTask(id, payload);
 
     if (task === null) {
@@ -21,7 +24,7 @@ export const fullUpdateTaskHandler = async (request: Request, h: ResponseToolkit
 
   } catch (err: any) {
     console.error(err);
-    return h.response({ error: err.message }).code(400);
+    return h.response({ error: err.message }).code(500);
   }
   
 }

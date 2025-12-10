@@ -1,0 +1,28 @@
+.add-task-btn {
+    background-color: rgb(197, 115, 115);
+    color: whitesmoke;
+}
+
+.add-task-inp {
+    background-color: white;
+    padding: 10px;
+    border: 3px solid black;
+    border-radius: 10px;
+}
+
+.add-task-action {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
+
+.task-list-li {
+    margin-top: 10px;
+    background-color: powderblue;
+    color: white;
+    padding: 10px;
+    border: 3px solid grey;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+    justify-content: center;
+}

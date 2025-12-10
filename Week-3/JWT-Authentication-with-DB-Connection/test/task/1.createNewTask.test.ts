@@ -3,8 +3,7 @@ import { expect } from '@hapi/code';
 import { init_test } from '../../src/server';
 // import { init } from '../server';
 import { Server } from '@hapi/hapi';
-import { User, UserPayload } from '../../src/models/userTableDefinition';
-import { sequelize } from '../../src/sequelize/sequelize';
+import { taskRepository } from '../../src/repository/taskRepo';
 
 export const lab = Lab.script();
 const { describe, it, beforeEach, afterEach } = lab;  // BDD - Behavior driven development
@@ -39,6 +38,9 @@ describe('POST /tasks', () => {
         const body = JSON.parse(res.payload);
         expect(body.taskId).to.exist()
         expect(body.taskId).to.be.a.string();
+        const task = await taskRepository.getSpecificTask(body.taskId)
+        expect(task).to.exist()
+        // expect()
     });
 
 

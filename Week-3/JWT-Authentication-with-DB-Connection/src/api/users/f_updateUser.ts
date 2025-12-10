@@ -1,8 +1,7 @@
 import type { Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
 import { userServices } from "../../services/userServices";
 import { UserPayload } from "../../models/userTableDefinition";
-import { validatePasswordPolicy } from "./passwordPolicy";
-import { error } from "console";
+import { passwordServices } from "../../services/passwordservices";
 
 export const fullUpdateUserHandler = async (request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
   try {
@@ -13,7 +12,7 @@ export const fullUpdateUserHandler = async (request: Request, h: ResponseToolkit
       return h.response({ error: "Invalid payload" }).code(400)
     }
 
-    const policy = validatePasswordPolicy(payload.password);
+    const policy = passwordServices.validatePasswordPolicy(payload.password);
 
     if (!policy.ok) {
       return h.response({ error: 'Weak password', reasons: policy.errors }).code(400);

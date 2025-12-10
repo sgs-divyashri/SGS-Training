@@ -1,8 +1,7 @@
 import type { Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
 import { userServices } from "../../services/userServices";
 import { UserPayload } from "../../models/userTableDefinition";
-import { validatePasswordPolicy } from "./passwordPolicy";
-import { hashPassword } from "./passwordHashing";
+import { passwordServices } from "../../services/passwordservices";
 
 export const partialUpdateUserHandler = async (request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
   try {
@@ -13,11 +12,11 @@ export const partialUpdateUserHandler = async (request: Request, h: ResponseTool
 
 
     if (payload.password !== undefined) {
-      const policy = validatePasswordPolicy(payload.password);
+      const policy = passwordServices.validatePasswordPolicy(payload.password);
       if (!policy.ok) { 
         return h.response({ error: 'Weak password', reasons: policy.errors }).code(400);
       }
-      payload.password = hashPassword(payload.password);
+      payload.password = passwordServices.hashPassword(payload.password);
       
     }
 

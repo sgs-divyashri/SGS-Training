@@ -136,14 +136,14 @@ describe('POST /users/login', () => {
         expect(task_res.statusCode).to.equal(201);
         const task_body = JSON.parse(task_res.payload);
         const taskID: string = task_body.taskId;
-        console.log("task body: ",task_body)
-        console.log("task id: ",task_body.taskId)
+        console.log("task body: ", task_body)
+        console.log("task id: ", task_body.taskId)
         expect(task_body.taskId).to.exist()
         expect(task_body.taskId).to.be.a.string();
 
         const update_payload = {
-            taskName: 'develop',
-            status: "Review"
+            "taskName": "system testing",
+            "description": "automation",
         }
 
         const f_update = await server.inject({
@@ -193,7 +193,7 @@ describe('POST /users/login', () => {
             taskName: 'testing',
             description: 'manual',
             createdBy: 3,
-            
+
         }
 
         const task_res = await server.inject({
