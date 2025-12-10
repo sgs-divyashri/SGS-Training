@@ -1,0 +1,51 @@
+html, body {
+  margin: 0;        
+}
+
+.body {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: powderblue;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+}
+
+.card {
+    width: 100%;
+    max-width: 350px;
+    background: whitesmoke;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    /* display: flex;
+    flex-direction: column; */
+}
+
+.card-title {
+    text-align: center;
+    margin-bottom: 8px;
+    font-size: 22px;
+    font-weight: bold;
+    color: #333;
+}
+
+.input-field {
+    background-color: whitesmoke;
+    margin: 3px;
+    padding: 10px 30px;
+    border: 2px solid rgba(21, 19, 19, 0.8);
+    border-radius: 10px;
+}
+
+.login-btn {
+    background-color: rgb(197, 115, 115);
+    color: whitesmoke;
+    padding: 10px;
+    border: 2px solid black;
+    border-radius: 10px;
+    width: 100px;
+    margin: 20px auto 10px auto;
+}   
