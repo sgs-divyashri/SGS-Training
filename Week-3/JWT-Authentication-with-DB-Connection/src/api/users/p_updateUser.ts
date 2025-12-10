@@ -26,8 +26,6 @@ export const partialUpdateUserHandler = async (request: Request, h: ResponseTool
       return h.response({ error: "User not found or already deleted" }).code(404);
     }
 
-    // console.log(user)
-
     return h.response({
       message: "Partially Updated Users successfully",
       user: user,
