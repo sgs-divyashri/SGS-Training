@@ -161,6 +161,8 @@ describe('POST /users/register', () => {
     const saved = await User.findOne({ where: { email: payload.email } });
     expect(saved).to.exist();
     expect(saved?.password).to.not.equal(payload.password)
+    const user = await userRepository.getSpecificUser(body.userID)
+    expect(user).to.exist()
   });
 });
 
