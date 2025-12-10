@@ -26,5 +26,4 @@ export const fullUpdateTaskHandler = async (request: Request, h: ResponseToolkit
     console.error(err);
     return h.response({ error: err.message }).code(500);
   }
-  
 }
