@@ -26,7 +26,6 @@ export const fullUpdateUserHandler = async (request: Request, h: ResponseToolkit
       return h.response({ error: "User not found or already deleted" }).code(404);
     }
 
-
     return h.response({
       message: " Fully Updated Users successfully",
       user: user,
@@ -37,5 +36,4 @@ export const fullUpdateUserHandler = async (request: Request, h: ResponseToolkit
     console.error(err);
     return h.response({ error: err.message }).code(500);
   }
-
 }
