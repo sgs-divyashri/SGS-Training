@@ -4,6 +4,7 @@ import { validateEmail } from "./emailValidation";
 import { UserPayload } from "../../models/userTableDefinition";
 import { passwordServices } from "../../services/passwordservices";
 
+
 export const registerUserHandler = async (request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
   try {
     const payload = request.payload as Pick<UserPayload, "name" | "email" | "password" | "age">;
