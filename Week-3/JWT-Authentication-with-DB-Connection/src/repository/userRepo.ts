@@ -40,7 +40,6 @@ export const userRepository = {
         return updatedUser
     },
 
-
     partialUpdateUser: async (id: number, payload: Partial<UserPayload>): Promise<UserPayload | null> => {
         const user = await User.findOne({ where: { userId: id, isActive: true } });
         if (!user) return null;
