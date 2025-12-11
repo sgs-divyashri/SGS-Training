@@ -1,11 +1,11 @@
 import LoginForm from './LoginForm/loginForm'
 import '../src/LoginForm/loginform.css'
 import './index.css'; 
-import TaskManager from './TaskManager/taskManager'
+import RegisterForm from './RegistrationForm/registerForm';
 
 function App() {
-  // return <TaskManager/>
-  return <LoginForm/>
+  return <RegisterForm/>
+  // return <LoginForm/>
 }
 
 export default App
