@@ -10,14 +10,16 @@ export default function FieldInputs() {
         console.log("Password: ", password)
     }
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} onReset={() => { setEmail(''); setPassword(''); }}>
             <div className="body">
                 <div className="card">
-                    <h1 className="card-title">Login Form</h1>
-                    <input type="email" className="input-field" name="email" placeholder="Enter email ID" required value={email} onChange={(e) => setEmail(e.target.value)} /> <br />
-                    <input type="password" className="input-field" name="password" placeholder="Enter Password" required value={password} onChange={(e) => setPassword(e.target.value)} /> <br />
-                    <button type="submit" className="login-btn">Login</button>
-                    <button type="reset">Res</button>
+                    <h1 className="mb-2 text-center font-bold">Login Form</h1>
+                    <input type="email" className="p-3 m-3 border-2" name="email" placeholder="Enter email ID" required value={email} onChange={(e) => setEmail(e.target.value)} /> <br />
+                    <input type="password" className="p-3 m-3 border-2" name="password" placeholder="Enter Password" required value={password} onChange={(e) => setPassword(e.target.value)} /> <br />
+                    <div className="button-container">
+                        <button type="submit" className="text-white bg-pink-300 border-2-solid-black px-6 py-3 rounded-xl">Login</button>
+                        <button type="reset" className="reset-btn">Res</button>
+                    </div>
                 </div>
             </div>
         </form>
