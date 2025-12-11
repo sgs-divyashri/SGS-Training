@@ -44,6 +44,15 @@ export default function RegisterInputs() {
         setAge(undefined);
     };
 
+
+    const toggleActive = (userId: number) => {
+        setRows(prev =>
+            prev.map(row =>
+                row.userId === userId ? { ...row, isActive: !row.isActive } : row
+            )
+        );
+    };
+
     return (
         <div className="min-h-screen bg-[#B0E0E6] p-6">
             <div className="mx-auto max-w-6xl m-12 grid lg:grid-cols-2 gap-6">
@@ -102,7 +111,13 @@ export default function RegisterInputs() {
                                             <td className="border p-2">{r.email}</td>
                                             <td className="border p-2">{r.password}</td>
                                             <td className="border p-2">{r.age}</td>
-                                            <td className="border p-2">{String(r.isActive)}</td>
+                                            <td className="border p-2">
+                                                <button type="button" onClick={() => toggleActive(r.userId)}
+                                                    aria-pressed={r.isActive}                                                   
+                                                    className={`inline-flex items-center h-4 w-8 px-3 py-1 rounded-full  ${r.isActive ? "bg-green-500" : "bg-gray-300"}`}>
+                                                    <span className={`flex inline-block h-2 w-2 rounded-full ${r.isActive ? "bg-white justify-end" : "bg-gray-700"}`} />
+                                                </button>
+                                            </td>
                                         </tr>
                                     ))
                                 )}
