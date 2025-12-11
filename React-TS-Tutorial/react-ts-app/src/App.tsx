@@ -1,5 +1,6 @@
 import LoginForm from './LoginForm/loginForm'
 import '../src/LoginForm/loginform.css'
+import './index.css'; 
 import TaskManager from './TaskManager/taskManager'
 
 function App() {
