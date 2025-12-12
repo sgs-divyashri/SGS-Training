@@ -1,8 +1,10 @@
 import { UserPayload } from "./registerForm";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function UsersList() {
     const [rows, setRows] = useState<UserPayload[]>([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const stored = JSON.parse(localStorage.getItem("users") ?? "[]") as UserPayload[];
@@ -16,6 +18,10 @@ export default function UsersList() {
             )
         );
     };
+
+    const handleClick = () => {
+        navigate(-1);
+    }
 
     return (
         <div className="bg-pink-200 rounded-xl shadow p-6 border w-full">
@@ -59,6 +65,11 @@ export default function UsersList() {
                         )}
                     </tbody>
                 </table>
+            </div>
+            <div className="flex justify-end">
+                <button type="button" onClick={handleClick} className="text-white bg-blue-300 border-2 my-4 px-4 py-3 rounded-xl hover:bg-blue-400">
+                    Go Back
+                </button>
             </div>
         </div>
     )
