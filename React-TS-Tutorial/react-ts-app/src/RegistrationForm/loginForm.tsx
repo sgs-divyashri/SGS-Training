@@ -24,7 +24,7 @@ export default function LoginForm() {
         password: "",
     });
 
-    const handleChange = (name: keyof Pick<UserPayload, "email"|"password">, raw: string) => {
+    const handleChange = (name: keyof Pick<UserPayload, "email" | "password">, raw: string) => {
         setValues(prev => {
             return { ...prev, [name]: raw };
         });
@@ -34,14 +34,18 @@ export default function LoginForm() {
         const { email, password } = values;
 
         // validations
-        if ( !email.trim() || !password.trim()) {
+        if (!email.trim() || !password.trim()) {
             alert("Please fill in all fields.");
             return;
         }
 
-        setValues({ email: "", password: ""});
+        setValues({ email: "", password: "" });
 
         navigate("/users");
+    }
+
+    const handleClick = () => {
+        navigate(-1);
     }
 
     return (
@@ -53,6 +57,9 @@ export default function LoginForm() {
                     <div className="flex justify-center gap-3 m-3">
                         <button type="submit" className="text-white bg-pink-400 border-2 px-6 py-3 rounded-xl hover:bg-pink-600">
                             Login
+                        </button>
+                        <button type="button" onClick={handleClick} className="text-white bg-blue-300 border-2 px-4 py-3 rounded-xl hover:bg-blue-400">
+                            Go Back
                         </button>
                     </div>
                 </form>
