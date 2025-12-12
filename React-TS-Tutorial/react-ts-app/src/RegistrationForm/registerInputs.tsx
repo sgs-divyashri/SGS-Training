@@ -9,35 +9,33 @@ interface RegisterInputsProps {
 export default function RegisterInputs({ fields, values, onChange }: RegisterInputsProps) {
   return (
     <div>
-      {fields.map((f) => {
-        const value = values[f.name];
+      {fields.map((f) => (
+        <div key={String(f.name)} className="flex items-center gap-4">
+          <label className="font-semibold w-24">{f.label}: </label>
 
-        const commonProps = {
-          className: "p-2 m-3 border-2 w-full mx-2 rounded-xl",
-          placeholder: f.placeholder,
-          required: true,
-          value: value === undefined ? "" : value as string | number,
-          onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-            onChange(f.name, e.target.value);
-          },
-        };
-
-        return (
-          <div key={String(f.name)} className="flex items-center gap-4">
-            <label className="font-semibold w-24">{f.label}: </label>
-
-            {f.type === "number" ? (
-              <input
-                type="number"
-                min={f.min}
-                {...commonProps}
-              />
-            ) : (
-              <input type={f.type} {...commonProps} />
-            )}
-          </div>
-        );
-      })}
+          {f.type === "number" ? (
+            <input
+              type="number"
+              min={f.min}
+              className="p-2 m-3 border-2 w-full mx-2 rounded-xl"
+              placeholder={f.placeholder}
+              required
+              value={values[f.name] === undefined ? "" : (values[f.name] as number)}
+              onChange={(e) => onChange(f.name, e.target.value)}
+            />
+          ) : (
+            <input
+              type={f.type}
+              className="p-2 m-3 border-2 w-full mx-2 rounded-xl"
+              placeholder={f.placeholder}
+              required
+              value={values[f.name] === undefined ? "" : (values[f.name] as string)}
+              onChange={(e) => onChange(f.name, e.target.value)}
+            />
+          )}
+        </div>
+      ))}
     </div>
   );
 }
+
