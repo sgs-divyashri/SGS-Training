@@ -79,7 +79,6 @@ export default function RegisterForm() {
         };
 
         localStorage.setItem("users", JSON.stringify([...existing, newRow]));
-
         setValues({ name: "", email: "", password: "", age: "" });
 
         navigate("/login");
