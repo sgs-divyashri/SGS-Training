@@ -11,7 +11,7 @@ const init = async () => {
     // Initialize models and associations
     let server: Server
     server = await create()
-    
+
     await server.start()
     console.log('Server running on %s', server.info.uri);
 
@@ -35,20 +35,30 @@ const create = async (): Promise<Server> => {
 
     await sequelize.sync();
 
-const server = Hapi.server({ // create a new server object from Hapi
-    port: 3000, // server listens on port: 3000
-    host: 'localhost', // accessibile from same machine - not from external networks
-});
+    const server = Hapi.server({ // create a new server object from Hapi
+        port: 3000, // server listens on port: 3000
+        host: 'localhost', // accessibile from same machine - not from external networks
+        routes: {
+            cors: {
+                origin: [
+                    '*'
+                ],
+                headers: ["Access-Control-Allow-Headers", "Access-Control-Allow-Origin", "Authorization", "Content-Type"],
+                credentials: false
+            }
+            // cors: true
+        }
+    });
 
-// To Register JWT plugin
-await server.register(Jwt); // Jwt - plugin object, functionality for JWT authentication.
+    // To Register JWT plugin
+    await server.register(Jwt); // Jwt - plugin object, functionality for JWT authentication.
 
-// Configure JWT auth strategy
-configureAuthStrategy(server);
+    // Configure JWT auth strategy
+    configureAuthStrategy(server);
 
-server.route(apiRoutes)
+    server.route(apiRoutes)
 
-return server
+    return server
 }
 
 export const init_test = async () => {
