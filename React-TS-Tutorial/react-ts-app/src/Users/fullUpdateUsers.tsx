@@ -1,41 +1,14 @@
 import RegisterInputs from "./registerInputs";
 import { useNavigate, useParams } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { api } from "./axiosClient";
-
-export interface UserPayload {
-    userId: number;
-    name: string;
-    email: string;
-    password: string;
-    age: number | "",
-    isActive: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-}
-
-export type FieldType = "text" | "email" | "password" | "number"
-
-export interface FieldConfig {
-    name: keyof Pick<UserPayload, "name" | "email" | "password" | "age">,
-    label: string,
-    type: FieldType,
-    placeholder: string,
-    min?: number
-}
-
-const fields: FieldConfig[] = [
-    { name: "name", label: "Name", type: "text", placeholder: "Enter Full Name" },
-    { name: "email", label: "Email", type: "email", placeholder: "Enter email ID" },
-    { name: "password", label: "Password", type: "password", placeholder: "Enter Password" },
-    { name: "age", label: "Age", type: "number", placeholder: "Enter age", min: 1 },
-];
+import { UserPayload } from "./registerForm";
+import { fields } from "./registerForm";
 
 export default function FullUpdateUser() {
     const navigate = useNavigate();
 
-    // form state owned by parent
     const [values, setValues] = useState({
         name: "",
         email: "",
@@ -44,11 +17,30 @@ export default function FullUpdateUser() {
     });
     const [users, setUsers] = useState<UserPayload[]>([]);
 
-    const [emailStatus, setEmailStatus] = useState<
-        { state: "available" | "unavailable" | "error"; message?: string }
-    >({ state: "available" });
+    const [emailStatus, setEmailStatus] = useState<{ state: "available" | "unavailable" | "error"; message?: string }>({ state: "available" });
     const { id } = useParams<{ id: string }>()
 
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const res = await api.get(`/users/${id}`);
+                const user = res.data.user
+                setValues({
+                    name: user.name,
+                    email: user.email,
+                    password: "",
+                    age: typeof user.age === "number" ? user.age : "",
+                })
+            }
+            catch (err: any) {
+                const msg =
+                    err.response?.data?.message ||
+                    err.message ||
+                    "Failed to load user.";
+            }
+        }
+        fetchUser()
+    }, [id])
 
     const handleChange = async (name: keyof Pick<UserPayload, "name" | "email" | "password" | "age">, raw: string) => {
         setValues(prev => {
@@ -111,10 +103,10 @@ export default function FullUpdateUser() {
                 isActive: true,
             };
 
-            const res = await api.get(`http://localhost:3000/users/f_update/${id}`, payload)
-            const createdUser = res.data;
+            const res = await api.put(`/users/f_update/${id}`, payload)
+            const updatedUser = res.data;
 
-            setUsers((prev) => [createdUser, ...prev]);
+            setUsers((prev) => [updatedUser, ...prev]);
 
             setValues({ name: "", email: "", password: "", age: "" });
             navigate("/login");
@@ -130,15 +122,22 @@ export default function FullUpdateUser() {
         }
     };
 
+    const handleClick = () => {
+        navigate("/")
+    }
+
     return (
         <div className="min-h-screen bg-[#B0E0E6] p-6">
             <div className="mx-auto max-w-2xl m-12 grid grid-cols-1">
                 <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-md p-6 border border-violet-300 mx-auto w-full">
-                    <h1 className="mb-4 text-center font-bold text-xl">Register User</h1>
+                    <h1 className="mb-4 text-center font-bold text-xl">Update User</h1>
                     < RegisterInputs fields={fields} values={values} onChange={handleChange} onEmailBlur={handleBlur} />
                     <div className="flex justify-center gap-3 m-3">
                         <button type="submit" className="text-white bg-pink-400 border-2 px-6 py-3 rounded-xl hover:bg-pink-600">
-                            Register
+                            Update
+                        </button>
+                        <button type="submit" className="text-white bg-pink-400 border-2 px-6 py-3 rounded-xl hover:bg-pink-600" onClick={() => handleClick()}>
+                            Logout
                         </button>
                     </div>
                 </form>
