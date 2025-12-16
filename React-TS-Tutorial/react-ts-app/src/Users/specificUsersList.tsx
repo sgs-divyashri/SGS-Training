@@ -37,6 +37,10 @@ export default function SpecificUser() {
         );
     };
 
+    const logout = () => {
+        navigate("/")
+    }
+
     const handleClick = () => {
         navigate(-1);
     }
@@ -87,6 +91,9 @@ export default function SpecificUser() {
             <div className="flex justify-end">
                 <button type="button" onClick={handleClick} className="text-white bg-blue-300 border-2 my-4 px-4 py-3 rounded-xl hover:bg-blue-400">
                     Go Back
+                </button>
+                <button type="submit" className="text-white bg-blue-300 border-2 m-4 px-4 py-3 rounded-xl hover:bg-blue-400" onClick={() => logout()}>
+                    Logout
                 </button>
             </div>
         </div>
