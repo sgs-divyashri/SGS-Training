@@ -14,7 +14,7 @@ function App() {
         <Route path="/login" element={<LoginForm />} ></Route>
         <Route path="/users" element={<UsersList/>} ></Route>
         <Route path="/users/:id" element={<SpecificUser />} />
-        <Route path="/users/f_update/id" element={<FullUpdateUser />} />
+        <Route path="/users/f_update/:id" element={<FullUpdateUser />} />
       </Routes>
     </BrowserRouter>
   )
