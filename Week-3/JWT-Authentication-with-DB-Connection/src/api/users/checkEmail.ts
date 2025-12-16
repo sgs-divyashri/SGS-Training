@@ -1,0 +1,17 @@
+import { UserPayload } from "../../models/userTableDefinition";
+import { userServices } from "../../services/userServices";
+import { ResponseToolkit, Request } from "@hapi/hapi";
+import { validateEmail } from "./emailValidation";
+
+export const checkEmail = async(request: Request, h: ResponseToolkit) => {
+    const payload = request.payload as Pick<UserPayload, "email">
+    const validEmail = validateEmail(payload.email)
+    if (!validEmail) {
+        return h.response({ error: "Enter correct Email Pattern" }).code(400);
+    }
+    const existingUser = await userServices.findByEmail(validEmail!);
+    if (existingUser) {
+        return h.response({ error: "Email already registered" }).code(409);
+    }
+    return h.response({ message: "Unique email" }).code(200);
+}
