@@ -13,7 +13,6 @@ export const userServices = {
     return newUser
   },
 
-
   loginUser: async (loginData: Pick<UserPayload, "email" | "password">): Promise<User | null> => {
     const user = await userRepository.loginUser(loginData)
     return user
