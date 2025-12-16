@@ -3,6 +3,8 @@ import LoginForm from "./Users/loginForm";
 import './index.css';
 import RegisterForm from './Users/registerForm';
 import UsersList from "./Users/registeredUsersList";
+import SpecificUser from "./Users/specificUsersList";
+import FullUpdateUser from "./Users/fullUpdateUsers";
 
 function App() {
   return (
@@ -11,6 +13,8 @@ function App() {
         <Route path="" element={<RegisterForm />} ></Route>
         <Route path="/login" element={<LoginForm />} ></Route>
         <Route path="/users" element={<UsersList/>} ></Route>
+        <Route path="/users/:id" element={<SpecificUser />} />
+        <Route path="/users/f_update/id" element={<FullUpdateUser />} />
       </Routes>
     </BrowserRouter>
   )
