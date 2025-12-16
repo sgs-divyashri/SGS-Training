@@ -24,7 +24,7 @@ export interface FieldConfig {
     min?: number
 }
 
-const fields: FieldConfig[] = [
+export const fields: FieldConfig[] = [
     { name: "name", label: "Name", type: "text", placeholder: "Enter Full Name" },
     { name: "email", label: "Email", type: "email", placeholder: "Enter email ID" },
     { name: "password", label: "Password", type: "password", placeholder: "Enter Password" },
