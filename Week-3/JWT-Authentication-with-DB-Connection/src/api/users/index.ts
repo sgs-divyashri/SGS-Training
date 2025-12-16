@@ -6,6 +6,7 @@ import { getSpecificUserHandler } from "./getSpecificUser";
 import { fullUpdateUserHandler } from "./f_updateUser";
 import { partialUpdateUserHandler } from "./p_updateUser";
 import { softDeleteUserHandler } from "./softDeleteUser";
+import { checkEmail } from "./checkEmail";
 
 export const userRoutes: ServerRoute[] = [
     {
@@ -16,6 +17,16 @@ export const userRoutes: ServerRoute[] = [
             auth: false,
         },
     },
+
+    {
+        method: 'POST',
+        path: '/users/check-email',
+        handler: checkEmail,
+        options: {
+            auth: false
+        }
+    },
+
     {
         method: 'POST',
         path: '/users/login',
