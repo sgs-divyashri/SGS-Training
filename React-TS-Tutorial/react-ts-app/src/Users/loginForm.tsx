@@ -30,7 +30,7 @@ export default function LoginForm() {
             return { ...prev, [name]: raw };
         });
     };
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const { email, password } = values;
 
@@ -40,14 +40,21 @@ export default function LoginForm() {
             return;
         }
 
+        try {
+            const res = await axios.post('http://localhost:3000/users/login', { email, password })
+            const token = res.data.token
+            localStorage.setItem("Token", token);
+            if (res.status == 200)
+                navigate("/users");
+        } catch (err: any) {
+            const status = err.response?.status;
+            if (status == 401)
+                alert("Incorrect Email or Password")
+            else
+                alert("Login failed. Please try again later.")
+        }
+
         setValues({ email: "", password: "" });
-
-        axios.post('http://localhost:3000/users/login', { email, password }, )
-            .then(res => {
-                console.log(res.data)
-            })
-
-        navigate("/users");
     }
 
     const handleClick = () => {
