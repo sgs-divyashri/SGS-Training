@@ -41,8 +41,14 @@ export default function RegisterForm() {
         password: "",
         age: "" as number | "",
     });
+    const [users, setUsers] = useState<UserPayload[]>([]);
 
-    const handleChange = (name: keyof Pick<UserPayload, "name" | "email" | "password" | "age">, raw: string) => {
+    const [emailStatus, setEmailStatus] = useState<
+        { state: "available" | "unavailable" | "error"; message?: string }
+    >({ state: "available" });
+
+
+    const handleChange = async (name: keyof Pick<UserPayload, "name" | "email" | "password" | "age">, raw: string) => {
         setValues(prev => {
             if (name === "age") {
                 const num = raw === "" ? "" : Number(raw);
@@ -50,9 +56,36 @@ export default function RegisterForm() {
             }
             return { ...prev, [name]: raw };
         });
+
+        if (!name.trim()) {
+            alert("Please fill in all fields.");
+            return;
+        }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleBlur = async () => {
+        const email = values.email.trim().toLowerCase();
+        if (!email) return;
+
+        try {
+            setEmailStatus({ state: "available" });
+            const { data } = await axios.post("http://localhost:3000/users/check-email", { email });
+            if (data.available) {
+                setEmailStatus({ state: "available" });
+            } else {
+                setEmailStatus({ state: "unavailable", message: data?.message || "Email is already in use." });
+            }
+        }
+        catch (err: any) {
+            setEmailStatus({
+                state: "error",
+                message: err.response?.data?.message || err.message || "Unable to verify email.",
+            });
+            alert(emailStatus.message || "Email is already registered.");
+        }
+    }
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         const { name, email, password, age } = values;
@@ -67,27 +100,32 @@ export default function RegisterForm() {
             return;
         }
 
-        const existing = JSON.parse(localStorage.getItem("users") ?? "[]") as UserPayload[];
-        const nextId = existing.length > 0 ? Math.max(...existing.map(u => u.userId || 0)) + 1 : 1;
+        try {
+            const payload = {
+                name: name.trim(),
+                email: email.trim(),
+                password,
+                age: Number(age),
+                isActive: true,
+            };
 
-        const newRow: UserPayload = {
-            userId: nextId,
-            name: name.trim(),
-            email: email.trim(),
-            password,
-            age: Number(age),
-            isActive: true,
-        };
+            const res = await axios.post("http://localhost:3000/users/register", payload)
+            const createdUser = res.data;
 
-        localStorage.setItem("users", JSON.stringify([...existing, newRow]));
-        setValues({ name: "", email: "", password: "", age: "" });
+            setUsers((prev) => [createdUser, ...prev]);
 
-        axios.post('http://localhost:3000/users/register', newRow)
-            .then(res => {
-                console.log(res.data)
-            })
+            setValues({ name: "", email: "", password: "", age: "" });
+            navigate("/login");
+        }
 
-        navigate("/login");
+        catch (err: any) {
+            const message =
+                err.response?.data?.message ||
+                err.response?.data?.error ||
+                err.message ||
+                "Registration failed";
+            console.error(message);
+        }
     };
 
     return (
@@ -95,7 +133,7 @@ export default function RegisterForm() {
             <div className="mx-auto max-w-2xl m-12 grid grid-cols-1">
                 <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-md p-6 border border-violet-300 mx-auto w-full">
                     <h1 className="mb-4 text-center font-bold text-xl">Register User</h1>
-                    < RegisterInputs fields={fields} values={values} onChange={handleChange} />
+                    < RegisterInputs fields={fields} values={values} onChange={handleChange} onEmailBlur={handleBlur} />
                     <div className="flex justify-center gap-3 m-3">
                         <button type="submit" className="text-white bg-pink-400 border-2 px-6 py-3 rounded-xl hover:bg-pink-600">
                             Register
