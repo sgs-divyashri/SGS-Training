@@ -31,9 +31,12 @@ export default function UsersList() {
         );
     };
 
-    const editButton = () => {
-        const { id } = useParams<{ id: string }>()
+    const editButton = (id: number) => {
         navigate(`/users/f_update/${id}`)
+    }
+
+    const logout = () => {
+        navigate("/")
     }
 
     const handleClick = () => {
@@ -78,7 +81,7 @@ export default function UsersList() {
                                         </button>
                                     </td>
                                     <td className="border p-2 text-center">
-                                        <button type="button" onClick={() => editButton()} className="text-white bg-pink-400 border-2 px-6 py-3 rounded-xl hover:bg-pink-600">Edit</button>
+                                        <button type="button" onClick={() => editButton(r.userId)} className="text-white bg-pink-400 border-2 px-6 py-3 rounded-xl hover:bg-pink-600">Edit</button>
                                         {/* <button>Delete</button> */}
                                     </td>
                                 </tr>
@@ -88,8 +91,11 @@ export default function UsersList() {
                 </table>
             </div>
             <div className="flex justify-end">
-                <button type="button" onClick={handleClick} className="text-white bg-blue-300 border-2 my-4 px-4 py-3 rounded-xl hover:bg-blue-400">
+                <button type="button" onClick={handleClick} className="text-white bg-blue-300 border-2 m-4 px-4 py-3 rounded-xl hover:bg-blue-400">
                     Go Back
+                </button>
+                <button type="submit" className="text-white bg-blue-300 border-2 m-4 px-4 py-3 rounded-xl hover:bg-blue-400" onClick={() => logout()}>
+                    Logout
                 </button>
             </div>
         </div>
