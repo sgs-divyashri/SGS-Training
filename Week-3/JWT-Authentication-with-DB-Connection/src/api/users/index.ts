@@ -5,8 +5,9 @@ import { getUserHandler } from "./getAllUsers";
 import { getSpecificUserHandler } from "./getSpecificUser";
 import { fullUpdateUserHandler } from "./f_updateUser";
 import { partialUpdateUserHandler } from "./p_updateUser";
-import { softDeleteUserHandler } from "./softDeleteUser";
+import { toggleUserHandler } from "./toggleUser";
 import { checkEmail } from "./checkEmail";
+// import { restoreUserHandler } from "./restoreSoftDeletedUser";
 
 export const userRoutes: ServerRoute[] = [
     {
@@ -60,9 +61,15 @@ export const userRoutes: ServerRoute[] = [
         handler: partialUpdateUserHandler
     },
 
+    // {
+    //     method: "PATCH",
+    //     path: "/users/restore/{userID}",
+    //     handler: restoreUserHandler
+    // },
+
     {
-        method: 'DELETE',
-        path: '/users/{userID}',
-        handler: softDeleteUserHandler,
+        method: 'PATCH',
+        path: '/users/toggle/{userID}',
+        handler: toggleUserHandler,
     }
 ]
