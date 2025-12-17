@@ -41,9 +41,9 @@ export const taskRepository = {
         const userExists = await User.findOne({
             where: { userId: payload.createdBy, isActive: true }
         });
-        // if (!userExists) {
-        //     throw new Error("Invalid createdBy userId");
-        // }
+        if (!userExists) {
+            throw new Error("Invalid createdBy userId");
+        }
         // Validate status
         if (!allowedStatuses.includes(payload.status!)) {
             return "INVALID_STATUS";
