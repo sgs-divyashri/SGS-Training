@@ -128,6 +128,10 @@ export default function RegisterForm() {
         }
     };
 
+    const handleClick = () => {
+        navigate("/login")
+    }
+
     return (
         <div className="min-h-screen bg-[#B0E0E6] p-6">
             <div className="mx-auto max-w-2xl m-12 grid grid-cols-1">
@@ -137,6 +141,9 @@ export default function RegisterForm() {
                     <div className="flex justify-center gap-3 m-3">
                         <button type="submit" className="text-white bg-pink-400 border-2 px-6 py-3 rounded-xl hover:bg-pink-600">
                             Register
+                        </button>
+                        <button type="button" onClick={handleClick} className="text-white bg-pink-400 border-2 px-6 py-3 rounded-xl hover:bg-pink-600">
+                            Login
                         </button>
                     </div>
                 </form>
