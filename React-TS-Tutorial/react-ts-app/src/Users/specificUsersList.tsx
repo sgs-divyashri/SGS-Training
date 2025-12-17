@@ -76,11 +76,12 @@ export default function SpecificUser() {
                                     {/* <td className="border p-2">{r.password}</td> */}
                                     <td className="border p-2">{r.age}</td>
                                     <td className="border p-2 text-center">
-                                        <button type="button" onClick={() => toggleActive(r.userId)}
-                                            aria-pressed={r.isActive}
-                                            className={`inline-flex items-center h-4 w-8 px-3 py-1 rounded-full  ${r.isActive ? "bg-green-500" : "bg-gray-300"}`}>
-                                            <span className={`flex inline-block h-2 w-2 rounded-full ${r.isActive ? "bg-white justify-end" : "bg-gray-700"}`} />
-                                        </button>
+                                        <label className="inline-flex items-center cursor-pointer select-none">
+                                            <input type="checkbox" checked={r.isActive} onChange={() => toggleActive(r.userId)} aria-pressed={r.isActive} aria-label={`Toggle active for ${r.name}`} className="sr-only peer" />
+                                            <div className={`relative w-16 h-8 rounded-full transition-colors duration-200 ${r.isActive ? "bg-green-500" : "bg-gray-300"} flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-green-500`} tabIndex={0} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleActive(r.userId); } }}>
+                                                <span className={`absolute top-1 left-1 w-6 h-6 rounded-full bg-white shadow transition-transform duration-200 ${r.isActive ? "translate-x-8" : "translate-x-0"}`} />
+                                            </div>
+                                        </label>
                                     </td>
                                 </tr>
                             ))
