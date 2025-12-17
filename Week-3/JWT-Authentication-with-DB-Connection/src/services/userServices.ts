@@ -38,9 +38,14 @@ export const userServices = {
     return user
   },
 
-  softDeleteUser: async (id: number): Promise<number> => {
-    const user = await userRepository.softDeleteUser(id)
+  toggleUser: async (id: number): Promise<User | null> => {
+    const user = await userRepository.toggleUser(id)
     return user
-  }
+  },
+
+  // restoreUser: async (id: number): Promise<User | null> => {
+  //   const user = await userRepository.restoreUser(id)
+  //   return user
+  // }
 }
 
