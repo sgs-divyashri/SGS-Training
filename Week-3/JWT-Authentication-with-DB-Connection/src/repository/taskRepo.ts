@@ -68,13 +68,16 @@ export const taskRepository = {
         return task.get();
     },
 
-    softDeleteTask: async (id: string): Promise<string> => {
-        const [affectedRows] = await Task.update({ isActive: false }, { where: { taskId: id, isActive: true } });
+    toggleTask: async (id: number): Promise<Task | null> => {
+        const task = await Task.findOne({ where: { taskId: id } });
+        if (!task) throw new Error(`User with ID ${id} not found`);
 
-        if (affectedRows === 0) {
-            throw new Error(`Task with ID ${id} not found or already deleted`);
+        const nextIsActive = !Boolean(task.isActive);
+
+        const [activeRows] = await Task.update({ isActive: nextIsActive }, { where: { taskId: id } });
+        if (activeRows === 0) {
+            throw new Error(`User with ID ${id} not found or already deleted`);
         }
-
-        return id;
+        return await Task.findOne({ where: { taskId: id } });
     }
 }
