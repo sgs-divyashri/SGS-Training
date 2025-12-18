@@ -26,11 +26,12 @@ export const taskServices = {
     return await taskRepository.fullUpdateTask(id, payload)
   },
 
-  partialUpdateTask: async (id: number, payload: Partial<{taskName: string, description: string, createdBy: number, status: string}>): Promise<TaskPayload | null> => {
+  partialUpdateTask: async (id: number, payload: Partial<{ taskName: string, description: string, createdBy: number, status: string }>): Promise<TaskPayload | null> => {
     return await taskRepository.partialUpdateTask(id, payload)
   },
 
-  softDeleteTask: async (id: string): Promise<string> => {
-    return await taskRepository.softDeleteTask(id)
-  }
+  toggleTask: async (id: number): Promise<Task | null> => {
+    const user = await taskRepository.toggleTask(id)
+    return user
+  },
 };
