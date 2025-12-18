@@ -81,7 +81,7 @@ export default function RegisterForm() {
                 state: "error",
                 message: err.response?.data?.message || err.message || "Unable to verify email.",
             });
-            alert(emailStatus.message || "Email is already registered.");
+            alert("Email is already registered.");
         }
     }
 
