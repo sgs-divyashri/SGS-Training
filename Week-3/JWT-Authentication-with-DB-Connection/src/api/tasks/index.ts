@@ -4,7 +4,7 @@ import { getTaskHandler } from "./getAllTasks";
 import { getSpecificTaskHandler } from "./getSpecificTask";
 import { getSpecificUserTaskHandler } from "./getSpecificUserTasks";
 import { fullUpdateTaskHandler } from "./f_updateTask";
-import { softDeleteTaskHandler } from "./softDeleteTask";
+import { toggleTaskHandler } from "./toggleTask";
 import { partialUpdateTaskHandler } from "./p_updateTask";
 
 
@@ -16,7 +16,7 @@ export const taskRoutes: ServerRoute[] = [
         path: '/tasks',
         handler: createTaskHandler,
         options: {
-            auth: false  
+            auth: false
         },
     },
     {
@@ -48,10 +48,10 @@ export const taskRoutes: ServerRoute[] = [
         path: "/tasks/p_update/{id}",
         handler: partialUpdateTaskHandler
     },
-
+    
     {
-        method: 'DELETE',
-        path: '/tasks/{id}',
-        handler: softDeleteTaskHandler
+        method: 'PATCH',
+        path: '/tasks/toggle/{taskId}',
+        handler: toggleTaskHandler,
     }
 ]
