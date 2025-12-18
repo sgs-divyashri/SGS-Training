@@ -57,13 +57,6 @@ const create = async (): Promise<Server> => {
     configureAuthStrategy(server);
 
     server.route(apiRoutes)
-    // console.log("Registered routes:");
-    // for (const table of server.table()) {
-    //     for (const r of table.table) {
-    //         console.log(`${r.method.toUpperCase()} ${r.path}`);
-    //     }
-    // }
-
 
     return server
 }
