@@ -37,6 +37,8 @@ export default function SpecificUser() {
         );
     };
 
+    const editButton = (id: number) => navigate(`/users/f_update/${id}`);
+
     const logout = () => {
         navigate("/")
     }
@@ -61,31 +63,27 @@ export default function SpecificUser() {
                         </tr>
                     </thead>
                     <tbody>
-                        {!Array.isArray(rows) || rows.length === 0 ? (
-                            <tr>
-                                <td colSpan={6} className="text-center p-3 text-gray-500">
-                                    No registrations yet
+                        {rows.map((r) => (
+                            <tr key={r.userId} className="bg-white">
+                                <td className="border p-2">{r.userId}</td>
+                                <td className="border p-2">{r.name}</td>
+                                <td className="border p-2">{r.email}</td>
+                                <td className="border p-2">{r.age}</td>
+                                <td className="border p-2 text-center">
+                                    <label className="inline-flex items-center cursor-pointer select-none">
+                                        <input type="checkbox" checked={r.isActive} onChange={() => toggleActive(r.userId)} className="sr-only" />
+                                        <div className={`relative w-16 h-8 rounded-full transition-colors duration-200 ${!!r.isActive ? "bg-green-500" : "bg-gray-300"} flex items-center`}>
+                                            <span className={`absolute top-1 left-1 w-6 h-6 rounded-full bg-white shadow transition-transform duration-200 ${!!r.isActive ? "translate-x-8" : "translate-x-0"}`} />
+                                        </div>
+                                    </label>
                                 </td>
+                                <div className="bg-pink-200 p-2 text-center">
+                                    <button type="button" onClick={() => editButton(r.userId)} className="text-white bg-pink-400 border-2 px-3 py-2 rounded-xl hover:bg-pink-600">
+                                        Edit
+                                    </button>
+                                </div>
                             </tr>
-                        ) : (
-                            rows.map((r) => (
-                                <tr key={r.userId} className="bg-white">
-                                    <td className="border p-2">{r.userId}</td>
-                                    <td className="border p-2">{r.name}</td>
-                                    <td className="border p-2">{r.email}</td>
-                                    {/* <td className="border p-2">{r.password}</td> */}
-                                    <td className="border p-2">{r.age}</td>
-                                    <td className="border p-2 text-center">
-                                        <label className="inline-flex items-center cursor-pointer select-none">
-                                            <input type="checkbox" checked={r.isActive} onChange={() => toggleActive(r.userId)} aria-pressed={r.isActive} aria-label={`Toggle active for ${r.name}`} className="sr-only peer" />
-                                            <div className={`relative w-16 h-8 rounded-full transition-colors duration-200 ${r.isActive ? "bg-green-500" : "bg-gray-300"} flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-green-500`} tabIndex={0} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleActive(r.userId); } }}>
-                                                <span className={`absolute top-1 left-1 w-6 h-6 rounded-full bg-white shadow transition-transform duration-200 ${r.isActive ? "translate-x-8" : "translate-x-0"}`} />
-                                            </div>
-                                        </label>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
+                        ))}
                     </tbody>
                 </table>
             </div>
