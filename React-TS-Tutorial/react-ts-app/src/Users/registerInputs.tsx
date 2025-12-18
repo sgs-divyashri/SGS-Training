@@ -4,10 +4,10 @@ interface RegisterInputsProps {
   fields: FieldConfig[];
   values: Pick<UserPayload, "name"|"email"|"password"|"age">;
   onChange: (name: keyof Pick<UserPayload, "name"|"email"|"password"|"age">, raw: string) => void;
-  onEmailBlur?: () => void; 
+  onEmailBlur: () => void; 
 }
 
-export default function RegisterInputs({ fields, values, onChange, onEmailBlur, }: RegisterInputsProps) {
+export default function RegisterInputs({ fields, values, onChange, onEmailBlur }: RegisterInputsProps) {
   return (
     <div>
       {fields.map((f) => (
