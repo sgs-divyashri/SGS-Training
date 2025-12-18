@@ -29,12 +29,37 @@ export default function SpecificUser() {
         fetchUsers()
     }, [id]);
 
-    const toggleActive = (userId: number) => {
+    const toggleActive = async (userId: number) => {
         setRows(prev =>
             prev.map(row =>
                 row.userId === userId ? { ...row, isActive: !row.isActive } : row
             )
         );
+        try {
+            // call the correct backend endpoint
+            const res = await api.patch(`/users/toggle/${userId}`)       // restore (reactivate)
+
+            // if backend returns updated user, sync with server truth
+            const updated = res.data?.user;
+            if (updated && typeof updated.isActive === "boolean") {
+                setRows((prev) =>
+                    prev.map((row) =>
+                        row.userId === userId ? { ...row, isActive: !!updated.isActive } : row
+                    )
+                );
+            }
+        } catch (err: any) {
+            setRows((prev) =>
+                prev.map((row) =>
+                    row.userId === userId ? { ...row, isActive: row.isActive } : row
+                )
+            );
+            console.error(
+                "Failed to update user.",
+                err?.response?.data?.message || err?.message || err
+            );
+
+        }
     };
 
     const editButton = (id: number) => navigate(`/users/f_update/${id}`);
@@ -49,7 +74,7 @@ export default function SpecificUser() {
 
     return (
         <div className="bg-pink-200 mx-auto my-40 rounded-xl shadow p-5 border w-5xl">
-            <h2 className="font-semibold mb-4 text-center text-lg">Registered Users</h2>
+            <h2 className="font-semibold mb-4 text-center text-lg">Single User</h2>
             <div className="overflow-x-auto">
                 <table className="min-w-full border border-gray-300">
                     <thead className="bg-gray-100">
