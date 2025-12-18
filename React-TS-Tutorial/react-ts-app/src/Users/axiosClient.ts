@@ -11,15 +11,3 @@ api.interceptors.request.use((request) => {
 });
 
 
-api.interceptors.response.use(
-  (res) => res,
-  (err) => {
-    if (err.response?.status === 401) {
-      localStorage.removeItem("Token");
-      // redirect to login
-      window.location.href = "/login";
-    }
-    return Promise.reject(err);
-  }
-);
-
