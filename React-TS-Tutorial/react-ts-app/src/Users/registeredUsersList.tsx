@@ -14,6 +14,13 @@ export default function UsersList() {
             try {
                 const res = await api.get("/users");
                 const normalized = res.data?.users ?? []
+
+                normalized.sort((a: UserPayload, b: UserPayload) => {
+                    const ai = Number(a.userId ?? 0);
+                    const bi = Number(b.userId ?? 0);
+                    return ai - bi;
+                });
+
                 setRows(normalized);
             } catch (err: any) {
                 console.error(
@@ -62,7 +69,7 @@ export default function UsersList() {
 
     return (
         <div>
-            <NavBar/>
+            <NavBar />
             <div className="bg-pink-200 m-auto my-6 rounded-xl shadow p-5 border w-5xl">
                 <h2 className="font-semibold mb-4 text-center text-lg">Registered Users</h2>
                 <div className="overflow-x-auto">
