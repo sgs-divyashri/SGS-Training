@@ -16,9 +16,9 @@ export interface FieldConfig {
 
 export const fields: FieldConfig[] = [
     { name: "taskName", label: "TaskName", type: "text" },
-    { name: "description", label: "Description", type: "text"},
-    { name: "createdBy", label: "CreatedBy", type: "number"},
-    { name: "status", label: "Status", type: "text"},
+    { name: "description", label: "Description", type: "text" },
+    { name: "createdBy", label: "CreatedBy", type: "number" },
+    { name: "status", label: "Status", type: "text" },
 ];
 
 export default function FullUpdateTask() {
@@ -28,12 +28,35 @@ export default function FullUpdateTask() {
     const [values, setValues] = useState({
         taskName: "",
         description: "",
-        createdBy: "" as number | "",
+        createdBy: "",
         status: ""
     });
     const [tasks, setTasks] = useState<TaskPayload[]>([])
-
     const { id } = useParams<{ id: string }>()
+
+    const [userOptions, setUserOptions] = useState<{ value: string; label: string }[]>([]);
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const res = await api.get("/users")
+                const normalized = res.data?.users ?? []
+                const opts = (normalized || []).map((u: any) => ({
+                    value: String(u.userId),
+                    label: String(u.email),
+                }));
+                setUserOptions(opts);
+            }
+            catch (err: any) {
+                const message = err.response?.data?.message ||
+                    err.response?.data?.error ||
+                    err.message ||
+                    "Failed to load users";
+                console.error(message);
+            }
+        }
+        fetchUsers();
+    }, [])
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -43,7 +66,7 @@ export default function FullUpdateTask() {
                 setValues({
                     taskName: user.taskName,
                     description: user.description,
-                    createdBy: typeof user.createdBy === "number" ? user.createdBy : "",
+                    createdBy: user.createdBy,
                     status: user.status
                 })
             }
@@ -59,10 +82,6 @@ export default function FullUpdateTask() {
 
     const handleChange = async (name: keyof Pick<TaskPayload, "taskName" | "description" | "createdBy" | "status">, raw: string) => {
         setValues(prev => {
-            if (name === "createdBy") {
-                const num = raw === "" ? "" : Number(raw);
-                return { ...prev, createdBy: num };
-            }
             return { ...prev, [name]: raw };
         });
 
@@ -75,33 +94,30 @@ export default function FullUpdateTask() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const { taskName, description, createdBy } = values;
+        const { taskName, description, createdBy, status } = values;
 
         // validations
-        if (!taskName.trim() || !description.trim() || createdBy === "") {
-            alert("Please fill in all fields.");
-            return;
-        }
-        if (Number(createdBy) <= 0) {
-            alert("Age must be a positive number.");
-            return;
-        }
+        // if (!taskName.trim() || !description.trim() || createdBy === "") {
+        //     alert("Please fill in all fields.");
+        //     return;
+        // }
 
         try {
             const payload = {
                 taskName: taskName.trim(),
                 description: description.trim(),
-                createdBy: Number(createdBy),
+                createdBy: createdBy,
+                status: status,
                 isActive: true,
             };
 
-            const res = await axios.post("http://localhost:3000/tasks", payload)
+            const res = await api.put(`/tasks/f_update/${id}`, payload)
             const createdTask = res.data;
 
             setTasks((prev) => [createdTask, ...prev]);
-
+            navigate("/users-task");
             setValues({ taskName: "", description: "", createdBy: "", status: "" });
-            navigate("/tasks");
+            
         }
 
         catch (err: any) {
@@ -116,12 +132,12 @@ export default function FullUpdateTask() {
 
     return (
         <div>
-            <NavBar/>
+            <NavBar />
             <div className="min-h-screen bg-[#B0E0E6] p-6">
                 <div className="mx-auto max-w-2xl m-12 grid grid-cols-1">
                     <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-md p-6 border border-violet-300 mx-auto w-full">
                         <h1 className="mb-4 text-center font-bold text-xl">Update Task</h1>
-                        < UpdateTaskInputs fields={fields} values={values} onChange={handleChange} />
+                        < UpdateTaskInputs fields={fields} values={values} onChange={handleChange} createdByOptions={userOptions} />
                         <div className="flex justify-center gap-3 m-3">
                             <button type="submit" className="text-white bg-pink-400 border-2 px-6 py-3 rounded-xl hover:bg-pink-600">
                                 Update
