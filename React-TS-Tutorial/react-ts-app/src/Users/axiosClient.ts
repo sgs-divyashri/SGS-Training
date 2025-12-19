@@ -5,9 +5,20 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use((request) => {
-  const token = localStorage.getItem("Token");
+  const token = localStorage.getItem("token");
   if (token) request.headers.Authorization = `Bearer ${token}`;
   return request;
 });
+
+
+api.interceptors.response.use(
+  (res) => res, async (err) => {
+    const status = err.response.status
+    if (status===401){
+      window.location.replace("/login");
+    }
+    return Promise.reject(err);
+  }
+)
 
 
