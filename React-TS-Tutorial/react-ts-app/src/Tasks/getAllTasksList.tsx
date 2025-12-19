@@ -13,6 +13,11 @@ export default function TasksList() {
             try {
                 const res = await api.get("/tasks");
                 const normalized = res.data?.tasks ?? []
+                normalized.sort((a: TaskPayload, b: TaskPayload) => {
+                                    const ai = Number(a.taskId ?? 0);
+                                    const bi = Number(b.taskId ?? 0);
+                                    return ai - bi;
+                                });
                 setRows(normalized);
             } catch (err: any) {
                 console.error(
