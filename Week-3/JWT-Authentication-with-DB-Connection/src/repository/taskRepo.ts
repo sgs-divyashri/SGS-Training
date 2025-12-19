@@ -24,22 +24,23 @@ export const taskRepository = {
         return users
     },
 
-    getSpecificTask: (id: number): Promise<Task | null> => {
+    getSpecificTask: (id: string): Promise<Task | null> => {
         const user = Task.findOne({ where: { taskId: id, isActive: true } })
         return user
     },
 
-    getSpecificUserTasks: async (userId: number): Promise<User | null> => {
-        const user = await User.findOne({
-            where: { userId: userId, isActive: true },
-            include: [Task]
+    getSpecificUserTasks: async (userId: number): Promise<Task[] | null> => {
+        if (!Number.isFinite(userId) || userId <= 0) return [];
+        const tasks = await Task.findAll({
+            where: { createdBy: userId }, // createdBy should be the FK to User.userId
+            order: [["createdAt", "DESC"]],
         });
-        return user
+        return tasks;
     },
 
-    fullUpdateTask: async (id: number, payload: Pick<TaskPayload, "taskName" | "description" | "createdBy" | "status">): Promise<Task | "INVALID_STATUS" | null | undefined> => {
+    fullUpdateTask: async (id: string, userId: number, payload: Pick<TaskPayload, "taskName" | "description" | "createdBy" | "status">): Promise<Task | "INVALID_STATUS" | null | undefined> => {
         const userExists = await User.findOne({
-            where: { userId: payload.createdBy, isActive: true }
+            where: { userId: userId, isActive: true }
         });
         if (!userExists) {
             throw new Error("Invalid createdBy userId");
@@ -55,7 +56,7 @@ export const taskRepository = {
         return updatedUser
     },
 
-    partialUpdateTask: async (id: number, payload: Partial<TaskPayload>): Promise<TaskPayload | null> => {
+    partialUpdateTask: async (id: string, payload: Partial<TaskPayload>): Promise<TaskPayload | null> => {
         const task = await Task.findOne({ where: { taskId: id, isActive: true } });
         if (!task) return null;
 
@@ -68,7 +69,7 @@ export const taskRepository = {
         return task.get();
     },
 
-    toggleTask: async (id: number): Promise<Task | null> => {
+    toggleTask: async (id: string): Promise<Task | null> => {
         const task = await Task.findOne({ where: { taskId: id } });
         if (!task) throw new Error(`User with ID ${id} not found`);
 
