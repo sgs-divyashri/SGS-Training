@@ -5,7 +5,7 @@ import { UserPayload } from "../models/userTableDefinition";
 
 export const userServices = {
   findByEmail: async (email: string): Promise<User | null> => {
-    return await User.findOne({ where: { email } });
+    return await User.findOne({ where: { email }, attributes: ["userId", "email"], });
   },
 
   createUser: async (payload: Pick<UserPayload, "name"|"email"|"password"|"age">): Promise<User> => {
