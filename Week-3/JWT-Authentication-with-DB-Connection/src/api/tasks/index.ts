@@ -33,7 +33,7 @@ export const taskRoutes: ServerRoute[] = [
 
     {
         method: 'GET',
-        path: '/tasks/user/{id}',
+        path: '/tasks/me',
         handler: getSpecificUserTaskHandler
     },
 
