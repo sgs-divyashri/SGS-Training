@@ -4,14 +4,19 @@ import { TaskPayload } from "../../models/taskTableDefinition";
 
 export const fullUpdateTaskHandler = async (request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
   try {
-
     const id = request.params.id;
+    const { userId } = request.auth.credentials as { userId?: number };
+
+    if (userId === undefined) {
+      return h.response({ error: "Unauthenticated or missing userId" }).code(401);
+    }
+
     const payload = request.payload as Pick<TaskPayload, "taskName" | "description" | "createdBy" | "status">;
 
-     if (!payload.taskName || !payload.description || !payload.createdBy || !payload.status) {
+    if (!payload.taskName || !payload.description || !payload.createdBy || !payload.status) {
       return h.response({ error: "Invalid payload" }).code(400)
     }
-    const task = await taskServices.fullUpdateTask(id, payload);
+    const task = await taskServices.fullUpdateTask(id, userId, payload);
 
     if (task === null) {
       return h.response({ error: "Task not found" }).code(404); // Fixed: User → Task
