@@ -9,6 +9,7 @@ import CreateTask from "./Tasks/createTask";
 import TasksList from "./Tasks/getAllTasksList";
 import SpecificTask from "./Tasks/getSpecificTask";
 import FullUpdateTask from "./Tasks/fullUpdateTask";
+import UsersTaskList from "./Tasks/getSpecificUsersTask";
 
 function App() {
   return (
@@ -19,10 +20,11 @@ function App() {
         <Route path="/users" element={<UsersList/>} ></Route>
         <Route path="/users/:id" element={<SpecificUser />} />
         <Route path="/users/f_update/:id" element={<FullUpdateUser />} />
-        <Route path="/tasks/create" element={<CreateTask />} />
+        <Route path="/tasks-create" element={<CreateTask />} />
         <Route path="/tasks" element={<TasksList />} />
         <Route path="/tasks/:id" element={<SpecificTask />} />
         <Route path="/tasks/f_update/:id" element={<FullUpdateTask />} />
+        <Route path="/users-task" element={<UsersTaskList />} />
       </Routes>
     </BrowserRouter>
   )
