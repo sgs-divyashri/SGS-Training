@@ -4,23 +4,23 @@ import { Task, TaskPayload } from "../../models/taskTableDefinition";
 
 export const createTaskHandler = async (request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
     const payload = request.payload as Pick<TaskPayload, "taskName" | "description" | "createdBy">;
-
+    const { userId } = request.auth.credentials as { userId?: number }
     // Basic validation
-    if (!payload.taskName || !payload.description || !payload.createdBy) {
-        return h.response({
-            error: 'TaskName, Description and createdBy are required'
-        }).code(400);
+    if (!Number.isFinite(userId) || userId! <= 0) {
+        return h.response({ error: "Invalid authenticated user id" }).code(401);
     }
 
-    if (isNaN(payload.createdBy)){
-        return h.response({error: "Invalid input type for createdBy"}).code(400)
+    if (!payload.taskName || !payload.description) {
+        return h.response({
+            error: 'TaskName, Description are required'
+        }).code(400);
     }
 
     try {
         const newTask = await taskServices.createTask({
             taskName: payload.taskName,
             description: payload.description,
-            createdBy: payload.createdBy
+            createdBy: Number(userId)
         });
 
         return h.response({
