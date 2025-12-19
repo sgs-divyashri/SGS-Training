@@ -41,9 +41,9 @@ const create = async (): Promise<Server> => {
         routes: {
             cors: {
                 origin: [
-                    '*'
+                    'http://localhost:5173'
                 ],
-                headers: ["Access-Control-Allow-Headers", "Access-Control-Allow-Origin", "Authorization", "Content-Type"],
+                headers: ["Access-Control-Allow-Headers", "Access-Control-Allow-Methods", "Access-Control-Allow-Origin", "Authorization", "Content-Type"],
                 credentials: false
             }
             // cors: true
