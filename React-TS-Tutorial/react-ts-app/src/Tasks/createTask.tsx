@@ -1,15 +1,16 @@
 import CreateTaskInputs from "./createTaskInputs";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import NavBar from "../components/navbar";
+import { api } from "../Users/axiosClient";
 
 export interface TaskPayload {
     taskId: string;
     taskName: string;
     description?: string;
     status?: string;
-    createdBy: number | string;
+    createdBy: string;
     isActive: boolean,
     createdAt?: Date;
     updatedAt?: Date;
@@ -38,16 +39,35 @@ export default function CreateTask() {
     const [values, setValues] = useState({
         taskName: "",
         description: "",
-        createdBy: "" as number | "",
+        createdBy: ""
     });
     const [tasks, setTasks] = useState<TaskPayload[]>([])
+    const [userOptions, setUserOptions] = useState<{ value: string; label: string }[]>([]);
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const res = await api.get("/users")
+                const normalized = res.data?.users ?? []
+                const opts = (normalized || []).map((u: any) => ({
+                    value: String(u.userId),       
+                    label: String(u.email),  
+                }));
+                setUserOptions(opts);
+            }
+            catch (err: any) {
+                const message = err.response?.data?.message ||
+                    err.response?.data?.error ||
+                    err.message ||
+                    "Failed to load users";
+                console.error(message);
+            }
+        }
+        fetchUsers();
+    }, [])
 
     const handleChange = async (name: keyof Pick<TaskPayload, "taskName" | "description" | "createdBy">, raw: string) => {
         setValues(prev => {
-            if (name === "createdBy") {
-                const num = raw === "" ? "" : Number(raw);
-                return { ...prev, createdBy: num };
-            }
             return { ...prev, [name]: raw };
         });
 
@@ -67,16 +87,12 @@ export default function CreateTask() {
             alert("Please fill in all fields.");
             return;
         }
-        if (Number(createdBy) <= 0) {
-            alert("Age must be a positive number.");
-            return;
-        }
 
         try {
             const payload = {
                 taskName: taskName.trim(),
                 description: description.trim(),
-                createdBy: Number(createdBy),
+                createdBy: createdBy,
                 isActive: true,
             };
 
@@ -86,7 +102,7 @@ export default function CreateTask() {
             setTasks((prev) => [createdTask, ...prev]);
 
             setValues({ taskName: "", description: "", createdBy: "" });
-            navigate("/tasks");
+            navigate(`/users-task`);
         }
 
         catch (err: any) {
@@ -101,12 +117,12 @@ export default function CreateTask() {
 
     return (
         <div>
-            <NavBar/>
+            <NavBar />
             <div className="min-h-screen bg-[#B0E0E6] p-6">
                 <div className="mx-auto max-w-2xl m-12 grid grid-cols-1">
                     <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-md p-6 border border-violet-300 mx-auto w-full">
                         <h1 className="mb-4 text-center font-bold text-xl">Register Task</h1>
-                        < CreateTaskInputs fields={fields} values={values} onChange={handleChange} />
+                        < CreateTaskInputs fields={fields} values={values} onChange={handleChange} createdByOptions={userOptions} />
                         <div className="flex justify-center gap-3 m-3">
                             <button type="submit" className="text-white bg-pink-400 border-2 px-6 py-3 rounded-xl hover:bg-pink-600">
                                 Create Task
