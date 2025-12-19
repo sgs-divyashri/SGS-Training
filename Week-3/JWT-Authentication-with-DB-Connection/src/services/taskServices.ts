@@ -14,23 +14,23 @@ export const taskServices = {
     return await taskRepository.getAllTasks()
   },
 
-  getSpecificTask: async (id: number): Promise<Task | null> => {
+  getSpecificTask: async (id: string): Promise<Task | null> => {
     return await taskRepository.getSpecificTask(id)
   },
 
-  getSpecificUserTasks: async (userId: number): Promise<User | null> => {
+  getSpecificUserTasks: async (userId: number): Promise<Task[] | null> => {
     return await taskRepository.getSpecificUserTasks(userId)
   },
 
-  fullUpdateTask: async (id: number, payload: Pick<TaskPayload, "taskName" | "description" | "createdBy" | "status">): Promise<Task | "INVALID_STATUS" | null | undefined> => {
-    return await taskRepository.fullUpdateTask(id, payload)
+  fullUpdateTask: async (id: string, userId: number, payload: Pick<TaskPayload, "taskName" | "description" | "createdBy" | "status">): Promise<Task | "INVALID_STATUS" | null | undefined> => {
+    return await taskRepository.fullUpdateTask(id, userId, payload)
   },
 
-  partialUpdateTask: async (id: number, payload: Partial<{ taskName: string, description: string, createdBy: number, status: string }>): Promise<TaskPayload | null> => {
+  partialUpdateTask: async (id: string, payload: Partial<{ taskName: string, description: string, createdBy: number, status: string }>): Promise<TaskPayload | null> => {
     return await taskRepository.partialUpdateTask(id, payload)
   },
 
-  toggleTask: async (id: number): Promise<Task | null> => {
+  toggleTask: async (id: string): Promise<Task | null> => {
     const user = await taskRepository.toggleTask(id)
     return user
   },
