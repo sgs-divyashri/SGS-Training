@@ -43,7 +43,7 @@ export default function LoginForm() {
         try {
             const res = await axios.post('http://localhost:3000/users/login', { email, password })
             const token = res.data.token
-            localStorage.setItem("Token", token);
+            localStorage.setItem("token", token);
             if (res.status == 200)
                 navigate("/users");
         } catch (err: any) {
