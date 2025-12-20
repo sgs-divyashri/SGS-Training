@@ -14,10 +14,19 @@ export default function SpecificUser() {
 
             try {
                 const res = await api.get(`/users/${id}`);
+                const u: UserPayload = res.data?.user ?? res.data
 
-                const user = res.data.user ?? res.data;
-                // Ensure it's shaped like UserPayload and wrap as array
-                return setRows(user ? [user] : []);
+                const normalized = {
+                    ...u,
+                    createdAt: u.createdAt ? new Date(u.createdAt as any).toLocaleString() : undefined,
+                    updatedAt: u.updatedAt ? new Date(u.updatedAt as any).toLocaleString() : undefined
+                }
+
+                setRows([normalized])
+
+                // const user = res.data.user ?? res.data;
+                // // Ensure it's shaped like UserPayload and wrap as array
+                // return setRows(user ? [user] : []);
             }
             catch (err: any) {
                 const msg =
@@ -85,6 +94,8 @@ export default function SpecificUser() {
                             {/* <th className="border p-2 text-sm text-center">Password</th> */}
                             <th className="border p-2 text-sm text-center">Age</th>
                             <th className="border p-2 text-sm text-center">IsActive</th>
+                            <th className="border p-2 text-sm text-center">Created At</th>
+                            <th className="border p-2 text-sm text-center">Updated At</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -102,6 +113,8 @@ export default function SpecificUser() {
                                         </div>
                                     </label>
                                 </td>
+                                <td className="border p-2">{r.createdAt}</td>
+                                <td className="border p-2">{r.updatedAt}</td>
                                 <div className="bg-pink-200 p-2 text-center">
                                     <button type="button" onClick={() => editButton(r.userId)} className="text-white bg-pink-400 border-2 px-3 py-2 rounded-xl hover:bg-pink-600">
                                         Edit
