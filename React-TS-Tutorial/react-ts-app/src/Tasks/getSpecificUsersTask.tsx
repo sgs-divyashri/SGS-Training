@@ -13,14 +13,13 @@ export default function UsersTaskList() {
         const fetchUsers = async () => {
             try {
                 const res = await api.get(`/tasks/me`);
-                console.log("GET /tasks/user response:", res.status, res.data);
                 const data = res.data
-                const normalized: TaskPayload[] = Array.isArray(data?.tasks)
-                    ? data.tasks
-                    : Array.isArray(data?.task)
-                        ? data.task
-                        : [];
-                // const normalized = res.data?.task ?? []
+                const normalized = (data?.tasks ?? []).map((t: TaskPayload) => ({
+                    ...t,
+                    createdAt: t.createdAt ? new Date(t.createdAt as any).toLocaleString() : undefined,
+                    updatedAt: t.updatedAt ? new Date(t.updatedAt as any).toLocaleString() : undefined
+                }))
+
                 setRows(normalized);
             } catch (err: any) {
                 console.error(
@@ -83,6 +82,8 @@ export default function UsersTaskList() {
                                 <th className="border p-2 text-sm text-center">Created By (User ID)</th>
                                 <th className="border p-2 text-sm text-center">Status</th>
                                 <th className="border p-2 text-sm text-center">IsActive</th>
+                                <th className="border p-2 text-sm text-center">Created At</th>
+                                <th className="border p-2 text-sm text-center">Updated At</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -101,6 +102,8 @@ export default function UsersTaskList() {
                                             </div>
                                         </label>
                                     </td>
+                                    <td className="border p-2">{r.createdAt}</td>
+                                    <td className="border p-2">{r.updatedAt}</td>
                                     <td className="bg-pink-200 p-2 text-center">
                                         <button type="button" onClick={() => editButton(r.taskId)} className="text-white bg-pink-400 border-2 px-3 py-2 rounded-xl hover:bg-pink-600">
                                             Edit
