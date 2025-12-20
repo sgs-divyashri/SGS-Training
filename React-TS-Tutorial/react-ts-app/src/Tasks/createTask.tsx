@@ -12,8 +12,8 @@ export interface TaskPayload {
     status?: string;
     createdBy: string;
     isActive: boolean,
-    createdAt?: Date;
-    updatedAt?: Date;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export type FieldType = "text" | "number"
