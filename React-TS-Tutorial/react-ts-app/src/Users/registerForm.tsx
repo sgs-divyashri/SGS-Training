@@ -10,8 +10,8 @@ export interface UserPayload {
     password: string;
     age: number | "",
     isActive: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
+    createdAt: string | undefined;
+    updatedAt: string | undefined;
 }
 
 export type FieldType = "text" | "email" | "password" | "number"
