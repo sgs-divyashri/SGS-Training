@@ -13,7 +13,11 @@ export default function UsersList() {
         const fetchUsers = async () => {
             try {
                 const res = await api.get("/users");
-                const normalized = res.data?.users ?? []
+                const normalized = (res.data?.users ?? []).map((u: UserPayload) => ({
+                    ...u,
+                    createdAt: u.createdAt ? new Date(u.createdAt as any).toLocaleString() : undefined,
+                    updatedAt: u.updatedAt ? new Date(u.updatedAt as any).toLocaleString() : undefined
+                }))
 
                 normalized.sort((a: UserPayload, b: UserPayload) => {
                     const ai = Number(a.userId ?? 0);
@@ -81,6 +85,8 @@ export default function UsersList() {
                                 <th className="border p-2 text-sm text-center">Email</th>
                                 <th className="border p-2 text-sm text-center">Age</th>
                                 <th className="border p-2 text-sm text-center">IsActive</th>
+                                <th className="border p-2 text-sm text-center">Created At</th>
+                                <th className="border p-2 text-sm text-center">Updated At</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -98,6 +104,8 @@ export default function UsersList() {
                                             </div>
                                         </label>
                                     </td>
+                                    <td className="border p-2">{r.createdAt}</td>
+                                    <td className="border p-2">{r.updatedAt}</td>
                                     <td className="bg-pink-200 p-2 text-center">
                                         <button type="button" onClick={() => editButton(r.userId)} className="text-white bg-pink-400 border-2 px-3 py-2 rounded-xl hover:bg-pink-600">
                                             Edit
