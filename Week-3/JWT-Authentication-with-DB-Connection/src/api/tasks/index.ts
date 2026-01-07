@@ -15,10 +15,8 @@ export const taskRoutes: ServerRoute[] = [
         method: 'POST',
         path: '/tasks',
         handler: createTaskHandler,
-        options: {
-            auth: false
-        },
     },
+    
     {
         method: 'GET',
         path: '/tasks',

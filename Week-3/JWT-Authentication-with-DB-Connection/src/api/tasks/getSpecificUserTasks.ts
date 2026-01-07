@@ -6,7 +6,7 @@ import { userServices } from "../../services/userServices";
 
 export const getSpecificUserTaskHandler = async (request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
     try {
-        const { userId, email } = request.auth.credentials as { userId?: number; email?: string };
+        const { userId } = request.auth.credentials as { userId?: number; };
 
         const userTasks = await taskServices.getSpecificUserTasks(Number(userId));
         if (!userTasks) {

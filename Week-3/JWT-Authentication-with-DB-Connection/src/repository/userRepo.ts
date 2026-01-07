@@ -4,7 +4,7 @@ import { UserPayload } from "../models/userTableDefinition";
 
 export const userRepository = {
     createUser: async (payload: Pick<UserPayload, "name" | "email" | "password" | "age">): Promise<User> => {
-        const newUser = await User.create({ ...payload, password: passwordServices.hashPassword(payload.password!) });
+        const newUser = await User.create({ ...payload, password: passwordServices.hashPassword(payload.password) });
         return newUser
     },
 
@@ -13,7 +13,7 @@ export const userRepository = {
         if (!user) return null;
 
         // Access password safely
-        const hashedPassword: string = user.getDataValue("password");
+        const hashedPassword: string = user.password;
         // console.log("Hashed password for login user: ",hashedPassword)
         const isValidPassword = passwordServices.verifyPassword(loginData.password, hashedPassword);
         if (!isValidPassword) return null;
@@ -32,7 +32,7 @@ export const userRepository = {
     },
 
     fullUpdateUser: async (id: number, payload: Pick<UserPayload, "name" | "email" | "password" | "age">): Promise<User | null | undefined> => {
-        const [rowsUpdated, [updatedUser]] = await User.update({ ...payload, password: passwordServices.hashPassword(payload.password) }, { where: { userId: id, isActive: true }, returning: true })
+        const [rowsUpdated, [updatedUser]] = await User.update({ ...payload, password: passwordServices.hashPassword(payload.password) }, { where: { userId: id }, returning: true })
         if (rowsUpdated === 0) {
             return null;
         }

@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import { BCRYPT_SALT_ROUNDS } from '../config/constants';
 
 // Simple regex: at least 8 chars, one uppercase, one lowercase, one digit, one special character
-// '?.' (positive lookahead) - exists anywhere in string, '.' - any single char, '.*' - any char any no. of times
+// '?=' (positive lookahead) - exists anywhere in string, '.' - any single char, '.*' - any char any no. of times
 const SIMPLE_COMPLEXITY = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*~]).{8,}$/;
 
 export interface PasswordCheckResult {

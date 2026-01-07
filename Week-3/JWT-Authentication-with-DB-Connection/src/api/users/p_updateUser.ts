@@ -8,9 +8,6 @@ export const partialUpdateUserHandler = async (request: Request, h: ResponseTool
     const id = Number(request.params.id);
     const payload = request.payload as Partial<UserPayload>;
 
-    console.log("Payload: ", payload)
-
-
     if (payload.password !== undefined) {
       const policy = passwordServices.validatePasswordPolicy(payload.password);
       if (!policy.ok) { 

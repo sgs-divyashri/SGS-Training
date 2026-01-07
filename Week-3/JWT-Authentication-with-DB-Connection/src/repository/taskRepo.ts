@@ -20,50 +20,43 @@ export const taskRepository = {
     },
 
     getAllTasks: (): Promise<Task[]> => {
-        const users = Task.findAll({ where: { isActive: true } });
-        return users
+        const tasks = Task.findAll({ where: { isActive: true } });
+        return tasks
     },
 
     getSpecificTask: (id: string): Promise<Task | null> => {
-        const user = Task.findOne({ where: { taskId: id, isActive: true } })
-        return user
+        const task = Task.findOne({ where: { taskId: id, isActive: true } })
+        return task
     },
 
     getSpecificUserTasks: async (userId: number): Promise<Task[] | null> => {
         if (!Number.isFinite(userId) || userId <= 0) return [];
         const tasks = await Task.findAll({
-            where: { createdBy: userId }, // createdBy should be the FK to User.userId
+            where: { createdBy: userId }, 
             order: [["createdAt", "DESC"]],
         });
         return tasks;
     },
 
-    fullUpdateTask: async (id: string, userId: number, payload: Pick<TaskPayload, "taskName" | "description" | "createdBy" | "status">): Promise<Task | "INVALID_STATUS" | null | undefined> => {
-        const userExists = await User.findOne({
-            where: { userId: userId, isActive: true }
-        });
-        if (!userExists) {
-            throw new Error("Invalid createdBy userId");
-        }
-        // Validate status
+    fullUpdateTask: async (id: string, payload: Pick<TaskPayload, "taskName" | "description" | "createdBy" | "status">): Promise<Task | "INVALID_STATUS" | null | undefined> => {
         if (!allowedStatuses.includes(payload.status!)) {
             return "INVALID_STATUS";
         }
-        const [rowsUpdated, [updatedUser]] = await Task.update({ ...payload }, { where: { taskId: id, isActive: true }, returning: true })
+        const [rowsUpdated, [updatedTask]] = await Task.update({ ...payload }, { where: { taskId: id }, returning: true })
         if (rowsUpdated === 0) {
             return null;
         }
-        return updatedUser
+        return updatedTask
     },
 
-    partialUpdateTask: async (id: string, payload: Partial<TaskPayload>): Promise<TaskPayload | null> => {
-        const task = await Task.findOne({ where: { taskId: id, isActive: true } });
+    partialUpdateTask: async (id: string, payload: Pick<Partial<TaskPayload>, "taskName" | "description" | "status" | "createdBy">): Promise<TaskPayload | null> => {
+        const task = await Task.findOne({ where: { taskId: id } });
         if (!task) return null;
 
         if (payload.taskName !== undefined) task.set('taskName', payload.taskName);
         if (payload.description !== undefined) task.set('description', payload.description);
         if (payload.status !== undefined) task.set('status', payload.status);
-        if (payload.isActive !== undefined) task.set('isActive', payload.isActive);
+        if (payload.createdBy !== undefined) task.set('createdBy', payload.createdBy);
 
         await task.save();
         return task.get();

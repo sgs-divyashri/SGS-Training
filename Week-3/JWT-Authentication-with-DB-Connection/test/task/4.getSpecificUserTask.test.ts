@@ -62,7 +62,10 @@ describe('POST /tasks', () => {
         const task_res = await server.inject({
             method: 'post',
             url: '/tasks',
-            payload: task_payload
+            payload: task_payload,
+            headers: {
+                authorization: `Bearer ${token}`
+            }
         });
 
         expect(task_res.statusCode).to.equal(201);
@@ -128,7 +131,10 @@ describe('POST /tasks', () => {
         const task_res = await server.inject({
             method: 'post',
             url: '/tasks',
-            payload: task_payload
+            payload: task_payload,
+            headers: {
+                authorization: `Bearer ${token}`
+            }
         });
 
         expect(task_res.statusCode).to.equal(201);
@@ -185,7 +191,10 @@ describe('POST /tasks', () => {
         const task_res = await server.inject({
             method: 'post',
             url: '/tasks',
-            payload: task_payload
+            payload: task_payload,
+            headers: {
+                authorization: `Bearer ${token}`
+            }
         });
 
         expect(task_res.statusCode).to.equal(201);

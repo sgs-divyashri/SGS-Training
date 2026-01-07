@@ -5,7 +5,6 @@ import Hapi, { Server } from '@hapi/hapi'
 import { configureAuthStrategy } from "./auth/auth.strategy";
 import { sequelize } from "./sequelize/sequelize";
 import { initModels } from "./models";
-import { isTypedArray } from "util/types";
 
 const init = async () => {
     // Initialize models and associations
@@ -13,7 +12,7 @@ const init = async () => {
     server = await create()
 
     await server.start()
-    console.log('Server running on %s', server.info.uri);
+    console.log('Server running on', server.info.uri);
 
 };
 
@@ -43,7 +42,7 @@ const create = async (): Promise<Server> => {
                 origin: [
                     'http://localhost:5173'
                 ],
-                headers: ["Access-Control-Allow-Headers", "Access-Control-Allow-Methods", "Access-Control-Allow-Origin", "Authorization", "Content-Type"],
+                headers: ["Authorization", "Content-Type"],
                 credentials: false
             }
             // cors: true
