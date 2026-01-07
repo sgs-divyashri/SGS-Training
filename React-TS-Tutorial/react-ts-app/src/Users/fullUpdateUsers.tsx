@@ -50,11 +50,6 @@ export default function FullUpdateUser() {
             }
             return { ...prev, [name]: raw };
         });
-
-        if (!name.trim()) {
-            alert("Please fill in all fields.");
-            return;
-        }
     };
 
     const handleBlur = async () => {
@@ -63,7 +58,7 @@ export default function FullUpdateUser() {
 
         try {
             setEmailStatus({ state: "available" });
-            const { data } = await axios.post("http://localhost:3000/users/check-email", { email });
+            const { data } = await api.post("/users/check-email", { email });
             if (data.available) {
                 setEmailStatus({ state: "available" });
             } else {
