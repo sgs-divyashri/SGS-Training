@@ -18,15 +18,12 @@ export default function SpecificUser() {
 
                 const normalized = {
                     ...u,
-                    createdAt: u.createdAt ? new Date(u.createdAt as any).toLocaleString() : undefined,
-                    updatedAt: u.updatedAt ? new Date(u.updatedAt as any).toLocaleString() : undefined
+                    createdAt: new Date(u.createdAt as any).toLocaleString(),
+                    updatedAt: new Date(u.updatedAt as any).toLocaleString()
                 }
 
                 setRows([normalized])
 
-                // const user = res.data.user ?? res.data;
-                // // Ensure it's shaped like UserPayload and wrap as array
-                // return setRows(user ? [user] : []);
             }
             catch (err: any) {
                 const msg =
