@@ -2,7 +2,7 @@ import LoginInputs from "./loginInputs";
 import React, { useState } from "react"
 import { useNavigate } from "react-router-dom";
 import { UserPayload } from "./registerForm";
-import axios from "axios";
+import { api } from "./axiosClient";
 
 export type FieldType = "email" | "password"
 
@@ -41,8 +41,13 @@ export default function LoginForm() {
         }
 
         try {
-            const res = await axios.post('http://localhost:3000/users/login', { email, password })
+            const res = await api.post('/users/login', { email, password })
             const token = res.data.token
+            if (!token) {
+                alert("Login succeeded but token is missing. Please try again.");
+                return;
+            }
+
             localStorage.setItem("token", token);
             if (res.status == 200)
                 navigate("/users");
