@@ -15,7 +15,9 @@ api.interceptors.response.use(
   (res) => res, async (err) => {
     const status = err.response.status
     if (status===401){
-      window.location.replace("/login");
+      console.warn('401 detected by interceptor');
+      localStorage.removeItem('token');
+      // window.location.replace("/login");
     }
     return Promise.reject(err);
   }
