@@ -15,13 +15,13 @@ export default function UsersList() {
                 const res = await api.get("/users");
                 const normalized = (res.data?.users ?? []).map((u: UserPayload) => ({
                     ...u,
-                    createdAt: u.createdAt ? new Date(u.createdAt as any).toLocaleString() : undefined,
-                    updatedAt: u.updatedAt ? new Date(u.updatedAt as any).toLocaleString() : undefined
+                    createdAt: new Date(u.createdAt as string).toLocaleString() ,
+                    updatedAt: new Date(u.updatedAt as string).toLocaleString() 
                 }))
 
                 normalized.sort((a: UserPayload, b: UserPayload) => {
-                    const ai = Number(a.userId ?? 0);
-                    const bi = Number(b.userId ?? 0);
+                    const ai = Number(a.userId);
+                    const bi = Number(b.userId);
                     return ai - bi;
                 });
 
@@ -46,8 +46,7 @@ export default function UsersList() {
             // call the correct backend endpoint
             const res = await api.patch(`/users/toggle/${userId}`)       // restore (reactivate)
 
-            // if backend returns updated user, sync with server truth
-            const updated = res.data?.user;
+            const updated = res.data?.users;
             if (updated && typeof updated.isActive === "boolean") {
                 setRows((prev) =>
                     prev.map((row) =>
