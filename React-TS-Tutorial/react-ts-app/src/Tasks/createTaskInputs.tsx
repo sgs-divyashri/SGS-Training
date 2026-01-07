@@ -26,7 +26,6 @@ export default function CreateTaskInputs({ fields, values, onChange, createdByOp
                 </option>
               ))}
             </select>
-
           ) : (
             <input
               type={f.type}
