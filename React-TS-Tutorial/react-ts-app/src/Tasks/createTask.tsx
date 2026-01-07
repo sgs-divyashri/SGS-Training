@@ -9,27 +9,26 @@ export interface TaskPayload {
     taskId: string;
     taskName: string;
     description?: string;
-    status?: string;
+    status: string;
     createdBy: string;
     isActive: boolean,
     createdAt: string;
     updatedAt: string;
 }
 
-export type FieldType = "text" | "number"
+export type FieldType = "text"
 
 export interface FieldConfig {
     name: keyof Pick<TaskPayload, "taskName" | "description" | "createdBy">,
     label: string,
-    type: FieldType,
-    placeholder: string,
-    min?: number
+    type?: FieldType,
+    placeholder?: string,
 }
 
 export const fields: FieldConfig[] = [
     { name: "taskName", label: "TaskName", type: "text", placeholder: "Enter Task Name" },
     { name: "description", label: "Description", type: "text", placeholder: "Enter Task Description" },
-    { name: "createdBy", label: "CreatedBy", type: "number", placeholder: "Enter the created User ID", min: 1 },
+    { name: "createdBy", label: "CreatedBy" },
 ];
 
 export default function CreateTask() {
@@ -70,11 +69,6 @@ export default function CreateTask() {
         setValues(prev => {
             return { ...prev, [name]: raw };
         });
-
-        if (!name.trim()) {
-            alert("Please fill in all fields.");
-            return;
-        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -93,10 +87,9 @@ export default function CreateTask() {
                 taskName: taskName.trim(),
                 description: description.trim(),
                 createdBy: createdBy,
-                isActive: true,
             };
 
-            const res = await axios.post("http://localhost:3000/tasks", payload)
+            const res = await api.post("/tasks", payload)
             const createdTask = res.data;
 
             setTasks((prev) => [createdTask, ...prev]);
