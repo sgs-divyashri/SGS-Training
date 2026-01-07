@@ -7,7 +7,6 @@ import NavBar from "../components/navbar";
 export default function UsersTaskList() {
     const [rows, setRows] = useState<TaskPayload[]>([]);
     const navigate = useNavigate();
-    const { id } = useParams<{ id: string }>();
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -19,6 +18,12 @@ export default function UsersTaskList() {
                     createdAt: t.createdAt ? new Date(t.createdAt as any).toLocaleString() : undefined,
                     updatedAt: t.updatedAt ? new Date(t.updatedAt as any).toLocaleString() : undefined
                 }))
+
+                normalized.sort((a: TaskPayload, b: TaskPayload) => {
+                    const aId = a.taskId;
+                    const bId = b.taskId;
+                    return aId.localeCompare(bId);
+                });
 
                 setRows(normalized);
             } catch (err: any) {
