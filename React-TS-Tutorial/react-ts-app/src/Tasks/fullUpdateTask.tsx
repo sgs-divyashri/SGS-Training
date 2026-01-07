@@ -11,13 +11,13 @@ import { api } from "../Users/axiosClient";
 export interface FieldConfig {
     name: keyof Pick<TaskPayload, "taskName" | "description" | "createdBy" | "status">,
     label: string,
-    type: FieldType,
+    type?: FieldType,
 }
 
 export const fields: FieldConfig[] = [
     { name: "taskName", label: "TaskName", type: "text" },
     { name: "description", label: "Description", type: "text" },
-    { name: "createdBy", label: "CreatedBy", type: "number" },
+    { name: "createdBy", label: "CreatedBy"},
     { name: "status", label: "Status", type: "text" },
 ];
 
@@ -84,11 +84,6 @@ export default function FullUpdateTask() {
         setValues(prev => {
             return { ...prev, [name]: raw };
         });
-
-        if (!name.trim()) {
-            alert("Please fill in all fields.");
-            return;
-        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -97,10 +92,10 @@ export default function FullUpdateTask() {
         const { taskName, description, createdBy, status } = values;
 
         // validations
-        // if (!taskName.trim() || !description.trim() || createdBy === "") {
-        //     alert("Please fill in all fields.");
-        //     return;
-        // }
+        if (!taskName.trim() || !description.trim() || createdBy === "") {
+            alert("Please fill in all fields.");
+            return;
+        }
 
         try {
             const payload = {
