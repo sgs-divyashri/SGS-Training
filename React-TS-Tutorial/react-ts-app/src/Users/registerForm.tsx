@@ -2,6 +2,7 @@ import RegisterInputs from "./registerInputs";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
+import { api } from "./axiosClient";
 
 export interface UserPayload {
     userId: number;
@@ -10,8 +11,8 @@ export interface UserPayload {
     password: string;
     age: number | "",
     isActive: boolean;
-    createdAt: string | undefined;
-    updatedAt: string | undefined;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export type FieldType = "text" | "email" | "password" | "number"
@@ -34,7 +35,6 @@ export const fields: FieldConfig[] = [
 export default function RegisterForm() {
     const navigate = useNavigate();
 
-    // form state owned by parent
     const [values, setValues] = useState({
         name: "",
         email: "",
@@ -56,11 +56,6 @@ export default function RegisterForm() {
             }
             return { ...prev, [name]: raw };
         });
-
-        if (!name.trim()) {
-            alert("Please fill in all fields.");
-            return;
-        }
     };
 
     const handleBlur = async () => {
@@ -69,11 +64,11 @@ export default function RegisterForm() {
 
         try {
             setEmailStatus({ state: "available" });
-            const { data } = await axios.post("http://localhost:3000/users/check-email", { email });
+            const { data } = await api.post("/users/check-email", { email });
             if (data.available) {
                 setEmailStatus({ state: "available" });
             } else {
-                setEmailStatus({ state: "unavailable", message: data?.message || "Email is already in use." });
+                setEmailStatus({ state: "unavailable", message: "Email is already in use." });
             }
         }
         catch (err: any) {
@@ -106,10 +101,9 @@ export default function RegisterForm() {
                 email: email.trim(),
                 password,
                 age: Number(age),
-                isActive: true,
             };
 
-            const res = await axios.post("http://localhost:3000/users/register", payload)
+            const res = await api.post("/users/register", payload)
             const createdUser = res.data;
 
             setUsers((prev) => [createdUser, ...prev]);
