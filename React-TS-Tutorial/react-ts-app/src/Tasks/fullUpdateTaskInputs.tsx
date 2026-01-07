@@ -39,7 +39,6 @@ export default function UpdateTaskInputs({ fields, values, onChange, createdByOp
               value={values.status === "" ? "" : String(values.status)}
               onChange={(e) => onChange(f.name, e.target.value)}
             >
-              <option value=""></option>
               {STATUS_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
                   {opt.label}
