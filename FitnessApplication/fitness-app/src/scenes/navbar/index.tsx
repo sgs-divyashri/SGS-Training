@@ -6,6 +6,7 @@ import Link from "./Link";
 import { SelectedPage } from "@/shared/types";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 import ActionButton from "@/shared/ActionButton";
 
 type Props = {
@@ -22,7 +23,9 @@ export const Navbar = ({
   const flexBetween = "flex items-center justify-between";
   const [isMenuToggled, setIsMenuToggled] = useState<boolean>(false);
   const isAboveMediumScreens = useMediaQuery("(min-width: 1060px)");
-  const navbarBackground = isTopOfPage ? "" : "bg-red-200 drop-shadow"
+  const navbarBackground = isTopOfPage ? "" : "bg-red-200 drop-shadow";
+  const navigate = useNavigate();
+
   return (
     <nav>
       <div
@@ -56,13 +59,13 @@ export const Navbar = ({
                   />
                 </div>
                 <div className="flex items-center gap-4">
-                  <p className="cursor-pointer hover:text-red-600">Sign In</p>
-                  <ActionButton setSelectedPage={setSelectedPage}>
+                  <NavLink to="/login" className="cursor-pointer hover:text-red-600">Sign In</NavLink>
+                  {/* <ActionButton setSelectedPage={setSelectedPage}>
                     Become a member
-                  </ActionButton>
-                  {/* <button className="rounded bg-red-600 px-2 py-1 text-white hover:bg-red-700">
-                  Become a member
-                </button> */}
+                  </ActionButton> */}
+                  <button className="rounded bg-red-600 px-2 py-1 text-white hover:bg-red-700" onClick={() => navigate("/register")}>
+                    Register
+                  </button>
                 </div>
               </div>
             ) : (

@@ -1,0 +1,21 @@
+{
+  "main": "server.js",
+  "scripts": {
+    "start": "npx ts-node -r dotenv/config src/server.ts"
+  },
+  "dependencies": {
+    "@hapi/hapi": "^21.4.4",
+    "@hapi/jwt": "^3.2.3",
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.2.3",
+    "mailtrap": "^4.4.0",
+    "nodemailer": "^7.0.12",
+    "pg": "^8.16.3",
+    "sequelize": "^6.37.7"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/node": "^25.0.3",
+    "@types/nodemailer": "^6.4.21"
+  }
+}

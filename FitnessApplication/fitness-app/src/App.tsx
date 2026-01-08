@@ -6,6 +6,8 @@ import Home from "./scenes/Home";
 import Benefits from "./scenes/Benefits";
 import OurClasses from "./scenes/OurClasses";
 import Contact from "./scenes/Contact";
+import Register from "./scenes/UserRegister/register";
+import Login from "./scenes/UserLogin/login";
 
 function App() {
   const [selectedPage, setSelectedPage] = useState<SelectedPage>(SelectedPage.Home)
@@ -33,6 +35,8 @@ function App() {
           <Route path="/benefits" element={<Benefits setSelectedPage={setSelectedPage}/>}></Route>
           <Route path="/class" element={<OurClasses setSelectedPage={setSelectedPage}/>}></Route>
           <Route path="/contact" element={<Contact setSelectedPage={setSelectedPage}/>}></Route>
+          <Route path="/register" element={<Register/>}></Route>
+          <Route path="/login" element={<Login/>}></Route>
         </Routes>
       </BrowserRouter>
     </div>
