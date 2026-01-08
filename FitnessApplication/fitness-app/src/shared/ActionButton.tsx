@@ -1,4 +1,4 @@
-import AnchorLink from "react-anchor-link-smooth-scroll"
+import { Link } from "react-router-dom";
 import { SelectedPage } from "./types";
 
 type Props = {
@@ -8,9 +8,9 @@ type Props = {
 
 const ActionButton = ({children, setSelectedPage}: Props) => {
   return (
-    <AnchorLink className="rounded-md bg-red-400 px-2 py-1 hover:bg-red-500 hover:text-white" onClick={() => setSelectedPage(SelectedPage.ContactUs)} href={`#${SelectedPage.ContactUs}`}>
+    <Link to="/contact" className="rounded-md bg-red-400 px-2 py-1 hover:bg-red-500 hover:text-white" onClick={() => setSelectedPage(SelectedPage.ContactUs)}>
         {children}
-    </AnchorLink>
+    </Link>
   )
 }
 

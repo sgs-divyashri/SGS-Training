@@ -40,7 +40,7 @@ export const Navbar = ({
                     setSelectedPage={setSelectedPage}
                   />
                   <Link
-                    page="About"
+                    page="Benefits"
                     selectedPage={selectedPage}
                     setSelectedPage={setSelectedPage}
                   />
@@ -94,7 +94,7 @@ export const Navbar = ({
               setSelectedPage={setSelectedPage}
             />
             <Link
-              page="About"
+              page="Benefits"
               selectedPage={selectedPage}
               setSelectedPage={setSelectedPage}
             />

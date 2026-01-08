@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Navbar } from "./scenes/navbar";
 import { SelectedPage } from "./shared/types";
 import Home from "./scenes/Home";
+import Benefits from "./scenes/Benefits";
+import OurClasses from "./scenes/OurClasses";
+import Contact from "./scenes/Contact";
 
 function App() {
   const [selectedPage, setSelectedPage] = useState<SelectedPage>(SelectedPage.Home)
@@ -22,8 +26,15 @@ function App() {
   }, [])
   return (
     <div className="app min-h-screen bg-red-100">
-      <Navbar isTopOfPage={isTopOfPage} selectedPage={selectedPage} setSelectedPage={setSelectedPage}/>
-      <Home setSelectedPage={setSelectedPage}/>
+      <BrowserRouter>
+        <Navbar isTopOfPage={isTopOfPage} selectedPage={selectedPage} setSelectedPage={setSelectedPage}/>
+        <Routes>
+          <Route path="/" element={<Home setSelectedPage={setSelectedPage}/>}></Route>
+          <Route path="/benefits" element={<Benefits setSelectedPage={setSelectedPage}/>}></Route>
+          <Route path="/class" element={<OurClasses setSelectedPage={setSelectedPage}/>}></Route>
+          <Route path="/contact" element={<Contact setSelectedPage={setSelectedPage}/>}></Route>
+        </Routes>
+      </BrowserRouter>
     </div>
   )
 }
