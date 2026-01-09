@@ -47,5 +47,3 @@ export const passwordServices = {
         return { ok: errors.length === 0, errors };
     }
 }
-
-
