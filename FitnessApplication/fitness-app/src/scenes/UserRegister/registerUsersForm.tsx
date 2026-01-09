@@ -40,4 +40,3 @@ export default function RegisterInputs({ fields, values, onChange, onEmailBlur }
     </div>
   );
 }
-
