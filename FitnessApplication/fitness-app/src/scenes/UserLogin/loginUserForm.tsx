@@ -19,7 +19,6 @@ export default function LoginInputs({ fields, values, onChange }: RegisterInputs
                         type={f.type}
                         className="p-2 m-3 border-2 w-full mx-2 rounded-xl"
                         placeholder={f.placeholder}
-                        // required
                         value={values[f.name] === undefined ? "" : (values[f.name] as string)}
                         onChange={(e) => onChange(f.name, e.target.value)}
                     />
