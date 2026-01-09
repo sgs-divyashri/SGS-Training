@@ -136,9 +136,6 @@ export default function Register() {
                         <button type="submit" className="text-white bg-pink-400 border-2 px-6 py-3 rounded-xl hover:bg-pink-600">
                             Register
                         </button>
-                        {/* <button type="button" onClick={handleClick} className="text-white bg-pink-400 border-2 px-6 py-3 rounded-xl hover:bg-pink-600">
-                            Back
-                        </button> */}
                     </div>
                 </form>
             </div>
