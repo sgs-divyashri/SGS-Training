@@ -7,9 +7,3 @@ export function normalizeEmail(email: string): string {
 export function validateEmail(email: string): boolean {
   return emailRegex.test(email);
 }
-
-
-// export const validateEmail = (email: string): string | null => {
-//     const trimmedEmail = email.trim().toLowerCase();
-//     return emailRegex.test(trimmedEmail) ? trimmedEmail : null;
-// };
