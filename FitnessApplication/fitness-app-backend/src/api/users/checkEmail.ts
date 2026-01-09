@@ -1,7 +1,6 @@
 import { UserPayload } from "../../models/userTableDefinition";
 import { userServices } from "../../service/userServices";
 import { ResponseToolkit, Request } from "@hapi/hapi";
-import { validateEmail } from "../../service/emailValidation";
 import { normalize } from "node:path";
 
 export const checkEmail = async(request: Request, h: ResponseToolkit) => {
