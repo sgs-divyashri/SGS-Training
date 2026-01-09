@@ -81,4 +81,3 @@ export default (sequelize: Sequelize) => {
 
   return User
 };
-
