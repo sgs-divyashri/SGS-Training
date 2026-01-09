@@ -1,4 +1,3 @@
-// src/service/mailer.ts
 import "dotenv/config";
 import Nodemailer from "nodemailer";
 
@@ -25,7 +24,7 @@ if (!sender.address) {
 let transport: Nodemailer.Transporter;
 
 if (PROVIDER === "gmail_app") {
-  // ✅ Gmail via App Password (simple & reliable)
+  // Gmail via App Password (simple & reliable)
   const user = process.env.GMAIL_USER;
   const pass = process.env.GMAIL_APP_PASSWORD;
   if (!user || !pass) {
@@ -33,31 +32,12 @@ if (PROVIDER === "gmail_app") {
       "GMAIL_USER / GMAIL_APP_PASSWORD missing in .env for Gmail App Password"
     );
   }
-
-  // Option A: Use `service: 'gmail'` helper
-//   const transport = Nodemailer.createTransport({
-//     service: "gmail",
-//     auth: {
-//       user, // Your actual Gmail address
-//       pass // The 16-char App Password (remove spaces if you want, usually works with them too)
-//     },
-//   });
     transport = Nodemailer.createTransport({
       service: 'gmail',
       auth: { user, pass },
       logger: true,
       debug: true,
     });
-
-  // Option B: Explicit SMTP host (either works)
-  // transport = Nodemailer.createTransport({
-  //   host: 'smtp.gmail.com',
-  //   port: 465,
-  //   secure: true, // implicit TLS
-  //   auth: { user, pass },
-  //   logger: true,
-  //   debug: true,
-  // });
 } else {
   throw new Error(`Unknown MAIL_PROVIDER: ${PROVIDER} (expected 'gmail_app')`);
 }
@@ -76,7 +56,7 @@ export async function sendMail({ to, subject, html, text }: SendMailArgs) {
   console.log("SMTP verify: OK");
 
   const info = await transport.sendMail({
-    from: sender, // "Evogym" <divya0301shri@gmail.com>
+    from: sender, 
     to: [to],
     subject,
     text,
@@ -93,6 +73,12 @@ export async function sendMail({ to, subject, html, text }: SendMailArgs) {
 
   return info;
 }
+
+
+
+
+
+
 
 // // src/service/mailer.ts
 // import "dotenv/config";
@@ -120,7 +106,7 @@ export async function sendMail({ to, subject, html, text }: SendMailArgs) {
 
 // // Build transport per provider
 // let transport: Nodemailer.Transporter;
-// // ✅ Mailtrap Email Sending - SMTP (production-capable)
+// // Mailtrap Email Sending - SMTP (production-capable)
 // // Get SMTP creds from Mailtrap → Sending → SMTP
 // const user = process.env.MAILTRAP_SMTP_USER;
 // const pass = process.env.MAILTRAP_SMTP_PASS;
