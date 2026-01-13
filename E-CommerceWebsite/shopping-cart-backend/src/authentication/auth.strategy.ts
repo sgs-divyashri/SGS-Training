@@ -20,6 +20,7 @@ export const configureAuthStrategy = (server: Server) => {   // server instance 
                 credentials: { // an object you create containing information about the authenticated user.
                     userId: artifacts.decoded.payload.userId,
                     email: artifacts.decoded.payload.email,
+                    purpose: artifacts.decoded.payload.purpose,  
                 },
             };
         },

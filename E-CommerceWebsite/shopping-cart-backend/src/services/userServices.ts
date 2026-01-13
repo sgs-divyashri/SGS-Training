@@ -18,6 +18,17 @@ export const userServices = {
     return user
   },
 
+  forgotPassword: async (data: Pick<UserPayload, "email">): Promise<User | null> => {
+    const user = await userRepository.forgotPassword(data)
+    return user
+  },
+  
+  updatePassword: async (userId: number, passwordHash: string) => {
+    const user = await userRepository.updatePassword(userId, passwordHash);
+    return user;
+  },
+
+
 //   getAllUsers: async (): Promise<User[]> => {
 //     const users = await userRepository.getAllUsers()
 //     return users

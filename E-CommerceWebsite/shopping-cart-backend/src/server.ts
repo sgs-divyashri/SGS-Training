@@ -42,7 +42,7 @@ const create = async (): Promise<Server> => {
                 origin: [
                     'http://localhost:5173'
                 ],
-                headers: ["Authorization", "Content-Type"],
+                headers: ["Accept", "Authorization", "Content-Type"],
                 credentials: false
             }
             // cors: true

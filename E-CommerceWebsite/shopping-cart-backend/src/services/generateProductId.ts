@@ -4,4 +4,4 @@ export default function generateSimpleId(): string {
   return `${timestamp}-${randomPart}`;
 }
 
-console.log(generateSimpleId()); // Example: 'lmdr0k-8k3x7u9p'
+// console.log(generateSimpleId()); // Example: 'lmdr0k-8k3x7u9p'

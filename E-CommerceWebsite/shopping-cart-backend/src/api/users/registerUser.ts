@@ -4,6 +4,7 @@ import { normalizeEmail } from "../../services/emailValidation";
 import { validateEmail } from "../../services/emailValidation";
 import { UserPayload } from "../../models/userTableDefinition";
 import { passwordServices } from "../../services/passwordServices";
+import { sendMail } from "../../services/resetPasswordMailer";
 
 export const registerUserHandler = async (request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
   try {

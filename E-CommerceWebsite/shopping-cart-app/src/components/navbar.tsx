@@ -1,4 +1,3 @@
-
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 
@@ -13,25 +12,17 @@ export default function NavBar() {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur shadow border-b border-gray-200">
+      <nav className="fixed top-0 left-0 right-0 bg-white shadow border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center">
-          <div className="font-semibold text-gray-900">MyShop</div>
+          <div className="font-bold text-gray-900">Amazon</div>
 
           <div className="ml-auto flex items-center gap-6">
             <NavLink to="/home" className={navClasses}>
               Home
             </NavLink>
-            <NavLink to="/store" className={navClasses}>
-              Store
-            </NavLink>
-            <NavLink to="/about" className={navClasses}>
-              About
-            </NavLink>
-
             <button
               className="relative w-6 h-6 text-gray-700 hover:text-gray-900"
               onClick={() => navigate("/cart")}
-              aria-label="Open cart"
               title="Cart"
             >
               {/* Cart Icon */}
@@ -42,7 +33,7 @@ export default function NavBar() {
               {/* Badge */}
               {count > 0 && (
                 <span
-                  className="absolute -top-1 -right-2 min-w-[18px] h-[18px] px-1 rounded-full bg-pink-600 text-white text-[11px] leading-[18px] text-center"
+                  className="absolute bottom-3 left-4 min-w-[18px] h-[18px] px-1 rounded-full bg-pink-600 text-white text-[11px] text-center"
                   aria-label={`${count} items in cart`}
                 >
                   {count > 99 ? "99+" : count}

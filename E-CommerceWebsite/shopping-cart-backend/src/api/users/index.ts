@@ -7,6 +7,8 @@ import { loginUserHandler } from "./userLogin";
 // import { partialUpdateUserHandler } from "./p_updateUser";
 // import { toggleUserHandler } from "./toggleUser";
 import { checkEmail } from "./checkEmail";
+import { forgotPasswordUserHandler } from "./forgotPassword";
+import { resetPasswordHandler } from "./resetPassword";
 // import { restoreUserHandler } from "./restoreSoftDeletedUser";
 
 export const userRoutes: ServerRoute[] = [
@@ -35,6 +37,24 @@ export const userRoutes: ServerRoute[] = [
         options: {
             auth: false,
         },
+    },
+
+    {
+        method: 'POST',
+        path: '/users/forgot-password',
+        handler: forgotPasswordUserHandler,
+        options: {
+            auth: false,
+        },
+    },
+
+    {
+        method: 'POST',
+        path: '/users/reset-password',
+        handler: resetPasswordHandler,
+        // options: {
+        //     auth: false,
+        // },
     },
 
     // {

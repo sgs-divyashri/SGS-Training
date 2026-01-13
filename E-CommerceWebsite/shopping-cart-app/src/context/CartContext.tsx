@@ -31,7 +31,7 @@ const CartContext = createContext<CartContextValue | undefined>(undefined);
 
 // Helper to normalize a product ID key (you used productId/id/sku interchangeably)
 function getId(p: any): string | number {
-  return p?.productId ?? p?.id ?? p?.sku ?? p?.p_id ?? p?.name; // last-resort fallback
+  return p?.productId; // last-resort fallback
 }
 
 function cartReducer(state: CartState, action: CartAction): CartState {

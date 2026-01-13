@@ -21,7 +21,8 @@ export const loginUserHandler = async (request: Request, h: ResponseToolkit) => 
     // Generate a new token
     const token = generateToken({
       userId: user.getDataValue("userId"),
-      email: user.getDataValue("email")
+      email: user.getDataValue("email"),
+      purpose: 'auth'
     });
 
     return h.response({
