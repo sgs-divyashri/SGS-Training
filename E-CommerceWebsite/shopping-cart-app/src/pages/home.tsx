@@ -17,7 +17,7 @@ import type {
 
 type SortKey = "relevance" | "priceAsc" | "priceDesc" | "nameAsc" | "nameDesc";
 
-// ---------- Column definitions ----------
+// Column definitions 
 const defaultColDef: ColDef = {
   sortable: true,
   filter: true,
@@ -117,7 +117,6 @@ const columnDefs: ColDef<Product>[] = [
     pinned: "right",
     sortable: false,
     filter: false,
-    // suppressHeaderMenuButton: true,
     cellRenderer: AddToCartButtonRenderer,
     cellRendererParams: (params: ICellRendererParams) => ({
       onAdd: (row: Product) => (params.context as any)?.onAddToCart?.(row),
@@ -125,7 +124,7 @@ const columnDefs: ColDef<Product>[] = [
   },
 ];
 
-// ---------- Sort & Filter model builders ----------
+// Sort & Filter model builders 
 function sortModel(key: SortKey): ColumnState[] {
   switch (key) {
     case "priceAsc":
