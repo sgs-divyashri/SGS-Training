@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 type Mode = "signin" | "register" | "forgot";
 
-/** ---- Validation Schemas ---- */
+/** Validation Schemas*/
 const signInSchema = Joi.object({
   email: Joi.string()
     .email({ tlds: { allow: false } })
@@ -402,7 +402,7 @@ export default function AuthPage() {
   );
 }
 
-/* ---------- Reusable Field component ---------- */
+/* Reusable Field component */
 function Field({
   id,
   label,
