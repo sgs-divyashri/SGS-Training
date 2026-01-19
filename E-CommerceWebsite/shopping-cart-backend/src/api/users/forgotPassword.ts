@@ -10,7 +10,7 @@ export const forgotPasswordUserHandler = async (
   h: ResponseToolkit
 ) => {
   try {
-    const payload = request.payload as Pick<UserPayload, "email" | "name">;
+    const payload = request.payload as Pick<UserPayload, "email">;
 
     if (!payload.email) {
       return h.response({ error: "Email is required" }).code(400);
@@ -22,16 +22,20 @@ export const forgotPasswordUserHandler = async (
     const user = await userServices.forgotPassword(payload);
 
     if (!user) {
-      return h.response({ error: "Invalid email" }).code(401);
+      return h
+        .response({
+          error: "If this email exists, a reset link has been sent.",
+        })
+        .code(401);
     }
 
     const token = generateToken(
       {
         userId: user.getDataValue("userId"),
         email: user.getDataValue("email"),
-        purpose: 'password_reset'
+        purpose: "password_reset",
       },
-      { expiresIn: "15m" } // adjust to your auth helper's options
+      { expiresIn: "15m" }
     );
 
     const FRONTEND_ORIGIN =
@@ -53,11 +57,14 @@ style="display:inline-block;background:#2563eb;color:#fff;padding:10px 16px;bord
               Reset Password
             </a>
           </p>
+          <!-- Visible fallback INSIDE HTML -->
+          <p style="margin-top:12px;color:#555">If the button doesn't work, copy and paste this link into your browser:</p>
+          <p style="word-break:break-all;color:#2563eb">${resetUrl}</p>
+
           <p>If you did not request this, you can safely ignore this email.</p>
         </div>
       `,
-
-    //   text: `Hello ${payload.name},\n\nThanks for registering with Evogym!\n\nRegards,\nEvogym Team`,
+      text: `If the button doesn't work, copy and paste this link into your browser: \n${resetUrl}`,
     });
 
     return h

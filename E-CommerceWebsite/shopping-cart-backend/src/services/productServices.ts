@@ -1,19 +1,33 @@
 import { User } from "../models/userTableDefinition";
 import { Model, Optional } from "sequelize";
-import { productRepository } from "../repository/productRepo";
+import { productRepository, ProductFilterSpec } from "../repository/productRepo";
 import { UserPayload } from "../models/userTableDefinition";
 import { Product, ProductPayload } from "../models/productTableDefinition";
 
 export const productServices = {
-  createProduct: async (payload: Pick<ProductPayload, "p_name" | "p_description" | "orderedBy" | "price">): Promise<Product> => {
+  createProduct: async (payload: Pick<ProductPayload, "p_name" | "p_description" | "prod_category" | "orderedBy" | "price">): Promise<Product> => {
     const newUser = await productRepository.createProduct(payload)
     return newUser
   },
 
-  getAllProducts: async (): Promise<Product[]> => {
-    const users = await productRepository.getAllProducts()
-    return users
+  getProducts: async () => {
+    const products = await productRepository.getProducts()
+    return products
   },
+
+  searchProducts: async (spec: ProductFilterSpec) => {
+    return await productRepository.search(spec)
+  },
+
+  delAndResProduct: async (id: string): Promise<Product | null> => {
+    const product = await productRepository.delAndResProduct(id)
+    return product
+  },
+
+  // getAllProducts: async (): Promise<Product[]> => {
+  //   const users = await productRepository.getAllProducts()
+  //   return users
+  // },
 
 //   getSpecificUser: async (id: number): Promise<User | null> => {
 //     const user = await userRepository.getSpecificUser(id)

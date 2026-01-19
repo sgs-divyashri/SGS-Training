@@ -2,8 +2,9 @@ export interface Product {
   productId: string;      
   p_name: string;
   p_description: string;
+  prod_category: string;
   price: number;
-  isActive: boolean;
+  inStock: string;
   createdAt?: string;
   updatedAt?: string;
 }

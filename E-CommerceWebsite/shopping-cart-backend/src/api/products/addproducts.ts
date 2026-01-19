@@ -9,12 +9,13 @@ export const addProductHandler = async (
   try {
     const payload = request.payload as Pick<
       ProductPayload,
-      "p_name" | "p_description" | "orderedBy" | "price"
+      "p_name" | "p_description" | "prod_category" | "orderedBy" | "price"
     >;
 
     if (
       !payload.p_name ||
       !payload.p_description ||
+      !payload.prod_category ||
       !payload.orderedBy ||
       !payload.price
     ) {
@@ -24,6 +25,7 @@ export const addProductHandler = async (
     const newUser = await productServices.createProduct({
       p_name: payload.p_name,
       p_description: payload.p_description,
+      prod_category: payload.prod_category,
       orderedBy: payload.orderedBy,
       price: payload.price,
     });

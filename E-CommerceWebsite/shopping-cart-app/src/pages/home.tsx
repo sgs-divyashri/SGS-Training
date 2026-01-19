@@ -1,29 +1,245 @@
 // src/pages/home.tsx
-import { useEffect, useMemo, useState } from "react";
-import { api } from "../axios/axiosClient";
-import ProductCard from "../components/ProductCard";
+import { useEffect, useRef, useState } from "react";
+import { api as http } from "../axios/axiosClient"; // <-- renamed to avoid collision
 import { Product } from "../types/product";
+import { useCart } from "../context/CartContext";
+import "ag-grid-community/styles/ag-grid.css";
+import "ag-grid-community/styles/ag-theme-alpine.css";
+import { AgGridReact } from "ag-grid-react";
+import type {
+  ColDef,
+  GridApi,
+  GridReadyEvent,
+  FilterModel,
+  ColumnState,
+  ICellRendererParams,
+} from "ag-grid-community";
+
+type SortKey = "relevance" | "priceAsc" | "priceDesc" | "nameAsc" | "nameDesc";
+
+// ---------- Column definitions ----------
+const defaultColDef: ColDef = {
+  sortable: true,
+  filter: true,
+  floatingFilter: true,
+  resizable: true,
+};
+
+type AddToCartParams = ICellRendererParams & {
+  onAdd?: (row: Product) => void;
+};
+
+function AddToCartButtonRenderer(props: AddToCartParams) {
+  const { data, onAdd } = props;
+
+  return (
+    <button
+      type="button"
+      onClick={() => onAdd?.(data)}
+      className="px-3 py-1 rounded bg-blue-600 text-white text-xs hover:bg-blue-700"
+      title="Add to cart"
+    >
+      Add
+    </button>
+  );
+}
+
+const columnDefs: ColDef<Product>[] = [
+  {
+    field: "p_name",
+    headerName: "Name",
+    filter: "agTextColumnFilter",
+    sortable: true,
+    flex: 1,
+  },
+  {
+    field: "p_description",
+    headerName: "Description",
+    filter: "agTextColumnFilter",
+    sortable: true,
+    flex: 2,
+  },
+  {
+    field: "prod_category",
+    headerName: "Category",
+    filter: "agTextColumnFilter",
+    sortable: true,
+    width: 120,
+  },
+  {
+    field: "price",
+    headerName: "Price (₹)",
+    filter: "agNumberColumnFilter",
+    sortable: true,
+    width: 140,
+    valueFormatter: (p) =>
+      `₹ ${Number(p.value ?? 0).toLocaleString("en-IN", {
+        maximumFractionDigits: 2,
+      })}`,
+    comparator: (a, b) => Number(a) - Number(b),
+  },
+
+  {
+    field: "inStock",
+    headerName: "Stock",
+    // Use Set filter so users can choose "In Stock"/"Out of Stock"
+    filter: "agTextColumnFilter",
+    sortable: true,
+    width: 140,
+
+    // Pretty display: green + red badges based on value
+    cellRenderer: (p: ICellRendererParams<Product>) => {
+      const value = (p.value ?? "").toString().trim();
+      const isInStock = value.toLowerCase() === "in stock";
+      const base =
+        "inline-flex items-center justify-center px-2 py-0.5 rounded text-xs font-medium";
+      const green = "bg-green-100 text-green-800";
+      const red = "bg-red-100 text-red-800";
+      const cls = `${base} ${isInStock ? green : red}`;
+      return value
+    },
+
+    // Make "In Stock" sort before "Out of Stock"
+    comparator: (a, b) => {
+      const rank = (v: any) =>
+        String(v ?? "")
+          .toLowerCase()
+          .trim() === "in stock"
+          ? 0
+          : 1;
+      return rank(a) - rank(b);
+    },
+  },
+  {
+    headerName: "Add To Cart",
+    colId: "actions",
+    width: 120,
+    pinned: "right",
+    sortable: false,
+    filter: false,
+    // suppressHeaderMenuButton: true,
+    cellRenderer: AddToCartButtonRenderer,
+    cellRendererParams: (params: ICellRendererParams) => ({
+      onAdd: (row: Product) => (params.context as any)?.onAddToCart?.(row),
+    }),
+  },
+];
+
+// ---------- Sort & Filter model builders ----------
+function sortModel(key: SortKey): ColumnState[] {
+  switch (key) {
+    case "priceAsc":
+      return [{ colId: "price", sort: "asc" }];
+    case "priceDesc":
+      return [{ colId: "price", sort: "desc" }];
+    case "nameAsc":
+      return [{ colId: "p_name", sort: "asc" }];
+    case "nameDesc":
+      return [{ colId: "p_name", sort: "desc" }];
+    case "relevance":
+    default:
+      return [];
+  }
+}
+
+function buildFilterModelForGrid(
+  selectedCategories: string[],
+  minPrice?: number,
+  maxPrice?: number,
+  inStockValue?: "In Stock" | "Out of Stock",
+): FilterModel {
+  const model: FilterModel = {};
+
+  if (selectedCategories.length > 0) {
+    model["prod_category"] = {
+      filterType: "set",
+      values: selectedCategories,
+    } as any;
+  }
+
+  if (typeof inStockValue === "string" && inStockValue.length > 0) {
+    model["inStock"] = {
+      filterType: "set",
+      values: [inStockValue],
+    } as any;
+  }
+
+  if (minPrice !== undefined && maxPrice !== undefined) {
+    model["price"] = {
+      filterType: "number",
+      type: "inRange",
+      filter: minPrice,
+      filterTo: maxPrice,
+    } as any;
+  } else if (minPrice !== undefined) {
+    model["price"] = {
+      filterType: "number",
+      type: "greaterThan",
+      filter: minPrice,
+    } as any;
+  } else if (maxPrice !== undefined) {
+    model["price"] = {
+      filterType: "number",
+      type: "lessThan",
+      filter: maxPrice,
+    } as any;
+  }
+
+  return model;
+}
 
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [search, setSearch] = useState("");
 
+  // External controls (your existing UI state)
+  const [search, setSearch] = useState("");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [minPrice, setMinPrice] = useState<number | undefined>(undefined);
+  const [maxPrice, setMaxPrice] = useState<number | undefined>(undefined);
+  const [inStockOnly, setInStockOnly] = useState("");
+  const [sortBy, setSortBy] = useState<SortKey>("relevance");
+
+  const { addToCart } = useCart(); // <- whatever your CartProvider exposes
+
+  const handleAddToCart = (row: Product) => {
+    // You can send the raw product to your reducer: it expects a Product
+    // Your reducer will normalize id with getId() (productId in your code)
+    addToCart(row);
+  };
+
+  // Debounced search (for Quick Filter and/or server q)
+  const [debounced, setDebounced] = useState("");
+  useEffect(() => {
+    const id = setTimeout(() => setDebounced(search.trim().toLowerCase()), 250);
+    return () => clearTimeout(id);
+  }, [search]);
+
+  // Fetch products
   useEffect(() => {
     let mounted = true;
-
-    async function fetchProducts() {
+    (async () => {
       setLoading(true);
       setError(null);
       try {
-        const res = await api.get("/products");
-        if (!mounted) return;
+        const res = await http.get("/products", {
+          params: {
+            q: debounced || undefined,
+            prod_category: selectedCategories.length
+              ? selectedCategories
+              : undefined,
+            minPrice: minPrice ?? undefined,
+            maxPrice: maxPrice ?? undefined,
+            sort: sortBy,
+            page: 1,
+            pageSize: 300, // fetch a larger page to enable client pagination
+          },
+        });
 
-        // { message: string, products: Product[] }
+        if (!mounted) return;
         const list = Array.isArray(res.data?.products) ? res.data.products : [];
-        const active = list.filter((p: any) => p?.isActive !== false);
-        setProducts(active);
+        setProducts(list as Product[]);
       } catch (err: any) {
         if (!mounted) return;
         const msg =
@@ -35,146 +251,120 @@ export default function Home() {
       } finally {
         if (mounted) setLoading(false);
       }
-    }
+    })();
 
-    fetchProducts();
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [debounced, selectedCategories, minPrice, maxPrice, sortBy]);
 
-  // Debounce search input (simple client-side debounce)
-  const [debounced, setDebounced] = useState("");
-  useEffect(() => {
-    const id = setTimeout(() => setDebounced(search.trim().toLowerCase()), 250);
-    return () => clearTimeout(id);
-  }, [search]);
+  // Grid API reference
+  const gridApiRef = useRef<GridApi | null>(null);
 
-  // Compute filtered products
-  const filtered = useMemo(() => {
-    if (!debounced) return products;
-    return products.filter((p) => {
-      const name = (p as any).p_name ?? (p as any).name ?? "";
-      const desc = (p as any).p_description ?? "";
-      return (
-        String(name).toLowerCase().includes(debounced) ||
-        String(desc).toLowerCase().includes(debounced)
-      );
+  // Grid ready: apply initial quick filter, sort & filter models
+
+  const onGridReady = (e: GridReadyEvent) => {
+    gridApiRef.current = e.api;
+    e.api.setGridOption("context", { onAddToCart: handleAddToCart });
+
+    // Quick Filter
+    e.api.setGridOption("quickFilterText", debounced);
+
+    // Sorting / Column state
+    e.api.applyColumnState({
+      state: sortModel(sortBy),
+      defaultState: { sort: null },
     });
-  }, [products, debounced]);
+
+    // Filters
+    e.api.setFilterModel(
+      buildFilterModelForGrid(selectedCategories, minPrice, maxPrice),
+    );
+    // No need for onFilterChanged in v31 when using setFilterModel
+  };
+
+  // Keep Quick Filter in sync with search box
+  useEffect(() => {
+    gridApiRef.current?.setGridOption("quickFilterText", debounced);
+  }, [debounced]);
+
+  // Keep grid filters in sync with category/price state
+
+  useEffect(() => {
+    const api = gridApiRef.current;
+    if (!api) return;
+
+    api.setFilterModel(
+      buildFilterModelForGrid(selectedCategories, minPrice, maxPrice),
+    );
+  }, [selectedCategories, minPrice, maxPrice]);
+
+  useEffect(() => {
+    const api = gridApiRef.current;
+    if (!api) return;
+
+    api.applyColumnState({
+      state: sortModel(sortBy),
+      defaultState: { sort: null },
+    });
+  }, [sortBy]);
+
+  // Clear filters resets both UI state and grid state
+  const clearFilters = () => {
+    setSelectedCategories([]);
+    setMinPrice(undefined);
+    setMaxPrice(undefined);
+    setInStockOnly("");
+    setSortBy("relevance");
+    setSearch("");
+
+    const api = gridApiRef.current;
+    if (api) {
+      // clear quick filter
+      api.setGridOption("quickFilterText", "");
+
+      // clear column filters
+      api.setFilterModel(null); // null clears all filters (v31+)
+
+      // Clear sorts
+      api.applyColumnState({
+        state: [],
+        defaultState: { sort: null },
+      });
+    }
+  };
 
   return (
     <div className="max-w-6xl mx-auto">
       <header className="mb-4">
-        <h1 className="text-2xl mt-10 mb-2 font-bold text-gray-900">Featured Products</h1>
+        <h1 className="text-2xl mt-10 mb-2 font-bold text-gray-900">
+          Featured Products
+        </h1>
         <p className="text-sm text-gray-600">Browse our latest items</p>
       </header>
 
-      {/* Search bar */}
-      <div className="mb-6">
-        <div className="relative">
-          {/* Search icon (left) */}
-          <div className="pointer-events-none absolute inset-y-0 left-0 pl-3 flex items-center">
-            <svg
-              className="h-5 w-5 text-gray-400"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                fillRule="evenodd"
-                d="M12.9 14.32a8 8 0 111.414-1.414l3.387 3.387a1 1 0 01-1.414 1.414l-3.387-3.387zM8 14a6 6 0 100-12 6 6 0 000 12z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </div>
-
-          <input
-            type="text"
-            inputMode="search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by name or description…"
-            aria-label="Search products"
-            className="block w-full rounded-lg border border-gray-300 pl-10 pr-10 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
-
-          {/* Clear button (right) */}
-          {search && (
-            <button
-              type="button"
-              onClick={() => setSearch("")}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-              aria-label="Clear search"
-              title="Clear"
-            >
-              <svg
-                className="h-5 w-5"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414
-                  1.414L11.414 10l4.293 4.293a1 1 0 01-1.414
-                  1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586
-                  10 4.293 5.707a1 1 0 010-1.414z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </button>
-          )}
-        </div>
+      {/* AG Grid table */}
+      <div className="ag-theme-alpine" style={{ height: 600, width: "100%" }}>
+        <AgGridReact<Product>
+          rowData={products}
+          columnDefs={columnDefs}
+          defaultColDef={defaultColDef}
+          animateRows
+          pagination
+          paginationPageSize={30}
+          paginationPageSizeSelector={[10, 30, 50, 100]} // keep page-size dropdown aligned
+          onGridReady={onGridReady}
+          getRowId={({ data }) => data.productId}
+          theme="legacy"
+        />
       </div>
 
-      {loading && <ProductGridSkeleton />}
-
+      {loading && <div className="mt-3 text-sm text-gray-600">Loading…</div>}
       {!loading && error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
+        <div className="mt-3 rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
           {error}
         </div>
       )}
-
-      {!loading && !error && filtered.length === 0 && (
-        <div className="rounded-lg border border-gray-200 bg-white p-4 text-gray-700">
-          {search
-            ? `No results for "${search}".`
-            : "No products available right now."}
-        </div>
-      )}
-
-      {!loading && !error && filtered.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((p: any, i: number) => (
-            <ProductCard key={p.productId ?? p.id ?? p.sku ?? i} product={p} />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* Skeleton grid while loading */
-function ProductGridSkeleton() {
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <div
-          key={i}
-          className="rounded-xl border border-gray-200 bg-white shadow-sm p-4 animate-pulse"
-        >
-          <div className="h-5 w-3/5 bg-gray-200 rounded mb-2"></div>
-          <div className="h-4 w-full bg-gray-200 rounded mb-1"></div>
-          <div className="h-4 w-5/6 bg-gray-200 rounded mb-1"></div>
-          <div className="h-4 w-4/6 bg-gray-200 rounded mb-3"></div>
-          <div className="flex justify-between">
-            <div className="h-6 w-20 bg-gray-200 rounded"></div>
-            <div className="h-8 w-24 bg-gray-200 rounded"></div>
-          </div>
-        </div>
-      ))}
     </div>
   );
 }

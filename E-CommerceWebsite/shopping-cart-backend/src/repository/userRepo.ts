@@ -34,10 +34,9 @@ export const userRepository = {
     return user;
   },
 
-  forgotPassword: async (data: Pick<UserPayload, "email">) => {
+  forgotPassword: async (data: Pick<UserPayload, "email">): Promise<User | null> => {
     const user = await User.findOne({
       where: { email: data.email, isActive: true },
-      attributes: { include: ["password"] },
     });
     if (!user) return null;
 

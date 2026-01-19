@@ -1,6 +1,8 @@
 import type { ServerRoute } from "@hapi/hapi";
 import { addProductHandler } from "./addproducts";
-import { getAllProductsHandler } from "./getAllProducts";
+import { getProductsHandler } from "./getFilteredProducts";
+import { delAndResProductHandler } from "./softDeleteProduct";
+
 
 export const productRoutes: ServerRoute[] = [
     {
@@ -15,7 +17,10 @@ export const productRoutes: ServerRoute[] = [
     {
         method: 'GET',
         path: '/products',
-        handler: getAllProductsHandler,
+        handler: getProductsHandler,
+        // options: {
+        //     auth: false,
+        // },
     },
 
     // {
@@ -42,9 +47,9 @@ export const productRoutes: ServerRoute[] = [
     // //     handler: restoreUserHandler
     // // },
 
-    // {
-    //     method: 'PATCH',
-    //     path: '/users/toggle/{userID}',
-    //     handler: toggleUserHandler,
-    // }
+    {
+        method: 'PATCH',
+        path: '/product/toggle/{productID}',
+        handler: delAndResProductHandler,
+    }
 ]

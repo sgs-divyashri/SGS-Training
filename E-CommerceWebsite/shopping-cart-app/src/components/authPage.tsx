@@ -1,38 +1,66 @@
-
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import Joi from "joi";
+import { joiResolver } from "@hookform/resolvers/joi";
+import { SignInForm, RegisterForm, ForgotForm } from "../types/authPage";
 import { api } from "../axios/axiosClient";
 import { useNavigate } from "react-router-dom";
 
 type Mode = "signin" | "register" | "forgot";
 
 /** ---- Validation Schemas ---- */
-const signInSchema = z.object({
-  email: z.string().email("Invalid email"),
-  password: z.string().min(8, "Minimum 8 characters"),
+const signInSchema = Joi.object({
+  email: Joi.string()
+    .email({ tlds: { allow: false } })
+    .required()
+    .messages({
+      "string.email": "Invalid email",
+      "string.empty": "Email is required",
+      "any.required": "Email is required",
+    }),
+  password: Joi.string().min(8).required().messages({
+    "string.min": "Minimum 8 characters",
+    "string.empty": "Password is required",
+    "any.required": "Password is required",
+  }),
 });
 
-const registerSchema = z
-  .object({
-    name: z.string().min(2, "Name is too short"),
-    email: z.string().email("Invalid email"),
-    password: z.string().min(8, "Minimum 8 characters"),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    path: ["confirmPassword"],
-    error: "Passwords do not match",
-  });
-
-const forgotSchema = z.object({
-  email: z.string().email("Invalid email"),
+const registerSchema = Joi.object({
+  name: Joi.string().min(2).required().messages({
+    "string.min": "Name is too short",
+    "string.empty": "Name is required",
+    "any.required": "Name is required",
+  }),
+  email: Joi.string()
+    .email({ tlds: { allow: false } })
+    .required()
+    .messages({
+      "string.email": "Invalid email",
+      "string.empty": "Email is required",
+      "any.required": "Email is required",
+    }),
+  password: Joi.string().min(8).required().messages({
+    "string.min": "Minimum 8 characters",
+    "string.empty": "Password is required",
+    "any.required": "Password is required",
+  }),
+  confirmPassword: Joi.string().valid(Joi.ref("password")).required().messages({
+    "any.only": "Passwords do not match",
+    "string.empty": "Please confirm your password",
+    "any.required": "Please confirm your password",
+  }),
 });
 
-type SignInForm = z.infer<typeof signInSchema>;
-type RegisterForm = z.infer<typeof registerSchema>;
-type ForgotForm = z.infer<typeof forgotSchema>;
+const forgotSchema = Joi.object({
+  email: Joi.string()
+    .email({ tlds: { allow: false } })
+    .required()
+    .messages({
+      "string.email": "Invalid email",
+      "string.empty": "Email is required",
+      "any.required": "Email is required",
+    }),
+});
 
 interface LoginResponse {
   token: string;
@@ -41,7 +69,7 @@ interface RegisterResponse {
   userId: number;
 }
 interface ForgotResponse {
-  message: string; 
+  message: string;
 }
 
 export default function AuthPage() {
@@ -59,7 +87,7 @@ export default function AuthPage() {
     formState: { errors, isSubmitting },
     reset,
   } = useForm<SignInForm | RegisterForm>({
-    resolver: zodResolver(isSignIn ? signInSchema : registerSchema),
+    resolver: joiResolver(isSignIn ? signInSchema : registerSchema),
     defaultValues: isSignIn
       ? { email: "", password: "" }
       : { name: "", email: "", password: "", confirmPassword: "" },
@@ -73,7 +101,7 @@ export default function AuthPage() {
     formState: { errors: forgotErrors, isSubmitting: isSubmittingForgot },
     reset: resetForgot,
   } = useForm<ForgotForm>({
-    resolver: zodResolver(forgotSchema),
+    resolver: joiResolver(forgotSchema),
     defaultValues: { email: "" },
     mode: "onBlur",
   });
@@ -106,7 +134,7 @@ export default function AuthPage() {
         const body = values as RegisterForm;
         const res = await api.post<RegisterResponse>("/users/register", body);
         const createdUser = res.data;
-        console.log("Registered:", createdUser);
+        alert(`Registered ${createdUser.userId}`);
 
         setMode("signin");
         reset({ email: body.email, password: "" });
@@ -125,9 +153,14 @@ export default function AuthPage() {
   async function onSubmitForgot(values: ForgotForm) {
     setServerMessage(null);
     try {
-      const res = await api.post<ForgotResponse>("/users/forgot-password", values);
+      const res = await api.post<ForgotResponse>(
+        "/users/forgot-password",
+        values
+      );
       const data = res.data;
-      setServerMessage(data?.message || "If this email exists, a reset link has been sent.");
+      setServerMessage(
+        data?.message || "If this email exists, a reset link has been sent."
+      );
     } catch (err: any) {
       const message =
         err?.response?.data?.error ||
@@ -144,7 +177,11 @@ export default function AuthPage() {
         {/* Header / Tabs */}
         <div className="px-6 pt-6">
           <h1 className="text-2xl font-semibold text-gray-900">
-            {isSignIn ? "Sign In" : isRegister ? "Create Account" : "Reset Password"}
+            {isSignIn
+              ? "Sign In"
+              : isRegister
+              ? "Create Account"
+              : "Reset Password"}
           </h1>
 
           {/* Only show tabs when not in forgot mode */}
@@ -154,7 +191,9 @@ export default function AuthPage() {
                 type="button"
                 onClick={() => switchMode("signin")}
                 className={`flex-1 p-2 rounded-md text-sm font-medium transition ${
-                  isSignIn ? "bg-white text-blue-600 shadow" : "text-gray-600 hover:text-gray-800"
+                  isSignIn
+                    ? "bg-white text-blue-600 shadow"
+                    : "text-gray-600 hover:text-gray-800"
                 }`}
                 aria-pressed={isSignIn}
               >
@@ -164,7 +203,9 @@ export default function AuthPage() {
                 type="button"
                 onClick={() => switchMode("register")}
                 className={`flex-1 py-2 rounded-md text-sm font-medium transition ${
-                  isRegister ? "bg-white text-blue-600 shadow" : "text-gray-600 hover:text-gray-800"
+                  isRegister
+                    ? "bg-white text-blue-600 shadow"
+                    : "text-gray-600 hover:text-gray-800"
                 }`}
                 aria-pressed={isRegister}
               >
@@ -186,9 +227,17 @@ export default function AuthPage() {
         {/* Forms */}
         {!isForgot ? (
           // Sign In / Register Form
-          <form onSubmit={handleSubmit(onSubmit)} noValidate className="px-6 pb-6 pt-4 space-y-4">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            noValidate
+            className="px-6 pb-6 pt-4 space-y-4"
+          >
             {!isSignIn && (
-              <Field id="name" label="Name" error={(errors as any)?.name?.message}>
+              <Field
+                id="name"
+                label="Name"
+                error={(errors as any)?.name?.message}
+              >
                 <input
                   id="name"
                   type="text"
@@ -200,7 +249,11 @@ export default function AuthPage() {
               </Field>
             )}
 
-            <Field id="email" label="Email" error={(errors as any)?.email?.message}>
+            <Field
+              id="email"
+              label="Email"
+              error={(errors as any)?.email?.message}
+            >
               <input
                 id="email"
                 type="email"
@@ -211,7 +264,11 @@ export default function AuthPage() {
               />
             </Field>
 
-            <Field id="password" label="Password" error={(errors as any)?.password?.message}>
+            <Field
+              id="password"
+              label="Password"
+              error={(errors as any)?.password?.message}
+            >
               <input
                 id="password"
                 type="password"
@@ -268,7 +325,6 @@ export default function AuthPage() {
                 : "Register"}
             </button>
 
-            {/* Helper link */}
             <p className="text-sm text-gray-600">
               {isSignIn ? (
                 <>
@@ -297,12 +353,21 @@ export default function AuthPage() {
           </form>
         ) : (
           // Forgot Password Card (email-only)
-          <form onSubmit={handleSubmitForgot(onSubmitForgot)} noValidate className="px-6 pb-6 pt-4 space-y-4">
+          <form
+            onSubmit={handleSubmitForgot(onSubmitForgot)}
+            noValidate
+            className="px-6 pb-6 pt-4 space-y-4"
+          >
             <p className="text-sm text-gray-700">
-              Enter your email address and we’ll send you a link to reset your password.
+              Enter your email address and we’ll send you a link to reset your
+              password.
             </p>
 
-            <Field id="forgot-email" label="Email" error={forgotErrors?.email?.message}>
+            <Field
+              id="forgot-email"
+              label="Email"
+              error={forgotErrors?.email?.message}
+            >
               <input
                 id="forgot-email"
                 type="email"
@@ -321,7 +386,7 @@ export default function AuthPage() {
               >
                 {isSubmittingForgot ? "Sending..." : "Send reset link"}
               </button>
-              
+
               <button
                 type="button"
                 onClick={() => switchMode("signin")}
@@ -364,6 +429,5 @@ function Field({
   );
 }
 
-/* ---------- Tailwind input classes ---------- */
 const inputClass =
   "w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 shadow-sm outline-none";

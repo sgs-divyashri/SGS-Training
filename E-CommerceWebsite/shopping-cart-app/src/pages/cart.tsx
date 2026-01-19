@@ -35,7 +35,7 @@ export default function CartPage() {
           </ul>
 
           <div className="mt-6 flex items-center justify-between">
-            <div className="text-lg font-semibold">Total: ₹{total.toFixed(2)}</div>
+            <div className="text-lg font-semibold">Total: ₹ {total.toFixed(2)}</div>
             <button className="px-4 py-2 rounded bg-gray-800 text-white" onClick={clear}>
               Clear Cart
             </button>

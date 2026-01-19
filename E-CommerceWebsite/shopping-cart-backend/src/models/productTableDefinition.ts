@@ -5,24 +5,26 @@ export interface ProductPayload {
   productId: string;
   p_name: string;
   p_description: string;
+  prod_category: string;
   orderedBy: number;
   price: number;
-  isActive: boolean;
+  inStock: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
 export interface UserCreationAttributes
-  extends Optional<ProductPayload, "productId" | "p_description"| "isActive" | "createdAt" | "updatedAt"> { }
+  extends Optional<ProductPayload, "productId" | "p_description"| "inStock" | "createdAt" | "updatedAt"> { }
 
 export class Product extends Model<ProductPayload, UserCreationAttributes>
   implements ProductPayload {
   public productId!: string;
   public p_name!: string;
   public p_description!: string;
+  public prod_category!: string;
   public orderedBy!: number;
   public price!: number;
-  public isActive!: boolean;
+  public inStock!: string;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -40,8 +42,12 @@ export default (sequelize: Sequelize) => {
         allowNull: false,
       },
       p_description: {
-        type: DataTypes.STRING(100),
+        type: DataTypes.STRING(2000),
         allowNull: false,
+      },
+      prod_category: {
+        type: DataTypes.ENUM("Electronics", "Home", "Books", "Fashion"),
+        allowNull: false
       },
       orderedBy: {
         type: DataTypes.INTEGER,
@@ -57,9 +63,9 @@ export default (sequelize: Sequelize) => {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
       },
-      isActive: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: true,
+      inStock: {
+        type: DataTypes.ENUM('In Stock', 'Out of Stock'),
+        defaultValue: 'In Stock',
         allowNull: false
       },
     },

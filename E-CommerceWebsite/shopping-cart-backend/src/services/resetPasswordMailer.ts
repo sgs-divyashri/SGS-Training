@@ -4,14 +4,14 @@ import Nodemailer from "nodemailer";
 export type SendMailArgs = {
   to: string;
   subject: string;
-  html?: string;
-  text?: string;
+  html: string;
+  text: string;
 };
 
 const PROVIDER = (process.env.MAIL_PROVIDER || "gmail_app").toLowerCase();
 
 const sender = {
-  name: process.env.MAIL_FROM_NAME || "Amzon",
+  name: process.env.MAIL_FROM_NAME || "Amazon",
   address: process.env.MAIL_FROM_ADDR || "",
 };
 
@@ -21,7 +21,7 @@ if (!sender.address) {
   );
 }
 
-let transport: Nodemailer.Transporter;
+// let transport: Nodemailer.Transporter;
 
 if (PROVIDER === "gmail_app") {
   // Gmail via App Password (simple & reliable)
@@ -32,12 +32,10 @@ if (PROVIDER === "gmail_app") {
       "GMAIL_USER / GMAIL_APP_PASSWORD missing in .env for Gmail App Password"
     );
   }
-    transport = Nodemailer.createTransport({
-      service: 'gmail',
-      auth: { user, pass },
-      logger: true,
-      debug: true,
-    });
+  var transport = Nodemailer.createTransport({
+    service: "gmail",
+    auth: { user, pass },
+  });
 } else {
   throw new Error(`Unknown MAIL_PROVIDER: ${PROVIDER} (expected 'gmail_app')`);
 }
@@ -47,7 +45,7 @@ export async function sendMail({ to, subject, html, text }: SendMailArgs) {
     to,
     subject,
     hasHtml: !!html,
-    hasText: !!text,
+    hasText: !! text,
     provider: PROVIDER,
     from: sender.address,
   });
@@ -56,11 +54,11 @@ export async function sendMail({ to, subject, html, text }: SendMailArgs) {
   console.log("SMTP verify: OK");
 
   const info = await transport.sendMail({
-    from: sender, 
+    from: sender,
     to: [to],
     subject,
-    text,
     html,
+    text
   });
 
   console.log("Mail sent:", {

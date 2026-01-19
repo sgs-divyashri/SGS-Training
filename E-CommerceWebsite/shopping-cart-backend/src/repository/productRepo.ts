@@ -1,68 +1,180 @@
+// src/repositories/productRepository.ts
+import { Op, OrderItem } from "sequelize";
 import { Product, ProductPayload } from "../models/productTableDefinition";
-import generateSimpleId from "../services/generateProductId";
 import { User } from "../models/userTableDefinition";
+import generateSimpleId from "../services/generateProductId";
+
+export type ProductFilterSpec = {
+  q?: string | undefined; // search term for p_name/p_description
+  minPrice?: number | undefined;
+  maxPrice?: number | undefined;
+  orderedBy?: number | undefined;
+  inStock?: string; // default to true in handler if you want
+  sort?:
+    | "relevance"
+    | "priceAsc"
+    | "priceDesc"
+    | "nameAsc"
+    | "nameDesc"
+    | "createdDesc";
+  page?: number | undefined; // 1-based
+  pageSize?: number | undefined; // limit per page
+  returnAll?: boolean; // bypass pagination for admin/testing
+  // optional: allow callers to override attributes
+  attributes?: string[] | { exclude: string[] };
+  categories?: string[] | undefined;
+};
 
 export const productRepository = {
-    createProduct: async (payload: Pick<ProductPayload, "p_name" | "p_description" | "orderedBy" | "price">): Promise<Product> => {
-        const userExists = await User.findOne({ where: { userId: payload.orderedBy, isActive: true } });
-        if (!userExists) {
-            throw new Error("Invalid createdBy userId");
-        }
-        const newUser = await Product.create({ ...payload, productId: generateSimpleId()});
-        return newUser
-    },
+  createProduct: async (
+    payload: Pick<
+      ProductPayload,
+      "p_name" | "p_description" | "prod_category" | "orderedBy" | "price"
+    >,
+  ): Promise<Product> => {
+    const userExists = await User.findOne({
+      where: { userId: payload.orderedBy, isActive: true },
+    });
+    if (!userExists) {
+      throw new Error("Invalid createdBy userId");
+    }
+    const newUser = await Product.create({
+      ...payload,
+      productId: generateSimpleId(),
+    });
+    return newUser;
+  },
 
-    getAllProducts: (): Promise<Product[]> => {
-        const products = Product.findAll();
-        return products
-    },
+  getProducts: async () => {
+    return Product.findAll({
+      attributes: { exclude: ["createdBy"] },
+      order: [["createdAt", "DESC"]],
+    });
+  },
 
-    // getSpecificUser: async (id: number): Promise<User | null> => {
-    //     const user = await User.findOne({ where: { userId: id } })
-    //     return user
-    // },
+  // Filtered search
+  search: async (spec: ProductFilterSpec) => {
+    const {
+      q,
+      minPrice,
+      maxPrice,
+      orderedBy,
+      inStock,
+      sort = "createdDesc",
+      page = 1,
+      pageSize = 12,
+      returnAll = false,
+      attributes,
+      categories,
+    } = spec;
 
-    // fullUpdateUser: async (id: number, payload: Pick<UserPayload, "name" | "email" | "password" | "age">): Promise<User | null | undefined> => {
-    //     const [rowsUpdated, [updatedUser]] = await User.update({ ...payload, password: passwordServices.hashPassword(payload.password) }, { where: { userId: id }, returning: true })
-    //     if (rowsUpdated === 0) {
-    //         return null;
-    //     }
+    // Build WHERE
+    const where: any = {};
+    if (typeof inStock === "string") where.inStock = inStock;
+    if (typeof orderedBy === "number") where.orderedBy = orderedBy;
 
-    //     return updatedUser
-    // },
+    if (minPrice !== undefined || maxPrice !== undefined) {
+      where.price = {};
+      if (minPrice !== undefined) where.price[Op.gte] = minPrice;
+      if (maxPrice !== undefined) where.price[Op.lte] = maxPrice;
+    }
 
-    // partialUpdateUser: async (id: number, payload: Partial<UserPayload>): Promise<UserPayload | null> => {
-    //     const user = await User.findOne({ where: { userId: id, isActive: true } });
-    //     if (!user) return null;
+    if (categories && categories.length > 0) {
+      where.prod_category = { [Op.in]: categories };
+    }
 
-    //     if (payload.name !== undefined) user.set('name', payload.name);
-    //     if (payload.email !== undefined) user.set('email', payload.email);
-    //     if (payload.password !== undefined) user.set('password', passwordServices.hashPassword(payload.password));
-    //     if (payload.age !== undefined) user.set('age', payload.age);
+    // LIKE / ILIKE search on p_name & p_description
+    let searchWhere: any | undefined;
+    if (q && q.trim()) {
+      const pattern = `%${escapeLike(q.trim())}%`;
+      const likeOp = (Op as any).iLike ?? Op.like; // ILIKE for Postgres; LIKE otherwise
+      searchWhere = {
+        [Op.or]: [
+          { p_name: { [likeOp]: pattern } },
+          { p_description: { [likeOp]: pattern } },
+        ],
+      };
+    }
 
-    //     await user.save();
-    //     return user.get();
-    // },
+    const finalWhere = searchWhere ? { [Op.and]: [where, searchWhere] } : where;
 
-    // // restoreUser: async (id: number): Promise<User | null> => {
-    // //     const [affectedRows] = await User.update({ isActive: true }, { where: { userId: id, isActive: false } });
-    // //     if (affectedRows === 0) {
-    // //         throw new Error(`User with ID ${id} not found or already restored`);
-    // //     };
-    // //     return await User.findOne({ where: { userId: id } });
-    // //     // return id
-    // // },
+    // ORDER
+    const order: OrderItem[] = mapSort(sort, Boolean(q));
+    if (!order.length) order.push(["createdAt", "DESC"]); // safety default
 
-    // toggleUser: async (id: number): Promise<User | null> => {
-    //     const user = await User.findOne({ where: { userId: id } });
-    //     if (!user) throw new Error(`User with ID ${id} not found`);
+    // Pagination
+    const offset = returnAll
+      ? undefined
+      : (Math.max(1, page) - 1) * Math.max(1, pageSize);
+    const limit = returnAll ? undefined : Math.max(1, pageSize);
 
-    //     const nextIsActive = !Boolean(user.isActive);
+    // Query
+    const { rows, count } = await Product.findAndCountAll({
+      where: finalWhere,
+      order,
+      attributes: attributes ?? { exclude: ["createdBy"] },
+      ...(typeof offset === "number" ? { offset } : {}),
+      ...(typeof limit === "number" ? { limit } : {}),
+    });
 
-    //     const [activeRows] = await User.update({ isActive: nextIsActive }, { where: { userId: id } });
-    //     if (activeRows === 0) {
-    //         throw new Error(`User with ID ${id} not found or already deleted`);
-    //     }
-    //     return await User.findOne({ where: { userId: id } });
-    // }
+    const total = Array.isArray(count) ? count.length : (count as number);
+    const pageOut = returnAll ? 1 : Math.max(1, page);
+    const sizeOut = returnAll ? total : Math.max(1, pageSize);
+
+    return {
+      items: rows,
+      total,
+      page: pageOut,
+      pageSize: sizeOut,
+      totalPages: returnAll ? 1 : Math.ceil(total / sizeOut),
+    };
+  },
+
+  delAndResProduct: async (id: string): Promise<Product | null> => {
+    const product = await Product.findOne({ where: { productId: id } });
+    if (!product) throw new Error(`User with ID ${id} not found`);
+
+    const currentRaw =
+      (product.get("inStock") as string | null) ?? "Out of Stock";
+    const normalized = currentRaw.trim().toLowerCase();
+    
+    const nextInStock: "In Stock" | "Out of Stock" = normalized === 'in stock' ? 'Out of Stock' : 'In Stock';
+
+    const [activeRows] = await Product.update(
+      { inStock: nextInStock },
+      { where: { productId: id } },
+    );
+    if (activeRows === 0) {
+      throw new Error(`User with ID ${id} not found`);
+    }
+    return await Product.findOne({ where: { productId: id } });
+  },
+};
+
+// --- helpers ---
+function mapSort(
+  sort: ProductFilterSpec["sort"],
+  hasSearch: boolean,
+): OrderItem[] {
+  switch (sort) {
+    case "priceAsc":
+      return [["price", "ASC"]];
+    case "priceDesc":
+      return [["price", "DESC"]];
+    case "nameAsc":
+      return [["p_name", "ASC"]];
+    case "nameDesc":
+      return [["p_name", "DESC"]];
+    case "relevance":
+      // keep simple; default order when searching (or add CASE literals for Postgres)
+      return hasSearch ? [] : [["createdAt", "DESC"]];
+    case "createdDesc":
+    default:
+      return [["createdAt", "DESC"]];
+  }
+}
+
+function escapeLike(input: string) {
+  // escape %, _, \ for LIKE
+  return input.replace(/[\\%_]/g, (m) => `\\${m}`);
 }

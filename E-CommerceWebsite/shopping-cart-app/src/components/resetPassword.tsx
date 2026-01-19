@@ -2,26 +2,23 @@
 import React, { useMemo, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import Joi from "joi";
+import { joiResolver } from "@hookform/resolvers/joi";
+import { FormValues } from "../types/authPage";
 import { api } from "../axios/axiosClient";
 
-const schema = z
-  .object({
-    password: z
-      .string()
-      .min(8, "Minimum 8 characters")
-      .regex(/[A-Z]/, "Must contain at least one uppercase letter")
-      .regex(/[a-z]/, "Must contain at least one lowercase letter")
-      .regex(/[0-9]/, "Must contain at least one digit"),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    path: ["confirmPassword"],
-    message: "Passwords do not match",
-  });
-
-type FormValues = z.infer<typeof schema>;
+const schema = Joi.object({
+  password: Joi.string().min(8).required().messages({
+    "string.min": "Minimum 8 characters",
+    "string.empty": "Password is required",
+    "any.required": "Password is required",
+  }),
+  confirmPassword: Joi.string().valid(Joi.ref("password")).required().messages({
+    "any.only": "Passwords do not match",
+    "string.empty": "Please confirm your password",
+    "any.required": "Please confirm your password",
+  }),
+});
 
 export default function ResetPassword() {
   const [params] = useSearchParams();
@@ -36,7 +33,7 @@ export default function ResetPassword() {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
-    resolver: zodResolver(schema),
+    resolver: joiResolver(schema),
     mode: "onBlur",
     defaultValues: { password: "", confirmPassword: "" },
   });
@@ -79,7 +76,7 @@ export default function ResetPassword() {
             onClick={() => navigate("/")}
             type="button"
           >
-            ← Back to Sign In
+            Back to Sign In
           </button>
         </section>
       </main>
@@ -89,9 +86,7 @@ export default function ResetPassword() {
   return (
     <main className="min-h-screen bg-blue-50 flex items-center justify-center p-4">
       <section className="w-full max-w-lg bg-white rounded-xl shadow p-8">
-        {/* Logo / Brand */}
         <div className="flex justify-center mb-4">
-          {/* Replace with your logo if needed */}
           <span className="text-xl font-bold text-pink-700">Amazon</span>
         </div>
 
@@ -107,24 +102,21 @@ export default function ResetPassword() {
 
         <form
           onSubmit={handleSubmit(onSubmit)}
-          noValidate
           className="mt-6 space-y-5"
         >
           {/* Create Password */}
           <div className="space-y-1.5">
             <label
-              htmlFor="password"
               className="block text-sm font-medium text-gray-700"
             >
               Create Password
             </label>
             <div className="relative">
               <input
-                id="password"
                 type={showPwd ? "text" : "password"}
                 autoComplete="new-password"
                 {...register("password")}
-                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 shadow-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 pr-10"
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 shadow-sm outline-none"
                 placeholder="Enter a strong password"
                 aria-invalid={!!errors.password}
               />
@@ -147,14 +139,12 @@ export default function ResetPassword() {
           {/* Confirm Password */}
           <div className="space-y-1.5">
             <label
-              htmlFor="confirmPassword"
               className="block text-sm font-medium text-gray-700"
             >
               Confirm Password
             </label>
             <div className="relative">
               <input
-                id="confirmPassword"
                 type={showConfirm ? "text" : "password"}
                 autoComplete="new-password"
                 {...register("confirmPassword")}
