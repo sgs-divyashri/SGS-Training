@@ -1,55 +1,52 @@
 import type { ServerRoute } from "@hapi/hapi";
 import { addProductHandler } from "./addproducts";
-import { getProductsHandler } from "./getFilteredProducts";
+import { getFilteredProductsHandler } from "./getFilteredProducts";
+import { getAllProductsHandler } from "./getAllProducts";
 import { delAndResProductHandler } from "./softDeleteProduct";
-
+import { deleteProductHandler } from "./deleteProduct";
+import { editProductHandler } from "./editProduct";
+import { notifyProductHandler } from "./notifyProducts";
 
 export const productRoutes: ServerRoute[] = [
     {
         method: 'POST',
         path: '/add',
-        handler: addProductHandler,
-        options: {
-            auth: false,
-        },
+        handler: addProductHandler
     },
 
     {
         method: 'GET',
         path: '/products',
-        handler: getProductsHandler,
-        // options: {
-        //     auth: false,
-        // },
+        handler: getAllProductsHandler,
     },
 
-    // {
-    //     method: 'GET',
-    //     path: '/users/{id}',
-    //     handler: getSpecificUserHandler
-    // },
+    {
+        method: 'GET',
+        path: '/filtered-products',
+        handler: getFilteredProductsHandler,
+    },
 
-    // {
-    //     method: "PUT",
-    //     path: "/users/f_update/{id}",
-    //     handler: fullUpdateUserHandler
-    // },
+    {
+        method: "PATCH",
+        path: "/product/edit/{id}",
+        handler: editProductHandler
+    },
 
-    // {
-    //     method: "PATCH",
-    //     path: "/users/p_update/{id}",
-    //     handler: partialUpdateUserHandler
-    // },
-
-    // // {
-    // //     method: "PATCH",
-    // //     path: "/users/restore/{userID}",
-    // //     handler: restoreUserHandler
-    // // },
+    {
+        method: 'PATCH',
+        path: '/notify/{productID}',
+        handler: notifyProductHandler,
+    },
 
     {
         method: 'PATCH',
         path: '/product/toggle/{productID}',
         handler: delAndResProductHandler,
+    },
+
+    {
+        method: 'DELETE',
+        path: '/product/{id}',
+        handler: deleteProductHandler
     }
 ]

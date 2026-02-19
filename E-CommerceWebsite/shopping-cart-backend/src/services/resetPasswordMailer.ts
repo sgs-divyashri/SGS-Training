@@ -5,7 +5,7 @@ export type SendMailArgs = {
   to: string;
   subject: string;
   html: string;
-  text: string;
+  // text: string;
 };
 
 const PROVIDER = (process.env.MAIL_PROVIDER || "gmail_app").toLowerCase();
@@ -21,10 +21,7 @@ if (!sender.address) {
   );
 }
 
-// let transport: Nodemailer.Transporter;
-
 if (PROVIDER === "gmail_app") {
-  // Gmail via App Password (simple & reliable)
   const user = process.env.GMAIL_USER;
   const pass = process.env.GMAIL_APP_PASSWORD;
   if (!user || !pass) {
@@ -40,12 +37,12 @@ if (PROVIDER === "gmail_app") {
   throw new Error(`Unknown MAIL_PROVIDER: ${PROVIDER} (expected 'gmail_app')`);
 }
 
-export async function sendMail({ to, subject, html, text }: SendMailArgs) {
+export async function sendMail({ to, subject, html }: SendMailArgs) {
   console.log("sendMail payload:", {
     to,
     subject,
     hasHtml: !!html,
-    hasText: !! text,
+    // hasText: !! text,
     provider: PROVIDER,
     from: sender.address,
   });
@@ -58,7 +55,7 @@ export async function sendMail({ to, subject, html, text }: SendMailArgs) {
     to: [to],
     subject,
     html,
-    text
+    // text
   });
 
   console.log("Mail sent:", {

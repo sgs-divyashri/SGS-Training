@@ -1,5 +1,6 @@
 import { DataTypes, Model, Optional, Sequelize } from "sequelize";
 import { Product } from "./productTableDefinition";
+import { Orders } from "./ordersTableDefinition";
 // import { Task } from "./taskTableDefinition";
 
 export interface UserPayload {
@@ -7,6 +8,7 @@ export interface UserPayload {
   name: string;
   email: string;
   password: string;
+  role: string;
   isActive: boolean;
   createdAt?: Date;
   updatedAt?: Date;
@@ -21,6 +23,7 @@ export class User extends Model<UserPayload, UserCreationAttributes>
   public name!: string;
   public email!: string;
   public password!: string;
+  public role!: string;
   public isActive!: boolean;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -52,6 +55,10 @@ export default (sequelize: Sequelize) => {
         type: DataTypes.TEXT,
         allowNull: false,
       },
+      role: {
+        type: DataTypes.ENUM('Admin', 'User'),
+        allowNull: false
+      },
       isActive: {
         type: DataTypes.BOOLEAN,
         defaultValue: true,
@@ -78,7 +85,7 @@ export default (sequelize: Sequelize) => {
   return {
     User,
     associate: (sequelize: Sequelize) => {
-      User.hasMany(Product, { foreignKey: "createdBy", sourceKey: 'userId' });
+      User.hasMany(Orders, { foreignKey: "orderedBy", sourceKey: 'userId', as: "orders", });
     }
   };
 };

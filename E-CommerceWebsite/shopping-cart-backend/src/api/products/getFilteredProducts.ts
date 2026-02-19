@@ -1,6 +1,6 @@
-// handlers/product/getProducts.ts
 import type { Request, ResponseToolkit, ResponseObject } from "@hapi/hapi";
 import { productServices } from "../../services/productServices";
+import { error } from "node:console";
 
 type SortParam =
   | "createdDesc"
@@ -10,7 +10,7 @@ type SortParam =
   | "nameDesc"
   | "relevance";
 
-export const getProductsHandler = async (
+export const getFilteredProductsHandler = async (
   request: Request,
   h: ResponseToolkit,
 ): Promise<ResponseObject> => {
@@ -24,9 +24,12 @@ export const getProductsHandler = async (
       sort = "createdDesc",
       page = "1",
       pageSize = "12",
-      all,
       prod_category,
     } = request.query as Record<string, any>;
+
+    const q_filter = typeof q === 'string' ? q.trim() : '';
+    if (!q_filter)
+      return h.response({ error: 'Quick Filter is required and cannot be empty.'}).code(400)
 
     // normalize
     const toNum = (v: any) =>
@@ -35,7 +38,6 @@ export const getProductsHandler = async (
     const maxPriceNum = toNum(maxPrice);
     const orderedByNum = toNum(orderedBy);
 
-    // basic validation
     if (minPrice !== undefined && minPriceNum === undefined)
       return h.response({ error: "Invalid minPrice" }).code(400);
     if (maxPrice !== undefined && maxPriceNum === undefined)
@@ -51,13 +53,9 @@ export const getProductsHandler = async (
     if (orderedBy !== undefined && orderedByNum === undefined)
       return h.response({ error: "Invalid orderedBy" }).code(400);
 
-    const pageNum = Math.max(1, parseInt(String(page), 10) || 1);
+    const pageNum = toNum(String(page))
     const pageSizeNum = Math.min(
-      100,
-      Math.max(1, parseInt(String(pageSize), 10) || 12),
-    );
-    const returnAll = ["1", "true", "yes"].includes(
-      String(all ?? "").toLowerCase(),
+      100, parseInt(String(pageSize))
     );
   
     let inStockValue: "In Stock" | "Out of Stock" | undefined = undefined;
@@ -83,7 +81,6 @@ export const getProductsHandler = async (
     }
 
     const SORT_MAP: Record<string, SortParam> = {
-      // canonical spellings
       createddesc: "createdDesc",
       priceasc: "priceAsc",
       pricedesc: "priceDesc",
@@ -102,19 +99,16 @@ export const getProductsHandler = async (
 
     const sortNorm = normalizeSort(sort);
 
-    // delegate filtering/sorting/pagination to repo via service
     const result = await productServices.searchProducts({
-      q: q ? String(q).trim() : undefined,
+      q: q_filter,
       minPrice: minPriceNum,
       maxPrice: maxPriceNum,
       orderedBy: orderedByNum,
-      ...(inStockValue ? { inStock: inStockValue } : {}),
+      inStock: inStockValue,
       sort: sortNorm,
       page: pageNum,
       pageSize: pageSizeNum,
-      returnAll,
-      attributes: { exclude: ["createdBy"] },
-      ...(categories && categories.length ? { categories } : {}),
+      categories
     });
 
     return h

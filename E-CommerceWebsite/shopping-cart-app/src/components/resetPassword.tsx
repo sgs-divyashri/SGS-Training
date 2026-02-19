@@ -1,4 +1,3 @@
-// src/pages/ResetPassword.tsx
 import React, { useMemo, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -6,6 +5,7 @@ import Joi from "joi";
 import { joiResolver } from "@hookform/resolvers/joi";
 import { FormValues } from "../types/authPage";
 import { api } from "../axios/axiosClient";
+import { Field, inputClass } from "./authPage";
 
 const schema = Joi.object({
   password: Joi.string().min(8).required().messages({
@@ -20,13 +20,11 @@ const schema = Joi.object({
   }),
 });
 
-export default function ResetPassword() {
+export const ResetPassword = () => {
   const [params] = useSearchParams();
   const token = params.get("token");
   const navigate = useNavigate();
   const [serverMsg, setServerMsg] = useState<string | null>(null);
-  const [showPwd, setShowPwd] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
 
   const {
     register,
@@ -40,16 +38,19 @@ export default function ResetPassword() {
 
   const isTokenMissing = useMemo(() => !token, [token]);
 
-  async function onSubmit(values: FormValues) {
+  const onSubmit = async (values: FormValues) => {
     setServerMsg(null);
     try {
       const res = await api.post(
         "/users/reset-password",
-        { password: values.password }, // <-- body
-        { headers: { Authorization: `Bearer ${token}` } } // <-- config (headers)
+        {
+          password: values.password,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
       );
       setServerMsg(res?.data?.message || "Password updated successfully.");
-      // Optionally redirect to sign-in after a short delay:
       setTimeout(() => navigate("/"), 2000);
     } catch (err: any) {
       const msg =
@@ -59,7 +60,7 @@ export default function ResetPassword() {
         "Something went wrong.";
       setServerMsg(msg);
     }
-  }
+  };
 
   if (isTokenMissing) {
     return (
@@ -72,9 +73,9 @@ export default function ResetPassword() {
             Reset link is invalid or missing. Please request a new link.
           </p>
           <button
+            type="button"
             className="mt-6 text-blue-600 hover:text-blue-700 underline underline-offset-2"
             onClick={() => navigate("/")}
-            type="button"
           >
             Back to Sign In
           </button>
@@ -100,73 +101,36 @@ export default function ResetPassword() {
           </p>
         )}
 
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="mt-6 space-y-5"
-        >
-          {/* Create Password */}
-          <div className="space-y-1.5">
-            <label
-              className="block text-sm font-medium text-gray-700"
-            >
-              Create Password
-            </label>
-            <div className="relative">
-              <input
-                type={showPwd ? "text" : "password"}
-                autoComplete="new-password"
-                {...register("password")}
-                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 shadow-sm outline-none"
-                placeholder="Enter a strong password"
-                aria-invalid={!!errors.password}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPwd((s) => !s)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                aria-label={showPwd ? "Hide password" : "Show password"}
-              >
-                {showPwd ? "🙈" : "👁️"}
-              </button>
-            </div>
-            {errors.password?.message && (
-              <p className="text-sm text-red-600 bg-red-50 px-2 py-1 rounded">
-                {errors.password.message}
-              </p>
-            )}
-          </div>
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-5">
+          <Field
+            id="password"
+            label="Password"
+            error={(errors as any)?.password?.message}
+          >
+            <input
+              id="password"
+              type="password"
+              autoComplete="new-password"
+              {...register("password")}
+              className={inputClass}
+              placeholder="Enter Password"
+            />
+          </Field>
 
-          {/* Confirm Password */}
-          <div className="space-y-1.5">
-            <label
-              className="block text-sm font-medium text-gray-700"
-            >
-              Confirm Password
-            </label>
-            <div className="relative">
-              <input
-                type={showConfirm ? "text" : "password"}
-                autoComplete="new-password"
-                {...register("confirmPassword")}
-                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 shadow-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 pr-10"
-                placeholder="Re-enter your password"
-                aria-invalid={!!errors.confirmPassword}
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirm((s) => !s)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                aria-label={showConfirm ? "Hide password" : "Show password"}
-              >
-                {showConfirm ? "🙈" : "👁️"}
-              </button>
-            </div>
-            {errors.confirmPassword?.message && (
-              <p className="text-sm text-red-600 bg-red-50 px-2 py-1 rounded">
-                {errors.confirmPassword.message}
-              </p>
-            )}
-          </div>
+          <Field
+            id="confirmPassword"
+            label="Confirm Password"
+            error={(errors as any)?.confirmPassword?.message}
+          >
+            <input
+              id="confirmPassword"
+              type="password"
+              autoComplete="new-password"
+              {...register("confirmPassword" as any)}
+              className={inputClass}
+              placeholder="Re-enter Password"
+            />
+          </Field>
 
           <div className="flex items-center justify-between">
             <button
@@ -174,12 +138,12 @@ export default function ResetPassword() {
               onClick={() => navigate("/")}
               className="text-sm text-blue-600 hover:text-blue-700 underline underline-offset-2"
             >
-              ← Back to Sign In
+              Back to Sign In
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="inline-flex justify-center items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-white font-semibold shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="inline-flex justify-center items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-white font-semibold shadow hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {isSubmitting ? "Updating..." : "Update Password"}
             </button>
@@ -188,4 +152,4 @@ export default function ResetPassword() {
       </section>
     </main>
   );
-}
+};

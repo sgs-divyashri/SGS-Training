@@ -1,10 +1,11 @@
 import { User } from "../models/userTableDefinition";
 import { passwordServices } from "../services/passwordServices";
 import { UserPayload } from "../models/userTableDefinition";
+import { RefreshToken } from "../models/refreshTokenTableDefinition";
 
 export const userRepository = {
   createUser: async (
-    payload: Pick<UserPayload, "name" | "email" | "password">
+    payload: Pick<UserPayload, "name" | "email" | "password" | "role">,
   ): Promise<User> => {
     const newUser = await User.create({
       ...payload,
@@ -14,7 +15,7 @@ export const userRepository = {
   },
 
   loginUser: async (
-    loginData: Pick<UserPayload, "email" | "password">
+    loginData: Pick<UserPayload, "email" | "password" | "role">,
   ): Promise<User | null> => {
     const user = await User.findOne({
       where: { email: loginData.email, isActive: true },
@@ -22,19 +23,28 @@ export const userRepository = {
     });
     if (!user) return null;
 
-    // Access password safely
     const hashedPassword: string = user.password;
-    // console.log("Hashed password for login user: ",hashedPassword)
+
     const isValidPassword = passwordServices.verifyPassword(
       loginData.password,
-      hashedPassword
+      hashedPassword,
     );
     if (!isValidPassword) return null;
+
+    const isRole: string = user.role;
+    if (isRole !== loginData.role) return null;
 
     return user;
   },
 
-  forgotPassword: async (data: Pick<UserPayload, "email">): Promise<User | null> => {
+  refreshToken: async (userId: number) => {
+    const count = await RefreshToken.destroy({ where: { userId: userId } });
+    return count > 0 ? userId : undefined;
+  },
+
+  forgotPassword: async (
+    data: Pick<UserPayload, "email">,
+  ): Promise<User | null> => {
     const user = await User.findOne({
       where: { email: data.email, isActive: true },
     });
@@ -43,8 +53,11 @@ export const userRepository = {
     return user;
   },
 
-  updatePassword: async(userId: number, passwordHash: string) => {
-    const user = await User.update({ password: passwordHash }, { where: { userId } });
+  updatePassword: async (userId: number, passwordHash: string) => {
+    const user = await User.update(
+      { password: passwordHash },
+      { where: { userId } },
+    );
     return user;
   },
 

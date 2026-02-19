@@ -1,6 +1,5 @@
 import type { Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
 import { userServices } from "../../services/userServices";
-import { normalizeEmail } from "../../services/emailValidation";
 import { validateEmail } from "../../services/emailValidation";
 import { UserPayload } from "../../models/userTableDefinition";
 import { passwordServices } from "../../services/passwordServices";
@@ -8,19 +7,17 @@ import { sendMail } from "../../services/resetPasswordMailer";
 
 export const registerUserHandler = async (request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
   try {
-    const payload = request.payload as Pick<UserPayload, "name" | "email" | "password">;
+    const payload = request.payload as Pick<UserPayload, "name" | "email" | "password" | "role">;
 
-    if (!payload.name || !payload.email || !payload.password) {
+    if (!payload.name || !payload.email || !payload.password || !payload.role) {
       return h.response({ error: "Bad Request" }).code(400);
     }
-    const email = normalizeEmail(payload.email)
 
-    if (!validateEmail(email)) {
+    if (!validateEmail(payload.email)) {
       return h.response({ error: "Invalid email format" }).code(400);
     }
 
-    // Check if email already exists
-    const existingUser = await userServices.findByEmail(email);
+    const existingUser = await userServices.findByEmail(payload.email);
     if (existingUser) {
       return h.response({ error: "Email already registered" }).code(409);
     }
@@ -33,8 +30,9 @@ export const registerUserHandler = async (request: Request, h: ResponseToolkit):
 
     const newUser = await userServices.createUser({
       name: payload.name,
-      email: email,
+      email: payload.email,
       password: payload.password,
+      role: payload.role
     });
 
     return h.response({
@@ -44,7 +42,7 @@ export const registerUserHandler = async (request: Request, h: ResponseToolkit):
 
   } catch (err: any) {
     console.error(err);
-    return h.response({ error: err.message }).code(500);
+    return h.response({ error: err.message || "Server error"}).code(500);
   }
 };
 

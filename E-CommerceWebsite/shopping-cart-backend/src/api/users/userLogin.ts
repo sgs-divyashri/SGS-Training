@@ -2,36 +2,65 @@ import { Request, ResponseToolkit } from "@hapi/hapi";
 import { userServices } from "../../services/userServices";
 import { generateToken } from "../../authentication/authentication";
 import { UserPayload } from "../../models/userTableDefinition";
+import { RefreshToken } from "../../models/refreshTokenTableDefinition";
+import Jwt from "@hapi/jwt";
 
-export const loginUserHandler = async (request: Request, h: ResponseToolkit) => {
+export const loginUserHandler = async (
+  request: Request,
+  h: ResponseToolkit,
+) => {
   try {
-    const payload = request.payload as Pick<UserPayload, "email" | "password">;
+    const payload = request.payload as Pick<
+      UserPayload,
+      "email" | "password" | "role"
+    >;
 
-    if (!payload.email || !payload.password) {
-      return h.response({ error: "Email and password are required" }).code(400);
+    if (!payload.email || !payload.password || !payload.role) {
+      return h
+        .response({ error: "Email, password and role are required" })
+        .code(400);
     }
 
-    // Validate credentials
     const user = await userServices.loginUser(payload);
 
     if (!user) {
-      return h.response({ error: "Invalid email or password" }).code(401);
+      return h
+        .response({ error: "Invalid email or password or role" })
+        .code(400);
     }
 
-    // Generate a new token
-    const token = generateToken({
+    const { accessToken, refreshToken } = generateToken({
       userId: user.getDataValue("userId"),
       email: user.getDataValue("email"),
-      purpose: 'auth'
+      role: user.getDataValue("role"),
+      purpose: "auth",
     });
 
-    return h.response({
-      message: "Login successful...",
-      token
-    }).code(200);
+    const rtArtifacts = Jwt.token.decode(refreshToken!);
+    const expSec = rtArtifacts.decoded.payload.exp as number;
 
+    await RefreshToken.create({
+      token: refreshToken!,
+      userId: user.getDataValue("userId"),
+      revokedAt: null,
+      expiresAt: new Date(expSec * 1000),
+    });
+
+    h.state("rt", refreshToken!, {
+      isSecure: process.env.NODE_ENV === "production",
+      isHttpOnly: true,
+      isSameSite: "Lax",
+      path: "/",
+    });
+
+    return h
+      .response({
+        message: "Login successful...",
+        data: { accessToken },
+      })
+      .code(200);
   } catch (err: any) {
     console.error(err);
-    return h.response({ error: err.message }).code(500);
+    return h.response({ error: err.message || "Server error" }).code(500);
   }
 };

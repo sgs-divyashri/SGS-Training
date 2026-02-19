@@ -1,10 +1,12 @@
 export type SignInForm = {
+  role: 'Admin' | 'User' | '';
   email: string;
   password: string;
 };
 
 export type RegisterForm = {
   name: string;
+  role: string;
   email: string;
   password: string;
   confirmPassword: string;

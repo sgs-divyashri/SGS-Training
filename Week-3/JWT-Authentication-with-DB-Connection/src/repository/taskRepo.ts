@@ -11,12 +11,12 @@ export const taskRepository = {
             throw new Error("Invalid createdBy userId");
         }
 
-        const newUser = await Task.create({
+        const newTask= await Task.create({
             taskId: await generateTaskId(),
             ...payload,
         });
 
-        return newUser
+        return newTask
     },
 
     getAllTasks: (): Promise<Task[]> => {

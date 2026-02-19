@@ -8,14 +8,19 @@ export const userServices = {
     return await User.findOne({ where: { email }, attributes: ["userId", "email"], });
   },
 
-  createUser: async (payload: Pick<UserPayload, "name"|"email"|"password">): Promise<User> => {
+  createUser: async (payload: Pick<UserPayload, "name"|"email"|"password"|"role">): Promise<User> => {
     const newUser = await userRepository.createUser(payload)
     return newUser
   },
 
-  loginUser: async (loginData: Pick<UserPayload, "email" | "password">): Promise<User | null> => {
+  loginUser: async (loginData: Pick<UserPayload, "email" | "password" | "role">): Promise<User | null> => {
     const user = await userRepository.loginUser(loginData)
     return user
+  },
+
+  refreshToken: async (userId: number) => {
+    const rToken = await userRepository.refreshToken(userId)
+    return rToken
   },
 
   forgotPassword: async (data: Pick<UserPayload, "email">): Promise<User | null> => {

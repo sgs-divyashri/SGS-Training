@@ -1,49 +1,91 @@
+import Jwt from "@hapi/jwt";
+import { JWT_SECRET } from "../config/constants";
+import { v4 as uuidv4 } from 'uuid';
 
-import Jwt from '@hapi/jwt';
-import { JWT_SECRET } from '../config/constants';
+export type TokenType = "access" | "refresh";
 
 export interface JWTPayload {
   userId: number;
   email: string;
-  purpose: "auth" | "password_reset"
+  purpose: "auth" | "password_reset";
+  role: string;
+  type: TokenType;
+  jti?: string;
+  aud: string;
+  iss: string;
+  iat: number;
+  exp?: number;
 }
 
 type GenerateOptions = {
-  /** e.g. 900 (seconds) or '15m' | '2h' | '7d' */
   expiresIn?: number | string;
-  /** override issued-at (seconds) if needed */
   iat?: number;
+  accessOnly?: boolean;
 };
 
-/** Parse '15m', '2h', '7d' etc. into seconds. Accepts value first, fallback second. */
-function toSeconds(value: number | string, fallbackSec: number) {
+function toSeconds(value: number | string | undefined, fallbackSec: number) {
   if (value == null) return fallbackSec;
-  if (typeof value === 'number' && Number.isFinite(value)) return value;
-
-  const match = /^(\d+)\s*([smhd])$/.exec(String(value).trim());
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  const s = String(value).trim();
+  const match = /^(\d+)\s*([smhd])$/.exec(s);
   if (!match) return fallbackSec;
-
   const n = parseInt(match[1]!, 10);
   const unit = match[2]!;
-  const mul = unit === 's' ? 1 : unit === 'm' ? 60 : unit === 'h' ? 3600 : 86400;
+  const mul =
+    unit === "s" ? 1 : unit === "m" ? 60 : unit === "h" ? 3600 : 86400;
   return n * mul;
 }
 
-// Generate JWT token using @hapi/jwt; maps expiresIn -> ttlSec
-export const generateToken = (payload: JWTPayload, options?: GenerateOptions): string => {
-  const iat = options?.iat ?? Math.floor(Date.now() / 1000);
-  const ttlSec = toSeconds(options?.expiresIn!, 7 * 24 * 60 * 60); // default 7 days
+export const generateToken = (
+  payload: Pick<JWTPayload, "userId" | "email" | "role" | "purpose">,
+  options?: GenerateOptions,
+) => {
+  const iat = Math.floor(Date.now() / 1000);
+  const aud = "urn:audience:test";
+  const iss = "urn:issuer:test";
+  const accessJti = uuidv4();
+  const refreshJti = uuidv4();
 
-  const claims = {
+  const accessPayload: JWTPayload = {
     ...payload,
-    aud: 'urn:audience:test',
-    iss: 'urn:issuer:test',
-    iat, // issued-at for clarity
+    type: "access",
+    aud,
+    iss,
+    iat,
+    jti: accessJti,
   };
 
-  return Jwt.token.generate(
-    claims,
-    { key: JWT_SECRET, algorithm: 'HS256' },
-    { ttlSec }
+  const accessTtlSec = toSeconds(options?.expiresIn, 60); 
+
+  const accessToken = Jwt.token.generate(
+    accessPayload,
+    { key: JWT_SECRET, algorithm: "HS256" },
+    { ttlSec: accessTtlSec },
   );
+
+  if (options?.accessOnly) {
+    return { accessToken };
+  }
+
+  const refreshPayload: JWTPayload = {
+    ...payload,
+    type: "refresh",
+    aud,
+    iss,
+    iat,
+    jti: refreshJti,
+  };
+
+  const refreshToken = Jwt.token.generate(
+    refreshPayload,
+    { key: JWT_SECRET, algorithm: "HS256" },
+    { ttlSec: 60 * 60 * 24 * 7 },
+  );
+
+  return {
+    accessToken,
+    refreshToken,
+    accessJti,
+    refreshJti,
+  };
 };

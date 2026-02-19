@@ -1,15 +1,15 @@
-// src/repositories/productRepository.ts
 import { Op, OrderItem } from "sequelize";
 import { Product, ProductPayload } from "../models/productTableDefinition";
-import { User } from "../models/userTableDefinition";
 import generateSimpleId from "../services/generateProductId";
+import { Category } from "../models/prodCategoryTableDefinition";
+import generateCategoryId from "../services/generateCategoryId";
 
 export type ProductFilterSpec = {
-  q?: string | undefined; // search term for p_name/p_description
+  q: string;
   minPrice?: number | undefined;
   maxPrice?: number | undefined;
   orderedBy?: number | undefined;
-  inStock?: string; // default to true in handler if you want
+  inStock?: string | undefined;
   sort?:
     | "relevance"
     | "priceAsc"
@@ -17,27 +17,23 @@ export type ProductFilterSpec = {
     | "nameAsc"
     | "nameDesc"
     | "createdDesc";
-  page?: number | undefined; // 1-based
-  pageSize?: number | undefined; // limit per page
-  returnAll?: boolean; // bypass pagination for admin/testing
-  // optional: allow callers to override attributes
-  attributes?: string[] | { exclude: string[] };
+  page?: number | undefined;
+  pageSize?: number | undefined;
   categories?: string[] | undefined;
+};
+
+export type PageSpec = {
+  page?: number | undefined;
+  pageSize?: number | undefined;
 };
 
 export const productRepository = {
   createProduct: async (
     payload: Pick<
       ProductPayload,
-      "p_name" | "p_description" | "prod_category" | "orderedBy" | "price"
+      "p_name" | "p_description" | "categoryId" | "price" | "qty"
     >,
   ): Promise<Product> => {
-    const userExists = await User.findOne({
-      where: { userId: payload.orderedBy, isActive: true },
-    });
-    if (!userExists) {
-      throw new Error("Invalid createdBy userId");
-    }
     const newUser = await Product.create({
       ...payload,
       productId: generateSimpleId(),
@@ -45,14 +41,51 @@ export const productRepository = {
     return newUser;
   },
 
-  getProducts: async () => {
-    return Product.findAll({
+  getProducts: async (spec: PageSpec) => {
+    const { page = 1, pageSize = 12 } = spec;
+    const offset = (Math.max(1, page) - 1) * Math.max(1, pageSize);
+    const limit = Math.max(1, pageSize);
+    const { rows, count } = await Product.findAndCountAll({
       attributes: { exclude: ["createdBy"] },
       order: [["createdAt", "DESC"]],
+      include: [
+        {
+          model: Category,
+          as: "category",
+          attributes: ["prod_category"],
+        },
+      ],
+      offset,
+      limit,
     });
+
+    const products = rows.map((p: any) => ({
+      productId: p.productId,
+      p_name: p.p_name,
+      p_description: p.p_description,
+      price: Number(p.price),
+      qty: Number(p.qty),
+      inStock: p.inStock,
+      isNotification: !!p.isNotification,
+      categoryId: p.categoryId,
+      prod_category: p.category?.prod_category ?? "",
+      createdAt: p.createdAt,
+      updatedAt: p.updatedAt,
+    }));
+
+    const total = count;
+    const pageOut = Math.max(1, page);
+    const sizeOut = Math.max(1, pageSize);
+
+    return {
+      items: products,
+      total,
+      page: pageOut,
+      pageSize: sizeOut,
+      totalPages: Math.ceil(total / sizeOut),
+    };
   },
 
-  // Filtered search
   search: async (spec: ProductFilterSpec) => {
     const {
       q,
@@ -63,12 +96,13 @@ export const productRepository = {
       sort = "createdDesc",
       page = 1,
       pageSize = 12,
-      returnAll = false,
-      attributes,
       categories,
     } = spec;
 
-    // Build WHERE
+    if (typeof q !== "string" || q.trim() === "") {
+      throw new Error("Quick filter is required and cannot be empty.");
+    }
+
     const where: any = {};
     if (typeof inStock === "string") where.inStock = inStock;
     if (typeof orderedBy === "number") where.orderedBy = orderedBy;
@@ -83,11 +117,10 @@ export const productRepository = {
       where.prod_category = { [Op.in]: categories };
     }
 
-    // LIKE / ILIKE search on p_name & p_description
     let searchWhere: any | undefined;
     if (q && q.trim()) {
       const pattern = `%${escapeLike(q.trim())}%`;
-      const likeOp = (Op as any).iLike ?? Op.like; // ILIKE for Postgres; LIKE otherwise
+      const likeOp = (Op as any).iLike;
       searchWhere = {
         [Op.or]: [
           { p_name: { [likeOp]: pattern } },
@@ -98,60 +131,114 @@ export const productRepository = {
 
     const finalWhere = searchWhere ? { [Op.and]: [where, searchWhere] } : where;
 
-    // ORDER
     const order: OrderItem[] = mapSort(sort, Boolean(q));
-    if (!order.length) order.push(["createdAt", "DESC"]); // safety default
+    if (!order.length) order.push(["createdAt", "DESC"]);
 
-    // Pagination
-    const offset = returnAll
-      ? undefined
-      : (Math.max(1, page) - 1) * Math.max(1, pageSize);
-    const limit = returnAll ? undefined : Math.max(1, pageSize);
+    const offset = (Math.max(1, page) - 1) * Math.max(1, pageSize);
+    const limit = Math.max(1, pageSize);
 
-    // Query
     const { rows, count } = await Product.findAndCountAll({
+      attributes: { exclude: ["createdBy"] },
       where: finalWhere,
       order,
-      attributes: attributes ?? { exclude: ["createdBy"] },
-      ...(typeof offset === "number" ? { offset } : {}),
-      ...(typeof limit === "number" ? { limit } : {}),
+      offset,
+      limit,
     });
 
-    const total = Array.isArray(count) ? count.length : (count as number);
-    const pageOut = returnAll ? 1 : Math.max(1, page);
-    const sizeOut = returnAll ? total : Math.max(1, pageSize);
+    const total = count;
+    const pageOut = Math.max(1, page);
+    const sizeOut = Math.max(1, pageSize);
 
     return {
       items: rows,
       total,
       page: pageOut,
       pageSize: sizeOut,
-      totalPages: returnAll ? 1 : Math.ceil(total / sizeOut),
+      totalPages: Math.ceil(total / sizeOut),
     };
+  },
+
+  editProduct: async (
+    id: string,
+    payload: Pick<
+      Partial<Product>,
+      "p_name" | "p_description" | "categoryId" | "price" | "qty"
+    >,
+  ): Promise<ProductPayload | null> => {
+    const product = await Product.findOne({ where: { productId: id } });
+    if (!product) return null;
+
+    // const category = await Category.findOne({
+    //   where: { prod_category: payload.categoryId },
+    // });
+
+    if (payload.p_name !== undefined) product.set("p_name", payload.p_name);
+    if (payload.p_description !== undefined)
+      product.set("p_description", payload.p_description);
+    if (payload.categoryId !== undefined) {
+      const category = await Category.findOne({
+        where: {
+          [Op.or]: [
+            { categoryId: payload.categoryId as any }, 
+            { prod_category: String(payload.categoryId) }, 
+          ],
+        },
+      });
+
+      if (!category) {
+        throw new Error("Category not found");
+      }
+      product.set("categoryId", category!.categoryId);
+    }
+    if (payload.price !== undefined) product.set("price", payload.price);
+    if (payload.qty !== undefined) product.set("qty", payload.qty)
+
+    await product.save();
+    return product.get();
+  },
+
+  notifyProduct: async (id: string): Promise<Product | null> => {
+    const product = await Product.findOne({ where: { productId: id } });
+    if (!product) throw new Error(`Product with ID ${id} not found`);
+    const nextIsNotify = !Boolean(product.isNotification);
+
+    const [activeRows] = await Product.update(
+      { isNotification: nextIsNotify },
+      { where: { productId: id } },
+    );
+    if (activeRows === 0) {
+      throw new Error(`User with ID ${id} not found or already deleted`);
+    }
+    return await Product.findOne({ where: { productId: id } });
   },
 
   delAndResProduct: async (id: string): Promise<Product | null> => {
     const product = await Product.findOne({ where: { productId: id } });
-    if (!product) throw new Error(`User with ID ${id} not found`);
+    if (!product) throw new Error(`Product with ID ${id} not found`);
 
     const currentRaw =
       (product.get("inStock") as string | null) ?? "Out of Stock";
-    const normalized = currentRaw.trim().toLowerCase();
-    
-    const nextInStock: "In Stock" | "Out of Stock" = normalized === 'in stock' ? 'Out of Stock' : 'In Stock';
+
+    const nextInStock = currentRaw === "In Stock" ? "Out of Stock" : "In Stock";
+
+    const notification = nextInStock === "In Stock";
 
     const [activeRows] = await Product.update(
-      { inStock: nextInStock },
-      { where: { productId: id } },
+      { inStock: nextInStock, isNotification: notification },
+      { where: { productId: id, inStock: currentRaw } },
     );
     if (activeRows === 0) {
       throw new Error(`User with ID ${id} not found`);
     }
     return await Product.findOne({ where: { productId: id } });
   },
+
+  deleteProduct: async (id: string): Promise<string | undefined> => {
+    const count = await Product.destroy({ where: { productId: id } });
+    return count > 0 ? id : undefined;
+  },
 };
 
-// --- helpers ---
 function mapSort(
   sort: ProductFilterSpec["sort"],
   hasSearch: boolean,
@@ -166,7 +253,6 @@ function mapSort(
     case "nameDesc":
       return [["p_name", "DESC"]];
     case "relevance":
-      // keep simple; default order when searching (or add CASE literals for Postgres)
       return hasSearch ? [] : [["createdAt", "DESC"]];
     case "createdDesc":
     default:
@@ -175,6 +261,5 @@ function mapSort(
 }
 
 function escapeLike(input: string) {
-  // escape %, _, \ for LIKE
   return input.replace(/[\\%_]/g, (m) => `\\${m}`);
 }
