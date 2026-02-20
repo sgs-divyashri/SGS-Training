@@ -122,7 +122,6 @@ export const NavBar = () => {
         setNewUser(prev => ({ ...prev, [name]: value }));
     };
 
-
     const handleLogout = () => {
         localStorage.removeItem("token");
         navigate("/", { replace: true });

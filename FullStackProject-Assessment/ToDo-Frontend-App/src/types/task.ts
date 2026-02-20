@@ -8,6 +8,7 @@ export interface Task {
     status?: TaskStatus;
     assigneeEmail?: string;   
     assigneeName?: string;
+    isActive: boolean;
 }
 
 export type Columns = {

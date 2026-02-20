@@ -1,174 +1,174 @@
-// 'use strict';
+'use strict';
 
-// import Lab from '@hapi/lab';
-// import { expect } from '@hapi/code';
-// import { init_test } from '../../src/server';
-// // import { init } from '../server';
-// import { Server } from '@hapi/hapi';
-// import { UserPayload } from '../../src/models/userTableDefinition';
+import Lab from '@hapi/lab';
+import { expect } from '@hapi/code';
+import { init_test } from '../../src/server';
+// import { init } from '../server';
+import { Server } from '@hapi/hapi';
+import { UserPayload } from '../../src/models/userTableDefinition';
 
-// export const lab = Lab.script();
-// const { describe, it, beforeEach, afterEach } = lab;  // BDD - Behavior driven development
-// import { uniqueEmail } from './1.registerUser.test';
-
-
-// describe('POST /users/login', () => {
-//     let server: Server;
-
-//     beforeEach(async () => {
-//         server = await init_test();
-//     });
-
-//     afterEach(async () => {
-//         await server.stop();
-//     });
-
-//     it('GET ALL USERS - retrieve all the users with 200', async () => {
-//         const payload = {
-//             name: 'Devi',
-//             email: uniqueEmail(),
-//             password: 'Divyaaa@Sheiii0315',
-//             age: 22
-//         } as UserPayload;
-
-//         const res = await server.inject({
-//             method: 'post',
-//             url: '/users/register',
-//             payload
-//         });
-
-//         expect(res.statusCode).to.equal(201);
-
-//         const payload_login = { email: payload.email, password: payload.password }
-
-//         const login = await server.inject({
-//             method: 'post',
-//             url: '/users/login',
-//             payload: payload_login
-//         })
-
-//         expect(login.statusCode).to.equal(200)
-//         const response = JSON.parse(login.payload)
-//         expect(response.token).to.exist();
-
-//         const token = response.token as string
-//         const getAll = await server.inject({
-//             method: 'get',
-//             url: '/users',
-//             headers: {
-//                 authorization: `Bearer ${token}`
-//             }
-//         })
-
-//         expect(getAll.statusCode).to.equal(200)
-//         const body = JSON.parse(getAll.payload)
-//         expect(body.users).to.exist()
-//     })
-
-//     it('GET ALL USERS - 401 Missing authentication error', async () => {
-//         const payload = {
-//             name: 'Devi',
-//             email: uniqueEmail(),
-//             password: 'Divyaaa@Sheiii0315',
-//             age: 22
-//         } as UserPayload;
-
-//         const res = await server.inject({
-//             method: 'post',
-//             url: '/users/register',
-//             payload
-//         });
-
-//         expect(res.statusCode).to.equal(201);
-
-//         const payload_login = { email: payload.email, password: payload.password }
-
-//         const login = await server.inject({
-//             method: 'post',
-//             url: '/users/login',
-//             payload: payload_login
-//         })
-
-//         expect(login.statusCode).to.equal(200)
-//         const response = JSON.parse(login.payload)
-//         expect(response.token).to.exist();
-
-//         const getAll = await server.inject({
-//             method: 'get',
-//             url: '/users'
-//         })
-
-//         expect(getAll.statusCode).to.equal(401)
-//     })
+export const lab = Lab.script();
+const { describe, it, beforeEach, afterEach } = lab;  // BDD - Behavior driven development
+import { uniqueEmail } from './1.registerUser.test';
 
 
-//     it('GET ALL USERS - 404 not found for invalid Endpoint', async () => {
-//         const payload = {
-//             name: 'Devi',
-//             email: uniqueEmail(),
-//             password: 'Divyaaa@Sheiii0315',
-//             age: 22
-//         } as UserPayload;
+describe('POST /users/login', () => {
+    let server: Server;
 
-//         const res = await server.inject({
-//             method: 'post',
-//             url: '/users/register',
-//             payload
-//         });
+    beforeEach(async () => {
+        server = await init_test();
+    });
 
-//         expect(res.statusCode).to.equal(201);
+    afterEach(async () => {
+        await server.stop();
+    });
 
-//         const payload_login = { email: payload.email, password: payload.password }
+    it('GET ALL USERS - retrieve all the users with 200', async () => {
+        const payload = {
+            name: 'Devi',
+            email: uniqueEmail(),
+            password: 'Divyaaa@Sheiii0315',
+            age: 22
+        } as UserPayload;
 
-//         const login = await server.inject({
-//             method: 'post',
-//             url: '/users/login',
-//             payload: payload_login
-//         })
+        const res = await server.inject({
+            method: 'post',
+            url: '/users/register',
+            payload
+        });
 
-//         expect(login.statusCode).to.equal(200)
-//         const response = JSON.parse(login.payload)
-//         expect(response.token).to.exist();
+        expect(res.statusCode).to.equal(201);
 
-//         const getAll = await server.inject({
-//             method: 'get',
-//             url: '/userss',
-//         })
+        const payload_login = { email: payload.email, password: payload.password }
 
-//         expect(getAll.statusCode).to.equal(404)
-//     })
+        const login = await server.inject({
+            method: 'post',
+            url: '/users/login',
+            payload: payload_login
+        })
 
-//     // it('400 not found for empty database', async () => {
+        expect(login.statusCode).to.equal(200)
+        const response = JSON.parse(login.payload)
+        expect(response.token).to.exist();
 
-//     //     const result = await server.inject({
-//     //         method: 'post',
-//     //         url: '/users/login',
-//     //         payload: {
-//     //             email: 'absent@example.com',
-//     //             password: 'StrongPass#9'
-//     //         }
-//     //     });
+        const token = response.token as string
+        const getAll = await server.inject({
+            method: 'get',
+            url: '/users',
+            headers: {
+                authorization: `Bearer ${token}`
+            }
+        })
 
-//     //     expect(result.statusCode).to.equal(400);
+        expect(getAll.statusCode).to.equal(200)
+        const body = JSON.parse(getAll.payload)
+        expect(body.users).to.exist()
+    })
 
-//     //     const login = JSON.parse(result.payload);
+    it('GET ALL USERS - 401 Missing authentication error', async () => {
+        const payload = {
+            name: 'Devi',
+            email: uniqueEmail(),
+            password: 'Divyaaa@Sheiii0315',
+            age: 22
+        } as UserPayload;
 
-//     //     expect(login.error).to.equal('User not found');
+        const res = await server.inject({
+            method: 'post',
+            url: '/users/register',
+            payload
+        });
 
-//     //     // ensure token is not present
-//     //     expect(login.token).to.not.exist();
+        expect(res.statusCode).to.equal(201);
+
+        const payload_login = { email: payload.email, password: payload.password }
+
+        const login = await server.inject({
+            method: 'post',
+            url: '/users/login',
+            payload: payload_login
+        })
+
+        expect(login.statusCode).to.equal(200)
+        const response = JSON.parse(login.payload)
+        expect(response.token).to.exist();
+
+        const getAll = await server.inject({
+            method: 'get',
+            url: '/users'
+        })
+
+        expect(getAll.statusCode).to.equal(401)
+    })
 
 
-//     //     const getAll = await server.inject({
-//     //         method: 'get',
-//     //         url: '/users',
+    it('GET ALL USERS - 404 not found for invalid Endpoint', async () => {
+        const payload = {
+            name: 'Devi',
+            email: uniqueEmail(),
+            password: 'Divyaaa@Sheiii0315',
+            age: 22
+        } as UserPayload;
 
-//     //     })
+        const res = await server.inject({
+            method: 'post',
+            url: '/users/register',
+            payload
+        });
 
-//     //     expect(getAll.statusCode).to.equal(404)
+        expect(res.statusCode).to.equal(201);
 
-//     //     const body = JSON.parse(getAll.payload);
-//     //     expect(body.error).to.equal('All users not found');
+        const payload_login = { email: payload.email, password: payload.password }
 
-//     // })
-// })
+        const login = await server.inject({
+            method: 'post',
+            url: '/users/login',
+            payload: payload_login
+        })
+
+        expect(login.statusCode).to.equal(200)
+        const response = JSON.parse(login.payload)
+        expect(response.token).to.exist();
+
+        const getAll = await server.inject({
+            method: 'get',
+            url: '/userss',
+        })
+
+        expect(getAll.statusCode).to.equal(404)
+    })
+
+    it('400 not found for empty database', async () => {
+
+        const result = await server.inject({
+            method: 'post',
+            url: '/users/login',
+            payload: {
+                email: 'absent@example.com',
+                password: 'StrongPass#9'
+            }
+        });
+
+        expect(result.statusCode).to.equal(400);
+
+        const login = JSON.parse(result.payload);
+
+        expect(login.error).to.equal('User not found');
+
+        // ensure token is not present
+        expect(login.token).to.not.exist();
+
+
+        const getAll = await server.inject({
+            method: 'get',
+            url: '/users',
+
+        })
+
+        expect(getAll.statusCode).to.equal(404)
+
+        const body = JSON.parse(getAll.payload);
+        expect(body.error).to.equal('All users not found');
+
+    })
+})

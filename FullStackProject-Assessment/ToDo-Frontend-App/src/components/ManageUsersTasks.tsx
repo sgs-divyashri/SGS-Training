@@ -15,6 +15,9 @@ export const ManageBoard = () => {
     const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
     const [form, setForm] = useState({ taskName: "", description: "", assignedTo: "", status: "To-Do" as Task["status"] });
     const nameRef = React.useRef<HTMLInputElement | null>(null)
+    const [selectedAssigneeEmail, setSelectedAssigneeEmail] = useState<string | null>(null);
+    const filterByAssignee = (email: string) => setSelectedAssigneeEmail(email);
+    const clearFilter = () => setSelectedAssigneeEmail(null);
 
     useEffect(() => {
         if (drawerOpen) {
@@ -48,6 +51,7 @@ export const ManageBoard = () => {
                     status: (t.status) as Task["status"],
                     assigneeEmail: t.User.email,
                     assigneeName: t.User.name,
+                    isActive: Boolean(t.isActive),
                 }));
 
                 if (mounted) setTasks(tasks);
@@ -60,7 +64,6 @@ export const ManageBoard = () => {
             mounted = false;
         };
     }, []);
-
 
     const openDrawer = (task: Task) => {
         setEditingTaskId(task.taskId!);
@@ -125,6 +128,22 @@ export const ManageBoard = () => {
         }
     };
 
+    const handleToggleTask = async (task: Task) => {
+        const prev = tasks;
+        const desired = !task.isActive;
+
+        setTasks(list => list.map(t => t.taskId === task.taskId ? { ...t, isActive: desired } : t));
+
+        try {
+            const { data } = await api.patch(`/tasks/toggle/${task.taskId}`);
+            setTasks(list => list.map(t => t.taskId === task.taskId ? { ...t, isActive: data.task.isActive } : t));
+            toast.success(`Task ${task.taskId} ${data.task.isActive ? 'opened' : 'closed'}`);
+        } catch (e: any) {
+            setTasks(prev);
+            toast.error('Failed to toggle task');
+        }
+    };
+
     async function onDragEnd(result: any) {
         const { source, destination, draggableId } = result;
 
@@ -138,9 +157,13 @@ export const ManageBoard = () => {
         });
     }
 
-    const todo = tasks!.filter(t => t.status === "To-Do");
-    const inProgress = tasks!.filter(t => t.status === "In-Progress");
-    const done = tasks!.filter(t => t.status === "Done");
+    const visibleTasks = selectedAssigneeEmail
+        ? tasks.filter(t => t.assigneeEmail === selectedAssigneeEmail)
+        : tasks;
+
+    const todo = visibleTasks!.filter(t => t.status === "To-Do");
+    const inProgress = visibleTasks!.filter(t => t.status === "In-Progress");
+    const done = visibleTasks!.filter(t => t.status === "Done");
 
     const columns = [
         { id: "To-Do", title: "To Do", items: todo },
@@ -178,6 +201,32 @@ export const ManageBoard = () => {
                 </Box>
             </Drawer>
             <h1 className="my-1 font-bold text-center">Manage Kanban Board</h1>
+            <div>
+                <TextField label="Assigned To" value={users.some(u => u.email === form.assignedTo) ? form.assignedTo : ""} onChange={(e) => setForm((f) => ({ ...f, assignedTo: e.target.value }))} size="small" select fullWidth>
+                    <MenuItem value="">
+                        <em>Select assignee</em>
+                    </MenuItem>
+                    {users.map(u => (
+                        <MenuItem key={u.userId} value={u.email}>
+                            {u.name} ({u.email})
+                        </MenuItem>
+                    ))}
+                </TextField>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 8 }}>
+                    {selectedAssigneeEmail ? (
+                        <>
+                            <span>
+                                Filtering by: <strong>{selectedAssigneeEmail}</strong>
+                            </span>
+                            <Button size="small" variant="outlined" onClick={clearFilter}>
+                                Clear filter
+                            </Button>
+                        </>
+                    ) : (
+                        <span>Showing: <strong>All assignees</strong></span>
+                    )}
+                </div>
+            </div>
             <div className="flex gap-6 p-3">
                 {columns.map(col => (
                     <Droppable droppableId={col.id} key={col.id}>
@@ -191,6 +240,9 @@ export const ManageBoard = () => {
                                                 <div className="flex justify-end">
                                                     <Button color="inherit" onClick={() => openDrawer(task)}>
                                                         <EditOutlined fontSize="small" />
+                                                    </Button>
+                                                    <Button onClick={() => handleToggleTask(task)}>
+                                                        {task.isActive ? 'Opened' : 'Closed'}
                                                     </Button>
                                                 </div>
                                                 <p className="text-sm text-gray-500">Task ID: <span>{task.taskId}</span></p>

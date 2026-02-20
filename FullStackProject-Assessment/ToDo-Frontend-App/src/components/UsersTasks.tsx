@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { api } from "../axios/axiosClient";
 import { Task } from "../types/task";
+import Button from "@mui/material/Button";
+import toast from "react-hot-toast";
 
 export const ViewBoard = () => {
     const [tasks, setTasks] = useState<Task[]>([]);
@@ -15,24 +17,25 @@ export const ViewBoard = () => {
                 const list = Array.isArray(res.data.tasks) ? res.data.tasks : [];
 
                 const tasks: Task[] = list.map((t: any) => ({
-                    taskId: t.taskId,                    
+                    taskId: t.taskId,
                     taskName: t.taskName,
                     taskDescription: t.description,
-                    assignedTo: t.assignedTo ,
+                    assignedTo: t.assignedTo,
                     status: (t.status) as Task["status"],
+                    isActive: Boolean(t.isActive),
                 }));
 
                 if (mounted) setTasks(tasks);
             } catch (e) {
                 console.error("Failed to load tasks", e);
 
-                if (mounted) setTasks([]); 
+                if (mounted) setTasks([]);
             }
         })();
         return () => {
             mounted = false;
         };
-    }, []);
+    }, [tasks]);
 
     async function onDragEnd(result: any) {
         const { source, destination, draggableId } = result;
@@ -86,6 +89,11 @@ export const ViewBoard = () => {
                                                 {...provided.draggableProps}
                                                 {...provided.dragHandleProps}
                                             >
+                                                <div className="flex justify-end">
+                                                    <Button>
+                                                        {task.isActive ? 'Opened' : 'Closed'}
+                                                    </Button>
+                                                </div>
                                                 <p className="text-sm text-gray-500">Task ID: {task.taskId}</p>
                                                 <p className="font-semibold">{task.taskName}</p>
                                                 <p className="text-sm text-gray-500">{task.taskDescription}</p>
