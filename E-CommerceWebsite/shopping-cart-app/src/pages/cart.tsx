@@ -149,7 +149,7 @@ export const CartPage = () => {
                       Price: ₹ {Number(it.price).toFixed(2)}
                     </div>
                     <div className="text-sm text-gray-600">
-                      Quantity: {it.total_quantity}
+                      Total Available Quantity: {it.total_quantity}
                     </div>
                   </div>
                   <div className="flex items-center gap-3">

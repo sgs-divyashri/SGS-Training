@@ -2,19 +2,20 @@ import type { Request, ResponseToolkit, ResponseObject } from "@hapi/hapi";
 import { productServices } from "../../services/productServices";
 import { placeOrderServices } from "../../services/placeOrderServices";
 import { viewOrderServices } from "../../services/viewOrderServices";
+import { notifyOrderServices } from "../../services/userNotificationServices";
 
-export const viewAllOrdersHandler = async (
+export const getAllOrderNotificationsHandler = async (
   request: Request,
   h: ResponseToolkit,
 ): Promise<ResponseObject> => {
   try {
-    const userId = Number(request.auth.credentials.userId)
-    const result = await viewOrderServices.viewAllOrders(userId);
+    // const adminId = Number(request.auth.credentials.userId)
+    const result = await notifyOrderServices.getAllOrderNotifications();
 
     return h
       .response({
         message: "Retrieved orders successfully",
-        orders: result.items
+        notifications: result.items
       })
       .code(200);
   } catch (err: any) {

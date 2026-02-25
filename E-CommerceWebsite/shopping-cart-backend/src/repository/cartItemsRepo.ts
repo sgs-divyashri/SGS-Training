@@ -1,23 +1,18 @@
+import { EditCartPayload } from "../api/cartItems/editCartItem";
 import {
   CartItems,
   CartItemsPayload,
 } from "../models/cartItemsTableDefinition";
-import { Product, ProductPayload } from "../models/productTableDefinition";
 import generateCartItemId from "../services/generateCartItemId";
-import generateSimpleId from "../services/generateProductId";
+import { OrderItems } from "../models/ordersTableDefinition";
 
 export const cartItemsRepository = {
   addCartItem: async (
     payload: Pick<
       CartItemsPayload,
-      | "prodId"
-      | "prodName"
-      | "prodDescription"
-      | "price"
       | "userId"
-      | "userEmail"
-      | "qty"
       | "total_quantity"
+      | "items"
       | "totalCount"
     >,
   ): Promise<CartItems> => {
@@ -41,15 +36,29 @@ export const cartItemsRepository = {
 
   editCartItems: async (
     id: string,
-    userId: string,
-    payload: Pick<Partial<CartItemsPayload>, "qty">,
+    userId: number,
+    payload: EditCartPayload
   ) => {
     const cart = await CartItems.findOne({
       where: { cartId: id, userId: userId },
     });
     if (!cart) return null;
 
-    if (payload.qty !== undefined) cart.set("qty", payload.qty);
+    const { productId, quantity } = payload
+
+    const items = (cart.get("items") as OrderItems[]) ?? [];
+    const idx = items.findIndex((i) => i.productId === productId);
+
+    if (idx === -1) {
+      return cart.get(); 
+    }
+
+    if (quantity <= 0) {
+      items.splice(idx, 1);
+    } else {
+      const current = items[idx]!;
+      items[idx] = { ...current, quantity: current.quantity + Number(quantity) };
+    }
 
     await cart.save();
     return cart.get();
@@ -62,8 +71,8 @@ export const cartItemsRepository = {
 
   deleteAllCartItems: async (id: number): Promise<number | undefined> => {
     const count = await CartItems.destroy({
-      where: { userId: id}
+      where: { userId: id }
     });
-    return count > 0 ? id: undefined;
+    return count > 0 ? id : undefined;
   },
 };

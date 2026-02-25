@@ -10,19 +10,15 @@ import {
   CartItemsPayload,
 } from "../models/cartItemsTableDefinition";
 import { cartItemsRepository } from "../repository/cartItemsRepo";
+import { EditCartPayload } from "../api/cartItems/editCartItem";
 
 export const cartItemsServices = {
   addCartItem: async (
     payload: Pick<
       CartItemsPayload,
-      | "prodId"
-      | "prodName"
-      | "prodDescription"
-      | "price"
       | "userId"
-      | "userEmail"
-      | "qty"
       | "total_quantity"
+      | "items"
       | "totalCount"
     >,
   ): Promise<CartItems> => {
@@ -37,8 +33,8 @@ export const cartItemsServices = {
 
   editCartItems: async (
     id: string,
-    userId: string,
-    payload: Pick<Partial<CartItemsPayload>, "qty">,
+    userId: number,
+    payload: EditCartPayload,
   ) => {
     const cartItems = await cartItemsRepository.editCartItems(id, userId, payload);
     return cartItems;

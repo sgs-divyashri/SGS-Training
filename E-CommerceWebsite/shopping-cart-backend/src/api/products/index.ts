@@ -1,11 +1,9 @@
 import type { ServerRoute } from "@hapi/hapi";
 import { addProductHandler } from "./addproducts";
-import { getFilteredProductsHandler } from "./getFilteredProducts";
-import { getAllProductsHandler } from "./getAllProducts";
+import { getProductsHandler } from "./getProducts";
 import { delAndResProductHandler } from "./softDeleteProduct";
 import { deleteProductHandler } from "./deleteProduct";
 import { editProductHandler } from "./editProduct";
-import { notifyProductHandler } from "./notifyProducts";
 
 export const productRoutes: ServerRoute[] = [
     {
@@ -17,25 +15,13 @@ export const productRoutes: ServerRoute[] = [
     {
         method: 'GET',
         path: '/products',
-        handler: getAllProductsHandler,
-    },
-
-    {
-        method: 'GET',
-        path: '/filtered-products',
-        handler: getFilteredProductsHandler,
+        handler: getProductsHandler,
     },
 
     {
         method: "PATCH",
         path: "/product/edit/{id}",
         handler: editProductHandler
-    },
-
-    {
-        method: 'PATCH',
-        path: '/notify/{productID}',
-        handler: notifyProductHandler,
     },
 
     {

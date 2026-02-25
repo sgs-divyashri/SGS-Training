@@ -1,7 +1,6 @@
 import { DataTypes, Model, Optional, Sequelize } from "sequelize";
-import { Product } from "./productTableDefinition";
 import { Orders } from "./ordersTableDefinition";
-// import { Task } from "./taskTableDefinition";
+import { Product } from "./productTableDefinition";
 
 export interface UserPayload {
   userId: number;
@@ -9,13 +8,12 @@ export interface UserPayload {
   email: string;
   password: string;
   role: string;
-  isActive: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
 export interface UserCreationAttributes
-  extends Optional<UserPayload, "userId" | "isActive" | "createdAt" | "updatedAt"> { }
+  extends Optional<UserPayload, "userId" | "createdAt" | "updatedAt"> { }
 
 export class User extends Model<UserPayload, UserCreationAttributes>
   implements UserPayload {
@@ -24,7 +22,6 @@ export class User extends Model<UserPayload, UserCreationAttributes>
   public email!: string;
   public password!: string;
   public role!: string;
-  public isActive!: boolean;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
   toJSON() {
@@ -59,11 +56,6 @@ export default (sequelize: Sequelize) => {
         type: DataTypes.ENUM('Admin', 'User'),
         allowNull: false
       },
-      isActive: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: true,
-        allowNull: false
-      },
     },
     {
       sequelize,
@@ -86,6 +78,7 @@ export default (sequelize: Sequelize) => {
     User,
     associate: (sequelize: Sequelize) => {
       User.hasMany(Orders, { foreignKey: "orderedBy", sourceKey: 'userId', as: "orders", });
+      User.hasMany(Product, {foreignKey: "addedBy", sourceKey: 'userId', as: "products"})
     }
   };
 };

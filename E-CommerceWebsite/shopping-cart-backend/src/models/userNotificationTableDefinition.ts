@@ -9,40 +9,34 @@ export interface OrderItems {
   quantity: number;
 }
 
-export interface ViewOrdersPayload {
-  viewOrderId: string;
+export interface NotifyOrdersPayload {
+  notifyId: string;
   orderId: string;
-  orderedBy: number;
   items: OrderItems[];
-  totalAmount: number;
-  status: string;
-  userStatus: string;
+  adminStatus: string;
   receivedAt?: Date;
 }
 
 export interface UserCreationAttributes extends Optional<
-  ViewOrdersPayload,
-  "viewOrderId" | "receivedAt"
+  NotifyOrdersPayload,
+  "notifyId" | "receivedAt"
 > {}
 
-export class ViewOrders
-  extends Model<ViewOrdersPayload, UserCreationAttributes>
-  implements ViewOrdersPayload
+export class NotifyUserOrders
+  extends Model<NotifyOrdersPayload, UserCreationAttributes>
+  implements NotifyOrdersPayload
 {
-  public viewOrderId!: string;
-  public orderedBy!: number;
+  public notifyId!: string;
   public orderId!: string;
   public items!: OrderItems[];
-  public status!: string;
-  public userStatus!: string;
-  public totalAmount!: number;
+  public adminStatus!: string;
   public readonly receivedAt!: Date;
 }
 
 export default (sequelize: Sequelize) => {
-  ViewOrders.init(
+  NotifyUserOrders.init(
     {
-      viewOrderId: {
+      notifyId: {
         type: DataTypes.STRING,
         primaryKey: true,
         allowNull: false,
@@ -52,34 +46,20 @@ export default (sequelize: Sequelize) => {
         allowNull: false,
         references: { model: "orders", key: "orderId" },
       },
-      orderedBy: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: { model: "users", key: "userId" },
-      },
       items: {
         type: DataTypes.JSONB, 
         allowNull: false,
         defaultValue: [],
       },
-      totalAmount: {
-        type: DataTypes.DECIMAL(10, 2),
-        allowNull: false,
-      },
-      status: {
+      adminStatus: {
         type: DataTypes.ENUM("ACCEPTED", "REJECTED", ""),
-        allowNull: false,
+        allowNull: true,
         defaultValue: ""
       },
-      userStatus: {
-        type: DataTypes.ENUM("ORDERED", "CANCELLED"),
-        allowNull: false,
-        defaultValue: "ORDERED"
-      }
     },
     {
       sequelize,
-      tableName: "view_orders",
+      tableName: "user_order_notifications",
       timestamps: true,
       createdAt: "receivedAt",
       updatedAt: false,
@@ -87,14 +67,9 @@ export default (sequelize: Sequelize) => {
   );
 
   return {
-    ViewOrders,
+    NotifyUserOrders,
     associate: (sequelize: Sequelize) => {
-      ViewOrders.belongsTo(User, {
-        foreignKey: "orderedBy",
-        targetKey: "userId",
-        as: "user",
-      });
-      ViewOrders.belongsTo(Orders, {
+      NotifyUserOrders.belongsTo(Orders, {
         foreignKey: 'orderId' 
       })
     },

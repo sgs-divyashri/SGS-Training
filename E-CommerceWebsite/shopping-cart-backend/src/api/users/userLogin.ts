@@ -36,22 +36,42 @@ export const loginUserHandler = async (
       purpose: "auth",
     });
 
-    const rtArtifacts = Jwt.token.decode(refreshToken!);
-    const expSec = rtArtifacts.decoded.payload.exp as number;
-
-    await RefreshToken.create({
-      token: refreshToken!,
-      userId: user.getDataValue("userId"),
-      revokedAt: null,
-      expiresAt: new Date(expSec * 1000),
+    let rtRecord = await RefreshToken.findOne({
+      where: {
+        userId: user.userId,
+      },
     });
 
-    h.state("rt", refreshToken!, {
+    let finalRefreshToken = refreshToken!;
+
+    if (!rtRecord) {
+      const rtArtifacts = Jwt.token.decode(refreshToken!);
+      const expSec = rtArtifacts.decoded.payload.exp as number;
+
+      rtRecord = await RefreshToken.create({
+        token: refreshToken!,
+        userId: user.userId,
+        revokedAt: null,
+        expiresAt: new Date(expSec * 1000),
+      });
+
+
+      finalRefreshToken = refreshToken!;
+    } else {
+      finalRefreshToken = rtRecord.getDataValue("token");
+    }
+
+    h.state("rt", finalRefreshToken!, {
       isSecure: process.env.NODE_ENV === "production",
       isHttpOnly: true,
       isSameSite: "Lax",
       path: "/",
     });
+
+    // if (!rtRecord) {
+    //   await RefreshToken.destroy({ where: { token: rt } });
+    //   return h.response({ error: "Refresh token expired" }).code(401);
+    // }
 
     return h
       .response({

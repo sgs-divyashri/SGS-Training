@@ -19,7 +19,7 @@ import { CartProvider } from "./context/CartContext";
 import { OrdersProvider } from "./context/OrdersContext";
 import { AdminNotificationProvider } from "./context/adminNotificationContext";
 import { NotificationProvider } from "./context/NotificationContext";
-import { SessionPopup } from "./components/sessionPopup";
+// import { SessionPopup } from "./components/sessionPopup";
 
 export let globalNavigate: ReturnType<typeof useNavigate>;
 
@@ -41,7 +41,7 @@ function App() {
         }}
         reverseOrder={false}
       />
-      <SessionPopup />
+      {/* <SessionPopup /> */}
       <section>
         <Routes>
           <Route element={<AuthLayout />}>

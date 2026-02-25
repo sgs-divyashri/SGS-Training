@@ -18,7 +18,7 @@ export const userRepository = {
     loginData: Pick<UserPayload, "email" | "password" | "role">,
   ): Promise<User | null> => {
     const user = await User.findOne({
-      where: { email: loginData.email, isActive: true },
+      where: { email: loginData.email},
       attributes: { include: ["password"] },
     });
     if (!user) return null;
@@ -37,16 +37,16 @@ export const userRepository = {
     return user;
   },
 
-  refreshToken: async (userId: number) => {
-    const count = await RefreshToken.destroy({ where: { userId: userId } });
-    return count > 0 ? userId : undefined;
-  },
+  // refreshToken: async (userId: number) => {
+  //   const count = await RefreshToken.destroy({ where: { userId: userId } });
+  //   return count > 0 ? userId : undefined;
+  // },
 
   forgotPassword: async (
     data: Pick<UserPayload, "email">,
   ): Promise<User | null> => {
     const user = await User.findOne({
-      where: { email: data.email, isActive: true },
+      where: { email: data.email},
     });
     if (!user) return null;
 

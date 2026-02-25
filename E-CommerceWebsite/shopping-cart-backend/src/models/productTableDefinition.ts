@@ -11,7 +11,7 @@ export interface ProductPayload {
   price: number;
   qty: number;
   inStock: string;
-  isNotification: boolean;
+  addedBy: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -21,15 +21,13 @@ export interface UserCreationAttributes extends Optional<
   | "productId"
   | "p_description"
   | "inStock"
-  | "isNotification"
   | "createdAt"
   | "updatedAt"
-> {}
+> { }
 
 export class Product
   extends Model<ProductPayload, UserCreationAttributes>
-  implements ProductPayload
-{
+  implements ProductPayload {
   public productId!: string;
   public p_name!: string;
   public p_description!: string;
@@ -37,7 +35,7 @@ export class Product
   public price!: number;
   public qty!: number;
   public inStock!: string;
-  public isNotification!: boolean;
+  public addedBy!: number;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -76,9 +74,8 @@ export default (sequelize: Sequelize) => {
         defaultValue: "In Stock",
         allowNull: false,
       },
-      isNotification: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
+      addedBy: {
+        type: DataTypes.INTEGER,
         allowNull: false,
       },
     },
@@ -94,16 +91,13 @@ export default (sequelize: Sequelize) => {
     associate: (sequelize: Sequelize) => {
       Product.belongsTo(Category, {
         foreignKey: "categoryId",
-        as: "category",
-        onDelete: "CASCADE",
-        onUpdate: "CASCADE",
+        as: "category"
       });
+      Product.belongsTo(User, {foreignKey: "userId", as: "user"})
       Product.hasMany(CartItems, {
         foreignKey: "prodId",
         sourceKey: "productId",
-        as: "cartItems",
-        onDelete: "CASCADE",
-        onUpdate: "CASCADE",
+        as: "cartItems"
       });
     },
   };

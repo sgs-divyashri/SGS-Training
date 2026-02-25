@@ -1,6 +1,7 @@
 import type { ServerRoute } from "@hapi/hapi";
 import { viewAllOrdersHandler } from "./viewAllOrders";
 import { editViewOrderStatusHandler } from "./editOrderStatus";
+import { deleteAdminNotificationHandler } from "./deleteAdminNotification";
 
 export const viewOrderRoutes: ServerRoute[] = [
   {
@@ -15,9 +16,9 @@ export const viewOrderRoutes: ServerRoute[] = [
     handler: editViewOrderStatusHandler,
   },
 
-  //   {
-  //     method: "DELETE",
-  //     path: "/order/{id}",
-  //     handler: cancelOrdersHandler,
-  //   },
+    {
+      method: "DELETE",
+      path: "/order/{id}",
+      handler: deleteAdminNotificationHandler,
+    },
 ];

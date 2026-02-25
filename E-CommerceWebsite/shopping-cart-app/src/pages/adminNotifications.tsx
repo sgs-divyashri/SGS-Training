@@ -1,8 +1,8 @@
-import { CloseRounded, DoneAllRounded, DoneRounded } from "@mui/icons-material";
+import { CloseFullscreenSharp, CloseRounded, CloseSharp, DoneAllRounded, DoneRounded } from "@mui/icons-material";
 import { useAdminNotification } from "../context/adminNotificationContext";
 
 export const AdminNotificationsPage = () => {
-  const { orders, clear, acceptOrder, rejectOrder } = useAdminNotification();
+  const { orders, clear, acceptOrder, removeNotifications, rejectOrder } = useAdminNotification();
 
   return (
     <div className="mt-10">
@@ -47,6 +47,11 @@ export const AdminNotificationsPage = () => {
                   >
                     <CloseRounded/>
                     Reject
+                  </button>
+                  <button
+                    onClick={() => removeNotifications(p.viewOrderId)}
+                  >
+                    <CloseSharp/>
                   </button>
                 </div>
               </li>

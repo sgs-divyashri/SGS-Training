@@ -4,5 +4,6 @@ import { categoryRoutes } from "./categories";
 import { userOrderRoutes } from "./orders.ts";
 import { cartItemRoutes } from "./cartItems";
 import { viewOrderRoutes } from "./viewOrders";
+import { orderNotificationRoutes } from "./notifyUserOrders";
 
-export default [...userRoutes, ...productRoutes, ...categoryRoutes, ...userOrderRoutes, ...cartItemRoutes, ...viewOrderRoutes]
+export default [...userRoutes, ...productRoutes, ...categoryRoutes, ...userOrderRoutes, ...cartItemRoutes, ...viewOrderRoutes, ...orderNotificationRoutes]

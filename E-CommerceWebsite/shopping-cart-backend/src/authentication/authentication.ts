@@ -55,7 +55,7 @@ export const generateToken = (
     jti: accessJti,
   };
 
-  const accessTtlSec = toSeconds(options?.expiresIn, 60); 
+  const accessTtlSec = toSeconds(options?.expiresIn, 900); 
 
   const accessToken = Jwt.token.generate(
     accessPayload,
@@ -79,6 +79,7 @@ export const generateToken = (
   const refreshToken = Jwt.token.generate(
     refreshPayload,
     { key: JWT_SECRET, algorithm: "HS256" },
+    // { ttlSec: 60 }
     { ttlSec: 60 * 60 * 24 * 7 },
   );
 

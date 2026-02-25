@@ -5,6 +5,8 @@ import { Op, where } from "sequelize";
 import { ViewOrdersPayload } from "../models/adminViewOrderNotifyTableDefinition";
 import generateOrderId from "../services/generateOrderId";
 import generateViewOrderId from "../services/generateViewOrderId";
+import { NotifyUserOrders } from "../models/userNotificationTableDefinition";
+import generateUserNotificationId from "../services/generateUserNotificationID";
 
 type PlacePayload = {
   orderedBy: number;
@@ -76,10 +78,10 @@ export const placeOrderRepository = {
     await Orders.create({
       orderId,
       orderedBy: payload.orderedBy,
-      items: detailedItems, 
+      items: detailedItems,
       totalAmount,
       status: "ORDERED",
-      adminStatus: "",
+      // adminStatus: "",
     });
 
     const viewOrder = await ViewOrders.create({
@@ -87,8 +89,8 @@ export const placeOrderRepository = {
       orderId,
       orderedBy: payload.orderedBy,
       items: detailedItems,
-      totalAmount, 
-      status: "", 
+      totalAmount,
+      status: "",
       userStatus: "ORDERED",
     });
 
@@ -111,16 +113,35 @@ export const placeOrderRepository = {
     viewOrderId: string,
     payload: Pick<ViewOrdersPayload, "status">,
   ) => {
-    const order = await ViewOrders.findOne({ where: { viewOrderId } });
+    const orderView = await ViewOrders.findOne({ where: { viewOrderId } });
+    if (!orderView) return null;
+
+    const orderId = orderView.get("orderId");
+
+    const order = await Orders.findOne({ where: { orderId } });
     if (!order) return null;
 
-    const orderId = order.get("orderId");
+    const items = order.get("items");        
+
     if (payload.status !== undefined) {
-      await Orders.update(
-        { adminStatus: payload.status! },
+      // await Orders.update(
+      //   { adminStatus: payload.status! },
+      //   { where: { orderId } },
+      // );
+
+      await ViewOrders.update(
+        { status: payload.status! },
         { where: { orderId } },
       );
     }
+
+    await NotifyUserOrders.create({
+      notifyId: generateUserNotificationId(),
+      orderId,
+      items,
+      adminStatus: payload.status!,
+      receivedAt: new Date()
+    });
 
     return {
       viewOrderId,

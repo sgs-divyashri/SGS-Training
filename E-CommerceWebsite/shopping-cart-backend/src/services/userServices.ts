@@ -18,11 +18,6 @@ export const userServices = {
     return user
   },
 
-  refreshToken: async (userId: number) => {
-    const rToken = await userRepository.refreshToken(userId)
-    return rToken
-  },
-
   forgotPassword: async (data: Pick<UserPayload, "email">): Promise<User | null> => {
     const user = await userRepository.forgotPassword(data)
     return user

@@ -1,4 +1,5 @@
 import { DataTypes, Model, Optional, Sequelize } from "sequelize";
+import { User } from "./userTableDefinition";
 
 export interface RefreshTokenPayload {
   token: string;
@@ -11,8 +12,7 @@ export type RefreshTokenCreationAttributes = RefreshTokenPayload;
 
 export class RefreshToken
   extends Model<RefreshTokenPayload, RefreshTokenCreationAttributes>
-  implements RefreshTokenPayload
-{
+  implements RefreshTokenPayload {
   public token!: string;
   public userId!: number;
   public revokedAt!: Date;
@@ -29,6 +29,7 @@ export default (sequelize: Sequelize) => {
       userId: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        references: { model: "users", key: "userId" },
       },
       revokedAt: {
         type: DataTypes.DATE,
@@ -47,5 +48,14 @@ export default (sequelize: Sequelize) => {
     },
   );
 
-  return RefreshToken;
+  return {
+    RefreshToken,
+    associate: (sequelize: Sequelize) => {
+      RefreshToken.belongsTo(User, {
+        foreignKey: "userId",
+        targetKey: "userId",
+        as: "user",
+      });
+    },
+  };
 };

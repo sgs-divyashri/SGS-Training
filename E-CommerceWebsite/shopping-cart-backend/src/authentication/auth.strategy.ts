@@ -13,7 +13,7 @@ export const configureAuthStrategy = (server: Server) => {
       sub: false, // plugin userID - check from userID from payload
       nbf: true, // not before - check whether current time is earlier than nbf, token invalid
       exp: true, // if current time is after exp → token invalid (token expired).
-      maxAgeSec: 900, // 4 hours - the token must not be older than 14,400 seconds (4 hours) from when it was issued.
+      maxAgeSec: 900, // 15 min - the token must not be older than 900 seconds (15 min) from when it was issued.
       timeSkewSec: 15,
     },
     validate: (artifacts: any, request: any, h: any) => {

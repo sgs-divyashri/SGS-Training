@@ -27,7 +27,13 @@ export const addPlaceOrderHandler = async (
       return h.response({ error: "Insufficient permissions" }).code(403);
     }
 
+    const orderedBy = Number(request.auth.credentials.userId)
+
     const body = request.payload as AddOrder;
+
+    if (body.orderedBy !== orderedBy) {
+      return h.response({ error: "Only current login user can place this order" }).code(400);
+    }
 
     if (
       !body.orderedBy ||

@@ -3,27 +3,18 @@ import { Product, ProductPayload } from "../models/productTableDefinition";
 import { Category } from "../models/prodCategoryTableDefinition";
 
 export const productServices = {
-  createProduct: async (payload: Pick<ProductPayload, "p_name" | "p_description" | "categoryId" | "price" | "qty">): Promise<Product> => {
+  createProduct: async (payload: Pick<ProductPayload, "p_name" | "p_description" | "categoryId" | "price" | "qty" | "addedBy">): Promise<Product> => {
     const newUser = await productRepository.createProduct(payload)
     return newUser
   },
 
-  getProducts: async (spec: PageSpec) => {
-    const products = await productRepository.getProducts(spec)
+  getProducts: async (isAdmin: boolean, userId: number) => {
+    const products = await productRepository.getProducts(isAdmin, userId)
     return products
-  },
-
-  searchProducts: async (spec: ProductFilterSpec) => {
-    return await productRepository.search(spec)
   },
 
   editProduct: async (id: string, payload: Pick<Partial<Product>, "p_name" | "p_description" | "categoryId" | "price" | "qty">): Promise<ProductPayload | null> => {
     return await productRepository.editProduct(id, payload)
-  },
-
-  notifyProduct: async (id: string): Promise<Product | null> => {
-    const notify = await productRepository.notifyProduct(id)
-    return notify
   },
 
   delAndResProduct: async (id: string): Promise<Product | null> => {

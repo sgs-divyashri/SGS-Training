@@ -1,3 +1,4 @@
+import { CloseRounded } from "@mui/icons-material";
 import { useNotification } from "../context/NotificationContext";
 
 export const NotificationsPage = () => {
@@ -18,7 +19,7 @@ export const NotificationsPage = () => {
           <ul className="space-y-3 my-4">
             {orders.map((p) => (
               <li
-                key={p.orderId}
+                key={p.notifyId}
                 className="border rounded p-3 flex items-center justify-between"
               >
                 <div className="mt-2 space-y-2">
@@ -29,17 +30,17 @@ export const NotificationsPage = () => {
                         Price: ₹ {it.price.toFixed(2)}
                       </div>
                       <div className="text-sm">Quantity: {it.quantity}</div>
-                      <div className="text-sm">Status: <span className={p.status === 'ACCEPTED' ? "text-green-600 font-semibold" : "text-red-600 font-semibold"}>{p.status}</span></div>
+                      <div className="text-sm">Status: <span className={p.adminStatus === 'ACCEPTED' ? "text-green-600 font-semibold" : "text-red-600 font-semibold"}>{p.adminStatus}</span></div>
                     </div>
                   ))}
                 </div>
 
                 <button
-                  onClick={() => removeFromNotifications(p.orderId)}
+                  onClick={() => removeFromNotifications(p.notifyId)}
                   className="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded"
                   title="Remove this notification"
                 >
-                  Dismiss
+                  <CloseRounded/>
                 </button>
               </li>
             ))}

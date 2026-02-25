@@ -7,12 +7,13 @@ import React, {
   useState,
 } from "react";
 import { api } from "../axios/axiosClient";
-import { ViewOrderItemRow } from "../types/viewOrders";
+// import { ViewOrderItemRow } from "../types/viewOrders";
 import toast from "react-hot-toast";
 import { getRole } from "../auth/auth";
+import { OrderNotificationRow } from "../types/orderNotification";
 
 type NotificationContextValue = {
-  orders: ViewOrderItemRow[]; // only accepted/rejected orders
+  orders: OrderNotificationRow[]; // only accepted/rejected orders
   cnt: number; // count of filtered orders
   removeFromNotifications: (id: string) => Promise<void>;
   clearAll: () => Promise<void>;
@@ -27,7 +28,7 @@ export const NotificationProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [orders, setOrders] = useState<ViewOrderItemRow[]>([]);
+  const [orders, setOrders] = useState<OrderNotificationRow[]>([]);
   const role = getRole();
   const lastStatusesRef = useRef<Record<string, string>>({});
   const initializedRef = useRef(false);
@@ -36,13 +37,13 @@ export const NotificationProvider = ({
     if (role !== "User") return;
     const fetchOrders = async () => {
       try {
-        const res = await api.get("/order-status");
+        const res = await api.get("/notify-orders");
 
-        const list = Array.isArray(res.data?.orderStatus)
-          ? res.data.orderStatus
+        const list = Array.isArray(res.data?.notifications)
+          ? res.data.notifications
           : [];
 
-        const nextOrders: ViewOrderItemRow[] = list
+        const nextOrders: OrderNotificationRow[] = list
           .map((ord: any) => {
             const items = Array.isArray(ord.items) ? ord.items : [];
             const total = items.reduce(
@@ -52,20 +53,19 @@ export const NotificationProvider = ({
             );
 
             return {
-              orderId: String(ord.orderId),
-              viewOrderId: String(ord.viewOrderId ?? ord.orderId),
+              notifyId: String(ord.notifyId),
+              OrderId: String(ord.orderId),
               items: items.map((it: any) => ({
                 prodName: String(it.prodName ?? ""),
                 price: Number(it.price ?? 0),
                 quantity: Number(it.quantity ?? 0),
               })),
-              status: String(ord.adminStatus ?? "").toUpperCase(),
-              total,
+              adminStatus: String(ord.adminStatus ?? "").toUpperCase(),
             };
           })
           .filter(
-            (o: ViewOrderItemRow) =>
-              o.status === "ACCEPTED" || o.status === "REJECTED",
+            (o: OrderNotificationRow) =>
+              o.adminStatus === "ACCEPTED" || o.adminStatus === "REJECTED",
           );
 
         const prevMap = lastStatusesRef.current;
@@ -73,11 +73,11 @@ export const NotificationProvider = ({
         if (initializedRef.current) {
           nextOrders.forEach((o) => {
             const prev = prevMap[o.orderId];
-            const curr = o.status;
+            const curr = o.adminStatus;
 
             if (prev !== curr && (curr === "ACCEPTED" || curr === "REJECTED")) {
               const productName = o.items[0].prodName;
-              const baseMsg = `${productName} (Order #${o.viewOrderId})`;
+              const baseMsg = `${productName} (Order #${o.notifyId})`;
 
               if (curr === "ACCEPTED") {
                 toast.success(`${baseMsg} has been ACCEPTED`);
@@ -94,7 +94,7 @@ export const NotificationProvider = ({
 
         const nextMap: Record<string, string> = {};
         nextOrders.forEach((o) => {
-          nextMap[o.orderId] = o.status;
+          nextMap[o.orderId] = o.adminStatus;
         });
         lastStatusesRef.current = nextMap;
       } catch (e) {
@@ -107,8 +107,9 @@ export const NotificationProvider = ({
     return () => clearInterval(interval);
   }, [role]);
 
-  const removeFromNotifications = async (orderId: string) => {
-    setOrders((prev) => prev.filter((o) => o.orderId !== orderId));
+  const removeFromNotifications = async (notifyId: string) => {
+    await api.delete(`/notify-orders/${notifyId}`)
+    setOrders((prev) => prev.filter((o) => o.notifyId !== notifyId));
   };
 
   const clearAll = async () => {

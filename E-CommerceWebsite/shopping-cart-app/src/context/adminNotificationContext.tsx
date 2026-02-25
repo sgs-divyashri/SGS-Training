@@ -10,6 +10,7 @@ type AdminNotificationContextValue = {
   addOrder: (row: ViewOrderItemRow) => void;
   acceptOrder: (viewOrderId: string) => void;
   rejectOrder: (viewOrderId: string) => void;
+  removeNotifications: (viewOrderId: string) => void
   clear: () => void;
 };
 
@@ -110,7 +111,7 @@ export const AdminNotificationProvider = ({
       });
 
       await api.patch(`/order/status/${viewOrderId}`, { status: "ACCEPTED" });
-    } catch (e) {}
+    } catch (e) { }
   };
 
   const rejectOrder = async (viewOrderId: string) => {
@@ -128,11 +129,16 @@ export const AdminNotificationProvider = ({
 
   const adminCount = orders.length;
 
+  const removeNotifications = async (viewOrderId: string) => {
+    await api.delete(`/order/${viewOrderId}`)
+    setOrders((prev) => prev.filter((o) => o.viewOrderId !== viewOrderId));
+  }
+
   const clear = () => setOrders([]);
 
   return (
     <AdminNotificationContext.Provider
-      value={{ orders, adminCount, addOrder, acceptOrder, rejectOrder, clear }}
+      value={{ orders, adminCount, addOrder, acceptOrder, rejectOrder, removeNotifications, clear }}
     >
       {children}
     </AdminNotificationContext.Provider>

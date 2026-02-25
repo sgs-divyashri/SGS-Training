@@ -2,6 +2,7 @@ import type { Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
 import { productServices } from "../../services/productServices";
 import { ProductPayload } from "../../models/productTableDefinition";
 import { Category } from "../../models/prodCategoryTableDefinition";
+import { JWTPayload } from "../../authentication/authentication";
 
 export const addProductHandler = async (
   request: Request,
@@ -10,16 +11,18 @@ export const addProductHandler = async (
   try {
     const payload = request.payload as Pick<
       ProductPayload,
-      "p_name" | "p_description" | "categoryId" | "price" | "qty"
+      "p_name" | "p_description" | "categoryId" | "price" | "qty" | "addedBy"
     >;
 
-    const role = String(request.auth.credentials.role ?? "")
-      .trim()
-      .toLowerCase();
+    type AuthCreds = {
+      userId: number;
+      role: string;
+    };
 
-    if (role !== "admin") {
-      return h.response({ error: "Insufficient permissions" }).code(403);
-    }
+    const { userId, role } = request.auth.credentials as Pick<JWTPayload, "userId" | "role">;
+    console.log('[addProduct] acting user:', { userId, role });
+    const isAdmin = String(role ?? "").trim().toLowerCase() === "admin";
+    if (!isAdmin) return h.response({ error: "Insufficient permissions" }).code(403);
 
     if (
       !payload.p_name ||
@@ -46,7 +49,8 @@ export const addProductHandler = async (
       p_description: payload.p_description,
       categoryId: category.categoryId,
       price: payload.price,
-      qty: payload.qty
+      qty: payload.qty,
+      addedBy: userId
     });
 
     return h

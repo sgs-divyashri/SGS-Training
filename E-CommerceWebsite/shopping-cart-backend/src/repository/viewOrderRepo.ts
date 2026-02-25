@@ -1,15 +1,30 @@
-import { Orders, PlaceOrdersPayload } from "../models/ordersTableDefinition";
-import generateOrderId from "../services/generateOrderId";
-import { CartItems } from "../models/cartItemsTableDefinition";
+import { Op } from "sequelize";
 import {
   ViewOrders,
   ViewOrdersPayload,
 } from "../models/adminViewOrderNotifyTableDefinition";
-import generateViewOrderId from "../services/generateViewOrderId";
+import { Product } from "../models/productTableDefinition";
 
 export const viewOrderRepository = {
-  viewAllOrders: async () => {
+  viewAllOrders: async (adminId: number) => {
+    const prods = await Product.findAll({
+      where: { addedBy: adminId },
+      attributes: ["productId"],
+      raw: true,
+    });
+
+    const ids = prods.map(p => p.productId);
+
+    if (ids.length === 0) {
+      return { items: [], total: 0 };
+    }
+
+    const orConditions = ids.map(id => ({
+      items: { [Op.contains]: [{ productId: id }] },
+    }));
+
     const { rows } = await ViewOrders.findAndCountAll({
+      where: { [Op.or]: orConditions },
       order: [["receivedAt", "DESC"]],
     });
 
@@ -29,8 +44,10 @@ export const viewOrderRepository = {
     return product.get();
   },
 
-  //   cancelOrder: async (id: string) => {
-  //     const count = await Orders.destroy({ where: { orderId: id } });
-  //     return count > 0 ? id : undefined;
-  //   },
+  deleteAdminNotification: async (viewOrderId: string) => {
+    const count = await ViewOrders.destroy({
+      where: { viewOrderId }
+    })
+    return count > 0 ? viewOrderId : undefined
+  }
 };

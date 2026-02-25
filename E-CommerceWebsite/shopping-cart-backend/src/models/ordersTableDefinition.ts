@@ -15,7 +15,6 @@ export interface PlaceOrdersPayload {
   items: OrderItems[];
   totalAmount: number;
   status: string;
-  adminStatus: string;
   placedAt?: Date;
 }
 
@@ -33,7 +32,6 @@ export class Orders
   public items!: OrderItems[];
   public totalAmount!: number;
   public status!: string;
-  public adminStatus!: string;
   public readonly placedAt!: Date;
 }
 
@@ -64,11 +62,11 @@ export default (sequelize: Sequelize) => {
         allowNull: false,
         defaultValue: "ORDERED",
       },
-      adminStatus: {
-        type: DataTypes.ENUM("ACCEPTED", "REJECTED", ""),
-        allowNull: false,
-        defaultValue: "",
-      },
+      // adminStatus: {
+      //   type: DataTypes.ENUM("ACCEPTED", "REJECTED", ""),
+      //   allowNull: false,
+      //   defaultValue: "",
+      // },
     },
     {
       sequelize,

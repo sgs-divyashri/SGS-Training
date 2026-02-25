@@ -7,6 +7,7 @@ import orderFactory from './ordersTableDefinition'
 import cartFactory from './cartItemsTableDefinition'
 import viewOrderFactory from './adminViewOrderNotifyTableDefinition'
 import refreshTokenFactory from './refreshTokenTableDefinition'
+import notifyUserOrdersFactory from './userNotificationTableDefinition'
 
 export const initModels = (sequelize: Sequelize) => {
   const UserModel = userFactory(sequelize);
@@ -16,6 +17,7 @@ export const initModels = (sequelize: Sequelize) => {
   const CartItemsModel = cartFactory(sequelize)
   const ViewOrdersModel = viewOrderFactory(sequelize)
   const RefreshTokenModel = refreshTokenFactory(sequelize)
+  const NotifyUserOrdersModel = notifyUserOrdersFactory(sequelize)
 
   CategoryModel.associate?.(sequelize)
   ProductModel.associate?.(sequelize);
@@ -23,6 +25,7 @@ export const initModels = (sequelize: Sequelize) => {
   OrdersModel.associate?.(sequelize)
   CartItemsModel.associate?.(sequelize)
   ViewOrdersModel.associate?.(sequelize)
+  NotifyUserOrdersModel.associate?.(sequelize)
 
-  return { User: UserModel, Product: ProductModel, Category: CategoryModel, Orders: OrdersModel, CartItem: CartItemsModel, ViewOrder: ViewOrdersModel, RefreshTokens: RefreshTokenModel};
+  return { User: UserModel, Product: ProductModel, Category: CategoryModel, Orders: OrdersModel, CartItem: CartItemsModel, ViewOrder: ViewOrdersModel, RefreshTokens: RefreshTokenModel, NotifyUserOrder: NotifyUserOrdersModel};
 };

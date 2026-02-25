@@ -54,11 +54,10 @@ const AddToCartButtonRenderer = (props: AddToCartParams) => {
         type="button"
         onClick={handleClick}
         disabled={isOutOfStock}
-        className={`px-3 py-1 rounded text-white text-xs ${
-          isOutOfStock
-            ? "bg-gray-400 cursor-not-allowed"
-            : "bg-blue-600 hover:bg-blue-700"
-        }`}
+        className={`px-3 py-1 rounded text-white text-xs ${isOutOfStock
+          ? "bg-gray-400 cursor-not-allowed"
+          : "bg-blue-600 hover:bg-blue-700"
+          }`}
         title={isOutOfStock ? "Out of Stock" : "Add to cart"}
       >
         Add
@@ -98,7 +97,7 @@ export const Home = () => {
   const navigate = useNavigate();
   const role = getRole();
   const token = getToken();
-  if(!token){
+  if (!token) {
     navigate("/")
   }
 
@@ -108,21 +107,34 @@ export const Home = () => {
 
   const handleEditProduct = async (params: any) => {
     if (role !== "Admin") return;
+
     const productId = params.data.productId;
-    const field = params.colDef.field;
+    const field = params.colDef.field;           
     const newValue = params.newValue;
     const oldValue = params.oldValue;
 
-    const patch = { [field]: newValue };
+    let patch: Record<string, any> = {};
+
+    if (field === "prod_category") {
+      const id = categoryIdByName.get(newValue);
+      if (!id) {
+        params.node.setDataValue(field, oldValue); 
+        toast.error("Invalid category selected");
+        return;
+      }
+      patch.categoryId = id;
+
+      params.node.setDataValue("categoryId", id);
+    } else {
+      patch[field] = newValue;
+    }
 
     try {
       await http.patch(`/product/edit/${productId}`, patch);
     } catch (err: any) {
-      params.node.setDataValue(field, oldValue);
+      params.node.setDataValue(field, oldValue); 
       console.error(err);
-      if (err.response.status === 401) {
-        return;
-      }
+      if (err.response?.status === 401) return;
       toast.error("Edit failed");
     }
   };
@@ -162,6 +174,7 @@ export const Home = () => {
 
   useEffect(() => {
     http.get("/products").then((res) => {
+      console.log('sample product', res.data?.products?.[0]);
       setProducts(res.data?.products || []);
     });
   }, []);
@@ -169,6 +182,7 @@ export const Home = () => {
   useEffect(() => {
     let active = true;
     http.get("/categories").then((res) => {
+      console.log('sample category', res.data?.categories?.[0]);
       const list = res.data.categories ?? [];
       if (active) setCategories(list);
     });
@@ -190,6 +204,12 @@ export const Home = () => {
     }),
     [role],
   );
+
+  const categoryIdByName = useMemo(() => {
+    const m = new Map<string, string | number>(); // name -> id
+    categories.forEach(c => m.set(c.prod_category, c.categoryId));
+    return m;
+  }, [categories]);
 
   const columnDefs = useMemo<ColDef<Product>[]>(() => {
     const editableForAdmin = role === "Admin";

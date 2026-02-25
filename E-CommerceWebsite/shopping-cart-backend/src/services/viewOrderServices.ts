@@ -2,8 +2,8 @@ import { viewOrderRepository } from "../repository/viewOrderRepo";
 import { ViewOrdersPayload } from "../models/adminViewOrderNotifyTableDefinition";
 
 export const viewOrderServices = {
-  viewAllOrders: async () => {
-    const orders = await viewOrderRepository.viewAllOrders();
+  viewAllOrders: async (userId: number) => {
+    const orders = await viewOrderRepository.viewAllOrders(userId);
     return orders;
   },
 
@@ -11,4 +11,9 @@ export const viewOrderServices = {
     const orders = await viewOrderRepository.editOrderStatus(id, payload);
     return orders;
   },
+
+  deleteAdminNotification: async (viewOrderId: string) => {
+    const del = await viewOrderRepository.deleteAdminNotification(viewOrderId)
+    return del;
+  }
 };
