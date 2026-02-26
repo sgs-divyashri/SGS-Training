@@ -121,25 +121,26 @@ export const placeOrderRepository = {
     const order = await Orders.findOne({ where: { orderId } });
     if (!order) return null;
 
-    const items = order.get("items");        
+    const items = order.get("items");
 
     if (payload.status !== undefined) {
       // await Orders.update(
       //   { adminStatus: payload.status! },
       //   { where: { orderId } },
       // );
+      console.log("NotifyUserOrders table:", (NotifyUserOrders as any).getTableName());
 
       await ViewOrders.update(
         { status: payload.status! },
-        { where: { orderId } },
+        { where: { viewOrderId } },
       );
     }
 
-    await NotifyUserOrders.create({
+    const created = await NotifyUserOrders.create({
       notifyId: generateUserNotificationId(),
       orderId,
-      items,
-      adminStatus: payload.status!,
+      items,                
+      adminStatus: payload.status!,  
       receivedAt: new Date()
     });
 
@@ -155,7 +156,6 @@ export const placeOrderRepository = {
       where: { orderedBy: userId },
       attributes: [
         "orderId",
-        "adminStatus",
         "items",
         "totalAmount",
         "placedAt",

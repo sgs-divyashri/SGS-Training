@@ -77,6 +77,7 @@ export default (sequelize: Sequelize) => {
       addedBy: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        references: { model: "users", key: "userId" },
       },
     },
     {
@@ -93,12 +94,12 @@ export default (sequelize: Sequelize) => {
         foreignKey: "categoryId",
         as: "category"
       });
-      Product.belongsTo(User, {foreignKey: "userId", as: "user"})
-      Product.hasMany(CartItems, {
-        foreignKey: "prodId",
-        sourceKey: "productId",
-        as: "cartItems"
-      });
+      Product.belongsTo(User, {foreignKey: "addedBy", as: "user"})
+      // Product.hasMany(CartItems, {
+      //   foreignKey: "prodId",
+      //   sourceKey: "productId",
+      //   as: "cartItems"
+      // });
     },
   };
 };

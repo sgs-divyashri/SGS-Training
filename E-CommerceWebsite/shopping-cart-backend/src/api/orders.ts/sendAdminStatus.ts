@@ -1,7 +1,4 @@
 import { Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
-import { productServices } from "../../services/productServices";
-import { Category } from "../../models/prodCategoryTableDefinition";
-import { productCategoryServices } from "../../services/prodCategoryServices";
 import { ViewOrders, ViewOrdersPayload } from "../../models/adminViewOrderNotifyTableDefinition";
 import { placeOrderServices } from "../../services/placeOrderServices";
 
