@@ -1,5 +1,3 @@
-import { viewOrderRepository } from "../repository/viewOrderRepo";
-import { ViewOrdersPayload } from "../models/adminViewOrderNotifyTableDefinition";
 import { notifyOrdersRepository } from "../repository/userOrderNotificationRepo";
 
 export const notifyOrderServices = {

@@ -1,9 +1,6 @@
 import { productCategoryRepository } from "../repository/prodCategoryRepo";
-import {
-  Category,
-  CategoryPayload,
-} from "../models/prodCategoryTableDefinition";
-import { CartItemsPayload } from "../models/cartItemsTableDefinition";
+import { Category } from "../models/prodCategoryTableDefinition";
+import { CategoryPayload } from "../types/categoryPayload";
 
 export const productCategoryServices = {
   addProdCategory: async (

@@ -1,5 +1,5 @@
 import { viewOrderRepository } from "../repository/viewOrderRepo";
-import { ViewOrdersPayload } from "../models/adminViewOrderNotifyTableDefinition";
+import { ViewOrdersPayload } from "../types/viewOrdersPayload";
 
 export const viewOrderServices = {
   viewAllOrders: async (userId: number) => {

@@ -1,7 +1,5 @@
-import {
-  Category,
-  CategoryPayload,
-} from "../models/prodCategoryTableDefinition";
+import { Category } from "../models/prodCategoryTableDefinition";
+import { CategoryPayload } from "../types/categoryPayload";
 import generateCategoryId from "../services/generateCategoryId";
 
 export const productCategoryRepository = {

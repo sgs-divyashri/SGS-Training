@@ -1,8 +1,4 @@
 import { Op } from "sequelize";
-import {
-  ViewOrders,
-  ViewOrdersPayload,
-} from "../models/adminViewOrderNotifyTableDefinition";
 import { Product } from "../models/productTableDefinition";
 import { NotifyUserOrders } from "../models/userNotificationTableDefinition";
 

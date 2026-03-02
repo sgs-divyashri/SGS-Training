@@ -1,5 +1,6 @@
 import { Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
-import { ViewOrders, ViewOrdersPayload } from "../../models/adminViewOrderNotifyTableDefinition";
+import { ViewOrdersPayload } from "../../types/viewOrdersPayload";
+import { ViewOrders } from "../../models/adminViewOrderNotifyTableDefinition";
 import { placeOrderServices } from "../../services/placeOrderServices";
 
 export const sendAdminStatusHandler = async (

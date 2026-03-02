@@ -1,7 +1,6 @@
 import { User } from "../models/userTableDefinition";
-import { Model, Optional } from "sequelize";
 import { userRepository } from "../repository/userRepo";
-import { UserPayload } from "../models/userTableDefinition";
+import { UserPayload } from "../types/userPayload";
 
 export const userServices = {
   findByEmail: async (email: string): Promise<User | null> => {

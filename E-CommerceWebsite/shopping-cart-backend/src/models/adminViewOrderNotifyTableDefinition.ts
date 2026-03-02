@@ -1,24 +1,8 @@
 import { DataTypes, Model, Optional, Sequelize } from "sequelize";
 import { User } from "./userTableDefinition";
 import { Orders } from "./ordersTableDefinition";
-
-export interface OrderItems {
-  productId: string;
-  prodName: string;
-  price: number;
-  quantity: number;
-}
-
-export interface ViewOrdersPayload {
-  viewOrderId: string;
-  orderId: string;
-  orderedBy: number;
-  items: OrderItems[];
-  totalAmount: number;
-  status: string;
-  userStatus: string;
-  receivedAt?: Date;
-}
+import { ViewOrdersPayload } from "../types/viewOrdersPayload";
+import { ProductItems } from "../types/productItems";
 
 export interface UserCreationAttributes extends Optional<
   ViewOrdersPayload,
@@ -32,7 +16,7 @@ export class ViewOrders
   public viewOrderId!: string;
   public orderedBy!: number;
   public orderId!: string;
-  public items!: OrderItems[];
+  public items!: ProductItems[];
   public status!: string;
   public userStatus!: string;
   public totalAmount!: number;

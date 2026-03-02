@@ -9,7 +9,6 @@ export const getAllOrderNotificationsHandler = async (
   h: ResponseToolkit,
 ): Promise<ResponseObject> => {
   try {
-    // const adminId = Number(request.auth.credentials.userId)
     const result = await notifyOrderServices.getAllOrderNotifications();
 
     return h

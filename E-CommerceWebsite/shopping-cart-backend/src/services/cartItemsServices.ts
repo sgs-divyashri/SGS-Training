@@ -1,40 +1,31 @@
-import {
-  productRepository,
-  ProductFilterSpec,
-  PageSpec,
-} from "../repository/productRepo";
-import { Product, ProductPayload } from "../models/productTableDefinition";
-import { Category } from "../models/prodCategoryTableDefinition";
-import {
-  CartItems,
-  CartItemsPayload,
-} from "../models/cartItemsTableDefinition";
+import { CartItems } from "../models/cartItemsTableDefinition";
+import { CartItemsPayload } from "../types/cartItemsPayload";
 import { cartItemsRepository } from "../repository/cartItemsRepo";
-import { EditCartPayload } from "../api/cartItems/editCartItem";
+import { ProductItems } from "../types/productItems";
 
 export const cartItemsServices = {
   addCartItem: async (
     payload: Pick<
       CartItemsPayload,
       | "userId"
-      | "total_quantity"
+      // | "total_quantity"
       | "items"
-      | "totalCount"
+      // | "totalCount"
     >,
   ): Promise<CartItems> => {
     const cart = await cartItemsRepository.addCartItem(payload);
     return cart;
   },
 
-  getAllCartItems: async () => {
-    const cartItems = await cartItemsRepository.getAllCartItems();
+  getAllCartItems: async (authUserId: number) => {
+    const cartItems = await cartItemsRepository.getAllCartItems(authUserId);
     return cartItems;
   },
 
   editCartItems: async (
     id: string,
     userId: number,
-    payload: EditCartPayload,
+    payload: Pick<ProductItems, "productId" | "quantity">,
   ) => {
     const cartItems = await cartItemsRepository.editCartItems(id, userId, payload);
     return cartItems;

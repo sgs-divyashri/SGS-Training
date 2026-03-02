@@ -1,12 +1,7 @@
 import { Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
 import { cartItemsServices } from "../../services/cartItemsServices";
-import { CartItems, CartItemsPayload } from "../../models/cartItemsTableDefinition";
-
-
-export type EditCartPayload = {
-  productId: string;
-  quantity: number; // if 0 or less, we remove the item
-};
+import { CartItems } from "../../models/cartItemsTableDefinition";
+import { ProductItems } from "../../types/productItems";
 
 export const editCartItemHandler = async (
   request: Request,
@@ -15,7 +10,7 @@ export const editCartItemHandler = async (
   try {
     const id = request.params.id;
     const userId = request.params.userId
-    const payload = request.payload as EditCartPayload;
+    const payload = request.payload as Pick<ProductItems, "productId" | "quantity">;
 
     const cartItems = await CartItems.findOne({ where: { cartId: id } });
     if (!cartItems) return h.response({ error: "Product not found" }).code(404);

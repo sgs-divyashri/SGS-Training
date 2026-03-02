@@ -57,11 +57,19 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       try {
         const res = await api.get("/cart-items");
         const raw = res.data.cartItems;
-        const next = raw.map((x: any) => ({
-          ...x,
-          quantity: x.quantity ?? x.qty ?? 0,
-        }));
 
+        const cart = raw[0]; // most recent cart for this user
+        if (!cart) { setItems([]); return; }
+
+        const next: CartItem[] = (cart.items ?? []).map((x: any) => ({
+          cartId: cart.cartId,
+          userId: cart.userId,
+          prodId: x.productId,
+          prodName: x.prodName ?? "",
+          price: Number(x.price ?? 0),
+          quantity: Number(x.quantity ?? 0),
+          total_quantity: Number(cart.total_quantity ?? 0),
+        }));
         setItems(next);
       } catch {
         setItems([]);
@@ -80,33 +88,52 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       }
 
       const prodId = product.productId;
-      const prodName = product.p_name;
-      const prodDescription = product.p_description;
-      const priceNum = Number(String(product.price).replace(/[^\d.-]/g, ""));
-
-      if (
-        !prodId ||
-        !prodName ||
-        !prodDescription ||
-        !Number.isFinite(priceNum)
-      ) {
-        throw new Error("Invalid product data");
-      }
 
       const payload = {
-        prodId,
-        prodName,
-        prodDescription,
-        price: priceNum,
         userId: claims.userId,
-        userEmail: claims.email,
-        total_quantity: product.qty,
-        qty: quantity,
+        items: [{ productId: prodId, quantity }],
       };
+
+      // const prodName = product.p_name;
+      // const prodDescription = product.p_description;
+      // const priceNum = Number(String(product.price).replace(/[^\d.-]/g, ""));
+
+      // if (
+      //   !prodId ||
+      //   !prodName ||
+      //   !prodDescription ||
+      //   !Number.isFinite(priceNum)
+      // ) {
+      //   throw new Error("Invalid product data");
+      // }
+
+      // const payload = {
+      //   prodId,
+      //   prodName,
+      //   prodDescription,
+      //   price: priceNum,
+      //   userId: claims.userId,
+      //   userEmail: claims.email,
+      //   total_quantity: product.qty,
+      //   qty: quantity,
+      // };
 
       const res = await api.post("/cart/add", payload);
 
-      const next = res.data?.cartItems;
+      const cart = res.data?.cart;
+
+
+      const next: CartItem[] = (cart?.items ?? []).map((x: any) => ({
+        cartId: cart.cartId,             // same cartId for all items (user-cart model)
+        userId: cart.userId,
+        prodId: x.productId,
+        prodName: x.prodName,
+        prodDescription: "",             // not provided by API; fill if needed
+        price: Number(x.price),
+        quantity: Number(x.quantity),
+        total_quantity: Number(cart.total_quantity ?? 0), // this is "total items in cart", not stock
+      }));
+
       setItems(next);
     },
     [],
@@ -125,8 +152,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       })),
     };
 
-    const prev = items;
-
     const orderedIds = new Set(payload.items.map((i) => i.productId));
     setItems((curr) => curr.filter((it) => !orderedIds.has(it.prodId)));
 
@@ -144,7 +169,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       }));
 
       setItems(next);
-    } catch {}
+    } catch { }
   }, [items]);
 
   const placeOrderItem = useCallback(

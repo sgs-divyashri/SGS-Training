@@ -1,5 +1,4 @@
 import type { Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
-import { productCategoryServices } from "../../services/prodCategoryServices";
 import { placeOrderServices } from "../../services/placeOrderServices";
 
 export const cancelOrdersHandler = async (request: Request, h: ResponseToolkit): Promise<ResponseObject> => {

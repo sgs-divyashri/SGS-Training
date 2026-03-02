@@ -1,31 +1,9 @@
 import { Op, OrderItem } from "sequelize";
-import { Product, ProductPayload } from "../models/productTableDefinition";
+import { Product } from "../models/productTableDefinition";
+import { ProductPayload } from "../types/productPayload";
 import generateSimpleId from "../services/generateProductId";
 import { Category } from "../models/prodCategoryTableDefinition";
 import Sequelize from "sequelize";
-
-export type ProductFilterSpec = {
-  q: string;
-  minPrice?: number | undefined;
-  maxPrice?: number | undefined;
-  orderedBy?: number | undefined;
-  inStock?: string | undefined;
-  sort?:
-  | "relevance"
-  | "priceAsc"
-  | "priceDesc"
-  | "nameAsc"
-  | "nameDesc"
-  | "createdDesc";
-  page?: number | undefined;
-  pageSize?: number | undefined;
-  categories?: string[] | undefined;
-};
-
-export type PageSpec = {
-  page?: number | undefined;
-  pageSize?: number | undefined;
-};
 
 export const productRepository = {
   createProduct: async (
@@ -34,7 +12,6 @@ export const productRepository = {
       "p_name" | "p_description" | "categoryId" | "price" | "qty" | "addedBy"
     >,
   ): Promise<Product> => {
-    console.log('[createProduct] data.addedBy =', payload.addedBy);
     const newUser = await Product.create({
       ...payload,
       productId: generateSimpleId(),
@@ -66,10 +43,6 @@ export const productRepository = {
   ): Promise<ProductPayload | null> => {
     const product = await Product.findOne({ where: { productId: id } });
     if (!product) return null;
-
-    // const category = await Category.findOne({
-    //   where: { prod_category: payload.categoryId },
-    // });
 
     if (payload.p_name !== undefined) product.set("p_name", payload.p_name);
     if (payload.p_description !== undefined)
@@ -122,28 +95,3 @@ export const productRepository = {
     return count > 0 ? id : undefined;
   },
 };
-
-function mapSort(
-  sort: ProductFilterSpec["sort"],
-  hasSearch: boolean,
-): OrderItem[] {
-  switch (sort) {
-    case "priceAsc":
-      return [["price", "ASC"]];
-    case "priceDesc":
-      return [["price", "DESC"]];
-    case "nameAsc":
-      return [["p_name", "ASC"]];
-    case "nameDesc":
-      return [["p_name", "DESC"]];
-    case "relevance":
-      return hasSearch ? [] : [["createdAt", "DESC"]];
-    case "createdDesc":
-    default:
-      return [["createdAt", "DESC"]];
-  }
-}
-
-function escapeLike(input: string) {
-  return input.replace(/[\\%_]/g, (m) => `\\${m}`);
-}

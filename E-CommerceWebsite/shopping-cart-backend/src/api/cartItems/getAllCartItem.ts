@@ -7,15 +7,16 @@ export const getAllCartItemsHandler = async (
   h: ResponseToolkit,
 ): Promise<ResponseObject> => {
   try {
-    const role = String(request.auth.credentials.role ?? "")
+    const role = String(request.auth?.credentials?.role ?? "")
       .trim()
       .toLowerCase();
+    const authUserId = Number(request.auth?.credentials?.userId);
 
     if (role !== "user") {
       return h.response({ error: "Insufficient permissions" }).code(403);
     }
-    
-    const result = await cartItemsServices.getAllCartItems();
+
+    const result = await cartItemsServices.getAllCartItems(authUserId);
 
     return h
       .response({

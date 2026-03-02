@@ -1,6 +1,6 @@
-import { productRepository, ProductFilterSpec, PageSpec } from "../repository/productRepo";
-import { Product, ProductPayload } from "../models/productTableDefinition";
-import { Category } from "../models/prodCategoryTableDefinition";
+import { productRepository } from "../repository/productRepo";
+import { Product } from "../models/productTableDefinition";
+import { ProductPayload } from "../types/productPayload";
 
 export const productServices = {
   createProduct: async (payload: Pick<ProductPayload, "p_name" | "p_description" | "categoryId" | "price" | "qty" | "addedBy">): Promise<Product> => {
@@ -13,7 +13,7 @@ export const productServices = {
     return products
   },
 
-  editProduct: async (id: string, payload: Pick<Partial<Product>, "p_name" | "p_description" | "categoryId" | "price" | "qty">): Promise<ProductPayload | null> => {
+  editProduct: async (id: string, payload: Pick<Partial<ProductPayload>, "p_name" | "p_description" | "categoryId" | "price" | "qty">): Promise<ProductPayload | null> => {
     return await productRepository.editProduct(id, payload)
   },
 

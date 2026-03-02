@@ -10,8 +10,6 @@ export const deleteAllCartItemsHandler = async (request: Request, h: ResponseToo
       return h.response({ error: 'Invalid user ID' }).code(400);
     }
 
-    // const userId = Number(request.auth.credentials.userId);
-
     const role = String(request.auth.credentials.role ?? "").trim().toLowerCase()
 
     if (role !== "user") {

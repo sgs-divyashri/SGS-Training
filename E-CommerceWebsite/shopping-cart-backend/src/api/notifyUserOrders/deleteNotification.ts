@@ -1,6 +1,4 @@
 import type { Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
-import { productServices } from "../../services/productServices";
-import { cartItemsServices } from "../../services/cartItemsServices";
 import { notifyOrderServices } from "../../services/userNotificationServices";
 
 export const deleteOrderNotificationHandler = async (request: Request, h: ResponseToolkit): Promise<ResponseObject> => {

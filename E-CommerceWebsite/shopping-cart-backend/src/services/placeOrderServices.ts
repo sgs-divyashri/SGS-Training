@@ -1,10 +1,10 @@
 import { placeOrderRepository } from "../repository/placeOrdersRepo";
-import { PlaceOrdersPayload } from "../models/ordersTableDefinition";
-import { ViewOrdersPayload } from "../models/adminViewOrderNotifyTableDefinition";
+import { PlaceOrdersPayload } from "../types/placeOrdersPayload";
+import { ViewOrdersPayload } from "../types/viewOrdersPayload";
 
 export const placeOrderServices = {
   addPlaceOrder: async (
-    payload: Pick<PlaceOrdersPayload, "orderedBy" | "totalAmount" | "items">
+    payload: Pick<PlaceOrdersPayload, "orderedBy" | "items">
   ) => {
     const newOrder = await placeOrderRepository.addPlaceOrder(payload);
     return newOrder;

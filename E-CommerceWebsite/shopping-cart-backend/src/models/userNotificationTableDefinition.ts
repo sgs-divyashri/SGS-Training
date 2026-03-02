@@ -1,34 +1,19 @@
 import { DataTypes, Model, Optional, Sequelize } from "sequelize";
-import { User } from "./userTableDefinition";
+import { NotifyOrdersPayload } from "../types/notifyOrdersPayload";
 import { Orders } from "./ordersTableDefinition";
-
-export interface OrderItems {
-  productId: string;
-  prodName: string;
-  price: number;
-  quantity: number;
-}
-
-export interface NotifyOrdersPayload {
-  notifyId: string;
-  orderId: string;
-  items: OrderItems[];
-  adminStatus: string;
-  receivedAt?: Date;
-}
+import { ProductItems } from "../types/productItems";
 
 export interface UserCreationAttributes extends Optional<
   NotifyOrdersPayload,
   "notifyId" | "receivedAt"
-> {}
+> { }
 
 export class NotifyUserOrders
   extends Model<NotifyOrdersPayload, UserCreationAttributes>
-  implements NotifyOrdersPayload
-{
+  implements NotifyOrdersPayload {
   public notifyId!: string;
   public orderId!: string;
-  public items!: OrderItems[];
+  public items!: ProductItems[];
   public adminStatus!: string;
   public readonly receivedAt!: Date;
 }
@@ -47,7 +32,7 @@ export default (sequelize: Sequelize) => {
         references: { model: "orders", key: "orderId" },
       },
       items: {
-        type: DataTypes.JSONB, 
+        type: DataTypes.JSONB,
         allowNull: false,
         defaultValue: [],
       },
@@ -70,7 +55,7 @@ export default (sequelize: Sequelize) => {
     NotifyUserOrders,
     associate: (sequelize: Sequelize) => {
       NotifyUserOrders.belongsTo(Orders, {
-        foreignKey: 'orderId' 
+        foreignKey: 'orderId'
       })
     },
   };

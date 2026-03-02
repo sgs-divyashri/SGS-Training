@@ -1,16 +1,7 @@
 import { DataTypes, Model, Optional, Sequelize } from "sequelize";
 import { Orders } from "./ordersTableDefinition";
 import { Product } from "./productTableDefinition";
-
-export interface UserPayload {
-  userId: number;
-  name: string;
-  email: string;
-  password: string;
-  role: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
+import { UserPayload } from "../types/userPayload";
 
 export interface UserCreationAttributes
   extends Optional<UserPayload, "userId" | "createdAt" | "updatedAt"> { }

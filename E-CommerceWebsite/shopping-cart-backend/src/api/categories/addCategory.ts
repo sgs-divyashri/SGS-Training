@@ -1,10 +1,6 @@
 import type { Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
-import { productServices } from "../../services/productServices";
-import { ProductPayload } from "../../models/productTableDefinition";
-import {
-  Category,
-  CategoryPayload,
-} from "../../models/prodCategoryTableDefinition";
+import { Category } from "../../models/prodCategoryTableDefinition";
+import { CategoryPayload } from "../../types/categoryPayload";
 import { productCategoryServices } from "../../services/prodCategoryServices";
 import { Op } from "sequelize";
 
@@ -16,9 +12,9 @@ export const addProductCategoryHandler = async (
     const role = String(request.auth.credentials.role ?? "").trim().toLowerCase()
 
     if (role !== "admin") {
-      return h.response({ error: "Insufficient permissions"}).code(403);
+      return h.response({ error: "Insufficient permissions" }).code(403);
     }
-    
+
     const payload = request.payload as Pick<CategoryPayload, "prod_category">;
     if (!payload.prod_category) {
       return h.response({ error: "Bad Request" }).code(400);

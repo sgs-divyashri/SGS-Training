@@ -5,7 +5,6 @@ export type SendMailArgs = {
   to: string;
   subject: string;
   html: string;
-  // text: string;
 };
 
 const PROVIDER = (process.env.MAIL_PROVIDER || "gmail_app").toLowerCase();
@@ -42,7 +41,6 @@ export async function sendMail({ to, subject, html }: SendMailArgs) {
     to,
     subject,
     hasHtml: !!html,
-    // hasText: !! text,
     provider: PROVIDER,
     from: sender.address,
   });
@@ -55,7 +53,6 @@ export async function sendMail({ to, subject, html }: SendMailArgs) {
     to: [to],
     subject,
     html,
-    // text
   });
 
   console.log("Mail sent:", {

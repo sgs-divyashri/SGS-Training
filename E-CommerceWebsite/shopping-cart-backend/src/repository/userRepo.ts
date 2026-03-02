@@ -1,7 +1,6 @@
 import { User } from "../models/userTableDefinition";
 import { passwordServices } from "../services/passwordServices";
-import { UserPayload } from "../models/userTableDefinition";
-import { RefreshToken } from "../models/refreshTokenTableDefinition";
+import { UserPayload } from "../types/userPayload";
 
 export const userRepository = {
   createUser: async (

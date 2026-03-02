@@ -1,20 +1,7 @@
 import { DataTypes, Model, Optional, Sequelize } from "sequelize";
 import { User } from "./userTableDefinition";
 import { Category } from "./prodCategoryTableDefinition";
-import { CartItems } from "./cartItemsTableDefinition";
-
-export interface ProductPayload {
-  productId: string;
-  p_name: string;
-  p_description: string;
-  categoryId: string;
-  price: number;
-  qty: number;
-  inStock: string;
-  addedBy: number;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
+import { ProductPayload } from "../types/productPayload";
 
 export interface UserCreationAttributes extends Optional<
   ProductPayload,
@@ -95,11 +82,6 @@ export default (sequelize: Sequelize) => {
         as: "category"
       });
       Product.belongsTo(User, {foreignKey: "addedBy", as: "user"})
-      // Product.hasMany(CartItems, {
-      //   foreignKey: "prodId",
-      //   sourceKey: "productId",
-      //   as: "cartItems"
-      // });
     },
   };
 };

@@ -1,8 +1,6 @@
 import { Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
-import { productServices } from "../../services/productServices";
-import { Category } from "../../models/prodCategoryTableDefinition";
-import { productCategoryServices } from "../../services/prodCategoryServices";
-import { ViewOrders, ViewOrdersPayload } from "../../models/adminViewOrderNotifyTableDefinition";
+import { ViewOrdersPayload } from "../../types/viewOrdersPayload";
+import { ViewOrders } from "../../models/adminViewOrderNotifyTableDefinition";
 import { viewOrderServices } from "../../services/viewOrderServices";
 
 export const editViewOrderStatusHandler = async (

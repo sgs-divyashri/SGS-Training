@@ -1,13 +1,6 @@
 import { DataTypes, Model, Optional, Sequelize } from "sequelize";
-import { User } from "./userTableDefinition";
+import { CategoryPayload } from "../types/categoryPayload";
 import { Product } from "./productTableDefinition";
-
-export interface CategoryPayload {
-  categoryId: string;
-  prod_category: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
 
 export interface CategoryCreationAttributes
   extends Optional<CategoryPayload, "categoryId" | "createdAt" | "updatedAt"> { }

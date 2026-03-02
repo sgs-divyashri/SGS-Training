@@ -2,19 +2,20 @@ import { Orders } from "../models/ordersTableDefinition";
 import { ViewOrders } from "../models/adminViewOrderNotifyTableDefinition";
 import { Product } from "../models/productTableDefinition";
 import { Op, where } from "sequelize";
-import { ViewOrdersPayload } from "../models/adminViewOrderNotifyTableDefinition";
+import { ViewOrdersPayload } from "../types/viewOrdersPayload";
 import generateOrderId from "../services/generateOrderId";
 import generateViewOrderId from "../services/generateViewOrderId";
 import { NotifyUserOrders } from "../models/userNotificationTableDefinition";
 import generateUserNotificationId from "../services/generateUserNotificationID";
-
-type PlacePayload = {
-  orderedBy: number;
-  items: Array<{ productId: string; quantity: number }>;
-};
+import { PlaceOrdersPayload } from "../types/placeOrdersPayload";
+import { ProductItems } from "../types/productItems";
+import { OrderItems } from "../types/orderItems";
 
 export const placeOrderRepository = {
-  addPlaceOrder: async (payload: PlacePayload) => {
+  addPlaceOrder: async (
+    payload: Pick<PlaceOrdersPayload, "orderedBy" | "items">
+  ) => {
+    // 1) Basic validation (unchanged logic)
     if (
       !payload?.orderedBy ||
       !Array.isArray(payload.items) ||
@@ -23,57 +24,55 @@ export const placeOrderRepository = {
       throw new Error("Invalid payload");
     }
 
-    const orderId = generateOrderId();
-    const viewOrderId = generateViewOrderId();
-
     const invalid = payload.items.some(
       (i) => !i.productId || !i.quantity || i.quantity <= 0,
     );
     if (invalid) throw new Error("Invalid item in payload");
 
+    // 2) Bulk load product data ONCE
     const productIds = payload.items.map((i) => i.productId);
     const products = await Product.findAll({
       where: { productId: { [Op.in]: productIds } },
-      attributes: ["productId", "p_name", "price"],
+      attributes: ["productId", "p_name", "price", "qty"],
     });
+    const prodMap = new Map(products.map(p => [String(p.get("productId")), p]));
 
-    const prodMap = new Map(
-      products.map((p) => [String(p.get("productId")), p]),
-    );
-
-    const detailedItems = payload.items.map(({ productId, quantity }) => {
+    // 3) Enrich each item (prodName, price) and normalize quantity
+    const detailedItems: ProductItems[] = payload.items.map(({ productId, quantity }) => {
       const prod = prodMap.get(String(productId));
       if (!prod) throw new Error(`Product ${productId} not found`);
-
       return {
         productId: String(productId),
         prodName: String(prod.get("p_name")),
         price: Number(prod.get("price")),
         quantity: Number(quantity),
+        // total_quantity: Number(prod.get("qty"))
       };
     });
 
+    // 4) Compute totalAmount (authoritative in service)
     const totalAmount = detailedItems.reduce(
       (sum, it) => sum + Number(it.price) * Number(it.quantity),
       0,
     );
 
+    // 5) Stock check & decrement (unchanged logic, centralized)
     for (const item of detailedItems) {
-      const prod = await Product.findOne({
-        where: { productId: item.productId },
-        attributes: ["productId", "qty"],
-      });
-      if (!prod) throw new Error(`Product ${item.productId} not found`);
-
-      const newQty = Number(prod.get("qty")) - item.quantity;
-      if (newQty < 0)
+      const prod = prodMap.get(item.productId)!; // exists by validation above
+      const currentQty = Number(prod.get("qty"));
+      const newQty = currentQty - item.quantity;
+      if (newQty < 0) {
         throw new Error(`Insufficient stock for ${item.productId}`);
-
+      }
       await Product.update(
         { qty: newQty, inStock: newQty > 0 ? "In Stock" : "Out of Stock" },
         { where: { productId: item.productId } },
       );
     }
+
+    // 6) Persist order + view order
+    const orderId = generateOrderId();
+    const viewOrderId = generateViewOrderId();
 
     await Orders.create({
       orderId,
@@ -81,7 +80,6 @@ export const placeOrderRepository = {
       items: detailedItems,
       totalAmount,
       status: "ORDERED",
-      // adminStatus: "",
     });
 
     const viewOrder = await ViewOrders.create({
@@ -94,6 +92,7 @@ export const placeOrderRepository = {
       userStatus: "ORDERED",
     });
 
+    // 7) Return summary
     return {
       orderId,
       viewOrderId: viewOrder.get("viewOrderId"),
@@ -101,6 +100,7 @@ export const placeOrderRepository = {
       itemsCount: detailedItems.length,
     };
   },
+
 
   getAllOrders: async () => {
     const { rows } = await Orders.findAndCountAll({

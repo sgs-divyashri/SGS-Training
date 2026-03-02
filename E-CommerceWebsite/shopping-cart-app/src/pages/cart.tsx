@@ -134,10 +134,13 @@ export const CartPage = () => {
         <>
           <ul className="space-y-3">
             {items.map((it) => {
-              const id = it.cartId;
+              // const id = it.cartId;
+              const rowKey = `${it.cartId}:${it.prodId}`;
+              const priceNum = Number(it.price);
+              const displayPrice = Number.isFinite(priceNum) ? priceNum.toFixed(2) : "-";
               return (
                 <li
-                  key={id}
+                  key={rowKey}
                   className="rounded border p-3 bg-white flex items-center justify-between"
                 >
                   <div className="flex-1">
@@ -146,7 +149,7 @@ export const CartPage = () => {
                       {it.prodDescription}
                     </div>
                     <div className="text-sm text-gray-600">
-                      Price: ₹ {Number(it.price).toFixed(2)}
+                      Price: ₹ {displayPrice}
                     </div>
                     <div className="text-sm text-gray-600">
                       Total Available Quantity: {it.total_quantity}

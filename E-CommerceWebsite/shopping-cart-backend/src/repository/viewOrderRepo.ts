@@ -1,8 +1,6 @@
 import { Op } from "sequelize";
-import {
-  ViewOrders,
-  ViewOrdersPayload,
-} from "../models/adminViewOrderNotifyTableDefinition";
+import { ViewOrders } from "../models/adminViewOrderNotifyTableDefinition";
+import { ViewOrdersPayload } from "../types/viewOrdersPayload";
 import { Product } from "../models/productTableDefinition";
 
 export const viewOrderRepository = {

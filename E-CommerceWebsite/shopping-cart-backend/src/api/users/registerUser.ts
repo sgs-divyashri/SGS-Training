@@ -1,9 +1,8 @@
 import type { Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
 import { userServices } from "../../services/userServices";
 import { validateEmail } from "../../services/emailValidation";
-import { UserPayload } from "../../models/userTableDefinition";
+import { UserPayload } from "../../types/userPayload";
 import { passwordServices } from "../../services/passwordServices";
-import { sendMail } from "../../services/resetPasswordMailer";
 
 export const registerUserHandler = async (request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
   try {

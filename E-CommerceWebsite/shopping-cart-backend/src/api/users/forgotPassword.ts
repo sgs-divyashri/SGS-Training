@@ -1,7 +1,7 @@
 import { Request, ResponseToolkit } from "@hapi/hapi";
 import { userServices } from "../../services/userServices";
 import { generateToken } from "../../authentication/authentication";
-import { UserPayload } from "../../models/userTableDefinition";
+import { UserPayload } from "../../types/userPayload";
 import { sendMail } from "../../services/resetPasswordMailer";
 
 export const forgotPasswordUserHandler = async (

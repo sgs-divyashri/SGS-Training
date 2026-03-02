@@ -1,12 +1,6 @@
 import { DataTypes, Model, Optional, Sequelize } from "sequelize";
 import { User } from "./userTableDefinition";
-
-export interface RefreshTokenPayload {
-  token: string;
-  userId: number;
-  revokedAt: Date | null;
-  expiresAt?: Date;
-}
+import { RefreshTokenPayload } from "../types/refreshTokenPayload";
 
 export type RefreshTokenCreationAttributes = RefreshTokenPayload;
 

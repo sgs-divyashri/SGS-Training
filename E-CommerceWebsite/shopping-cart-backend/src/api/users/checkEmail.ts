@@ -1,4 +1,4 @@
-import { UserPayload } from "../../models/userTableDefinition";
+import { UserPayload } from "../../types/userPayload";
 import { userServices } from "../../services/userServices";
 import { ResponseToolkit, Request } from "@hapi/hapi";
 import { normalize } from "node:path";

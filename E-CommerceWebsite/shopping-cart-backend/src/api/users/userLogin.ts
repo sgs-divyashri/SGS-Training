@@ -1,7 +1,7 @@
 import { Request, ResponseToolkit } from "@hapi/hapi";
 import { userServices } from "../../services/userServices";
 import { generateToken } from "../../authentication/authentication";
-import { UserPayload } from "../../models/userTableDefinition";
+import { UserPayload } from "../../types/userPayload";
 import { RefreshToken } from "../../models/refreshTokenTableDefinition";
 import Jwt from "@hapi/jwt";
 

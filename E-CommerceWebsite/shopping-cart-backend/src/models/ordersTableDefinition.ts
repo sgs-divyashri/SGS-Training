@@ -1,35 +1,20 @@
 import { DataTypes, Model, Optional, Sequelize } from "sequelize";
-import { Category } from "./prodCategoryTableDefinition";
 import { User } from "./userTableDefinition";
+import { ProductItems } from "../types/productItems";
+import { PlaceOrdersPayload } from "../types/placeOrdersPayload";
 
-export interface OrderItems {
-  productId: string;
-  prodName: string;
-  price: number;
-  quantity: number;
-}
-
-export interface PlaceOrdersPayload {
-  orderId: string;
-  orderedBy: number;
-  items: OrderItems[];
-  totalAmount: number;
-  status: string;
-  placedAt?: Date;
-}
-
-export interface UserCreationAttributes extends Optional<
+export interface OrderCreationAttributes extends Optional<
   PlaceOrdersPayload,
   "orderId" | "placedAt"
 > {}
 
 export class Orders
-  extends Model<PlaceOrdersPayload, UserCreationAttributes>
+  extends Model<PlaceOrdersPayload, OrderCreationAttributes>
   implements PlaceOrdersPayload
 {
   public orderId!: string;
   public orderedBy!: number;
-  public items!: OrderItems[];
+  public items!: ProductItems[];
   public totalAmount!: number;
   public status!: string;
   public readonly placedAt!: Date;
@@ -62,11 +47,6 @@ export default (sequelize: Sequelize) => {
         allowNull: false,
         defaultValue: "ORDERED",
       },
-      // adminStatus: {
-      //   type: DataTypes.ENUM("ACCEPTED", "REJECTED", ""),
-      //   allowNull: false,
-      //   defaultValue: "",
-      // },
     },
     {
       sequelize,
