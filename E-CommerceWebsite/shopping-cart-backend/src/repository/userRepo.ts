@@ -3,9 +3,11 @@ import { passwordServices } from "../services/passwordServices";
 import { UserPayload } from "../types/userPayload";
 
 export const userRepository = {
-  createUser: async (
-    payload: Pick<UserPayload, "name" | "email" | "password" | "role">,
-  ): Promise<User> => {
+  findByEmail: async (email: string): Promise<User | null> => {
+    return await User.findOne({ where: { email }, attributes: ["userId", "email"], });
+  },
+  
+  createUser: async (payload: Pick<UserPayload, "name" | "email" | "password" | "role">): Promise<User> => {
     const newUser = await User.create({
       ...payload,
       password: passwordServices.hashPassword(payload.password),
@@ -13,9 +15,7 @@ export const userRepository = {
     return newUser;
   },
 
-  loginUser: async (
-    loginData: Pick<UserPayload, "email" | "password" | "role">,
-  ): Promise<User | null> => {
+  loginUser: async (loginData: Pick<UserPayload, "email" | "password" | "role">): Promise<User | null> => {
     const user = await User.findOne({
       where: { email: loginData.email},
       attributes: { include: ["password"] },
@@ -36,14 +36,7 @@ export const userRepository = {
     return user;
   },
 
-  // refreshToken: async (userId: number) => {
-  //   const count = await RefreshToken.destroy({ where: { userId: userId } });
-  //   return count > 0 ? userId : undefined;
-  // },
-
-  forgotPassword: async (
-    data: Pick<UserPayload, "email">,
-  ): Promise<User | null> => {
+  forgotPassword: async (data: Pick<UserPayload, "email">): Promise<User | null> => {
     const user = await User.findOne({
       where: { email: data.email},
     });
@@ -58,59 +51,5 @@ export const userRepository = {
       { where: { userId } },
     );
     return user;
-  },
-
-  // getAllUsers: (): Promise<User[]> => {
-  //     const users = User.findAll();
-  //     return users
-  // },
-
-  // getSpecificUser: async (id: number): Promise<User | null> => {
-  //     const user = await User.findOne({ where: { userId: id } })
-  //     return user
-  // },
-
-  // fullUpdateUser: async (id: number, payload: Pick<UserPayload, "name" | "email" | "password" | "age">): Promise<User | null | undefined> => {
-  //     const [rowsUpdated, [updatedUser]] = await User.update({ ...payload, password: passwordServices.hashPassword(payload.password) }, { where: { userId: id }, returning: true })
-  //     if (rowsUpdated === 0) {
-  //         return null;
-  //     }
-
-  //     return updatedUser
-  // },
-
-  // partialUpdateUser: async (id: number, payload: Partial<UserPayload>): Promise<UserPayload | null> => {
-  //     const user = await User.findOne({ where: { userId: id, isActive: true } });
-  //     if (!user) return null;
-
-  //     if (payload.name !== undefined) user.set('name', payload.name);
-  //     if (payload.email !== undefined) user.set('email', payload.email);
-  //     if (payload.password !== undefined) user.set('password', passwordServices.hashPassword(payload.password));
-  //     if (payload.age !== undefined) user.set('age', payload.age);
-
-  //     await user.save();
-  //     return user.get();
-  // },
-
-  // // restoreUser: async (id: number): Promise<User | null> => {
-  // //     const [affectedRows] = await User.update({ isActive: true }, { where: { userId: id, isActive: false } });
-  // //     if (affectedRows === 0) {
-  // //         throw new Error(`User with ID ${id} not found or already restored`);
-  // //     };
-  // //     return await User.findOne({ where: { userId: id } });
-  // //     // return id
-  // // },
-
-  // toggleUser: async (id: number): Promise<User | null> => {
-  //     const user = await User.findOne({ where: { userId: id } });
-  //     if (!user) throw new Error(`User with ID ${id} not found`);
-
-  //     const nextIsActive = !Boolean(user.isActive);
-
-  //     const [activeRows] = await User.update({ isActive: nextIsActive }, { where: { userId: id } });
-  //     if (activeRows === 0) {
-  //         throw new Error(`User with ID ${id} not found or already deleted`);
-  //     }
-  //     return await User.findOne({ where: { userId: id } });
-  // }
+  }
 };

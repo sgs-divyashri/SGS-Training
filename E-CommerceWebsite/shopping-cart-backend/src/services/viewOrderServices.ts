@@ -7,9 +7,9 @@ export const viewOrderServices = {
     return orders;
   },
 
-  editOrderStatus: async (id: string, payload: Pick<ViewOrdersPayload, "status">) => {
-    const orders = await viewOrderRepository.editOrderStatus(id, payload);
-    return orders;
+  sendAdminStatus: async (id: string, payload: Pick<ViewOrdersPayload, "status">) => {
+    const adminStatus = await viewOrderRepository.sendAdminStatus(id, payload);
+    return adminStatus;
   },
 
   deleteAdminNotification: async (viewOrderId: string) => {

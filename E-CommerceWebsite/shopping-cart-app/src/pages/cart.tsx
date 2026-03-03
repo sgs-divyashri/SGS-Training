@@ -21,7 +21,7 @@ export const CartPage = () => {
   const [placingId, setPlacingId] = useState<string | null>(null);
   const [placingAll, setPlacingAll] = useState(false);
   const claims = decodeToken();
-  const userId = claims?.userId;
+  const userId = claims!.userId;
 
   const placingOrderItems = async (cartId: string) => {
     if (items.length === 0 || placingId) return;
@@ -134,13 +134,10 @@ export const CartPage = () => {
         <>
           <ul className="space-y-3">
             {items.map((it) => {
-              // const id = it.cartId;
-              const rowKey = `${it.cartId}:${it.prodId}`;
-              const priceNum = Number(it.price);
-              const displayPrice = Number.isFinite(priceNum) ? priceNum.toFixed(2) : "-";
+              const id = it.cartId;
               return (
                 <li
-                  key={rowKey}
+                  key={id}
                   className="rounded border p-3 bg-white flex items-center justify-between"
                 >
                   <div className="flex-1">
@@ -149,7 +146,7 @@ export const CartPage = () => {
                       {it.prodDescription}
                     </div>
                     <div className="text-sm text-gray-600">
-                      Price: ₹ {displayPrice}
+                      Price: ₹ {(it.price).toFixed(2)}
                     </div>
                     <div className="text-sm text-gray-600">
                       Total Available Quantity: {it.total_quantity}

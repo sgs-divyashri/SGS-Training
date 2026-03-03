@@ -106,10 +106,6 @@ export const AdminNotificationProvider = ({
     setStatus(viewOrderId, "ACCEPTED");
 
     try {
-      await api.patch(`/order/view/status/${viewOrderId}`, {
-        status: "ACCEPTED",
-      });
-
       await api.patch(`/order/status/${viewOrderId}`, { status: "ACCEPTED" });
     } catch (e) { }
   };
@@ -117,10 +113,6 @@ export const AdminNotificationProvider = ({
   const rejectOrder = async (viewOrderId: string) => {
     setStatus(viewOrderId, "REJECTED");
     try {
-      await api.patch(`/order/view/status/${viewOrderId}`, {
-        status: "REJECTED",
-      });
-
       await api.patch(`/order/status/${viewOrderId}`, { status: "REJECTED" });
     } catch (e) {
       throw e;

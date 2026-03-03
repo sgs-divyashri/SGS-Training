@@ -2,6 +2,9 @@ import { Op } from "sequelize";
 import { ViewOrders } from "../models/adminViewOrderNotifyTableDefinition";
 import { ViewOrdersPayload } from "../types/viewOrdersPayload";
 import { Product } from "../models/productTableDefinition";
+import { NotifyUserOrders } from "../models/userNotificationTableDefinition";
+import { Orders } from "../models/ordersTableDefinition";
+import generateUserNotificationId from "../services/generateUserNotificationID";
 
 export const viewOrderRepository = {
   viewAllOrders: async (adminId: number) => {
@@ -29,17 +32,37 @@ export const viewOrderRepository = {
     return { items: rows };
   },
 
-  editOrderStatus: async (
-    id: string,
-    payload: Pick<ViewOrdersPayload, "status">,
-  ) => {
-    const product = await ViewOrders.findOne({ where: { viewOrderId: id } });
-    if (!product) return null;
+  sendAdminStatus: async (viewOrderId: string, payload: Pick<ViewOrdersPayload, "status">) => {
+    const orderView = await ViewOrders.findOne({ where: { viewOrderId } });
+    if (!orderView) return null;
 
-    if (payload.status !== undefined) product.set("status", payload.status);
+    const orderId = orderView.get("orderId");
 
-    await product.save();
-    return product.get();
+    const order = await Orders.findOne({ where: { orderId } });
+    if (!order) return null;
+
+    const items = order.get("items");
+
+    if (payload.status !== undefined) {
+      await ViewOrders.update(
+        { status: payload.status! },
+        { where: { viewOrderId } },
+      );
+    }
+
+    await NotifyUserOrders.create({
+      notifyId: generateUserNotificationId(),
+      orderId,
+      items,                
+      adminStatus: payload.status!,  
+      receivedAt: new Date()
+    });
+
+    return {
+      viewOrderId,
+      orderId,
+      status: payload.status,
+    };
   },
 
   deleteAdminNotification: async (viewOrderId: string) => {

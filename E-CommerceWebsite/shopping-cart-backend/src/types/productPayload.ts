@@ -6,7 +6,7 @@ export interface ProductPayload {
   price: number;
   qty: number;
   inStock: string;
-  addedBy: number;
+  addedBy?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }

@@ -35,6 +35,8 @@ export default (sequelize: Sequelize) => {
         type: DataTypes.STRING,
         allowNull: false,
         references: { model: "orders", key: "orderId" },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE"
       },
       orderedBy: {
         type: DataTypes.INTEGER,

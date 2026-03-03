@@ -4,16 +4,8 @@ import { cartItemsRepository } from "../repository/cartItemsRepo";
 import { ProductItems } from "../types/productItems";
 
 export const cartItemsServices = {
-  addCartItem: async (
-    payload: Pick<
-      CartItemsPayload,
-      | "userId"
-      // | "total_quantity"
-      | "items"
-      // | "totalCount"
-    >,
-  ): Promise<CartItems> => {
-    const cart = await cartItemsRepository.addCartItem(payload);
+  addCartItem: async (payload: Pick<CartItemsPayload, "productId" | "quantity">, userId: number): Promise<CartItems> => {
+    const cart = await cartItemsRepository.addCartItem(payload, userId);
     return cart;
   },
 
@@ -22,11 +14,7 @@ export const cartItemsServices = {
     return cartItems;
   },
 
-  editCartItems: async (
-    id: string,
-    userId: number,
-    payload: Pick<ProductItems, "productId" | "quantity">,
-  ) => {
+  editCartItems: async (id: string, userId: number, payload: Pick<ProductItems, "productId" | "quantity">) => {
     const cartItems = await cartItemsRepository.editCartItems(id, userId, payload);
     return cartItems;
   },

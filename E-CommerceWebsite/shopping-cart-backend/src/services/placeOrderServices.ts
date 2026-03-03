@@ -1,12 +1,9 @@
 import { placeOrderRepository } from "../repository/placeOrdersRepo";
 import { PlaceOrdersPayload } from "../types/placeOrdersPayload";
-import { ViewOrdersPayload } from "../types/viewOrdersPayload";
 
 export const placeOrderServices = {
-  addPlaceOrder: async (
-    payload: Pick<PlaceOrdersPayload, "orderedBy" | "items">
-  ) => {
-    const newOrder = await placeOrderRepository.addPlaceOrder(payload);
+  addPlaceOrder: async (payload: Pick<PlaceOrdersPayload, "items">, orderedBy: number) => {
+    const newOrder = await placeOrderRepository.addPlaceOrder(payload, orderedBy);
     return newOrder;
   },
 
@@ -15,23 +12,13 @@ export const placeOrderServices = {
     return orders;
   },
 
-  getAdminStatus: async (userId: number) => {
-    const status = await placeOrderRepository.getAdminStatus(userId);
-    return status;
-  },
-
-  sendAdminStatus: async (id: string, payload: Pick<ViewOrdersPayload, "status">) => {
-    const adminStatus = await placeOrderRepository.sendAdminStatus(id, payload);
-    return adminStatus;
-  },
-
   cancelOrder: async (id: string) => {
     const cancelledOrder = await placeOrderRepository.cancelOrder(id);
     return cancelledOrder;
   },
 
-  deleteOrderNotification: async (id: string) => {
-    const cancelledOrder = await placeOrderRepository.deleteOrderNotification(id);
-    return cancelledOrder;
-  }
+  deleteOrder: async (id: string) => {
+    const delOrder = await placeOrderRepository.deleteOrder(id)
+    return delOrder;
+  },
 };

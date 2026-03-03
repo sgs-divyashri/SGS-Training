@@ -2,9 +2,7 @@ import type { ServerRoute } from "@hapi/hapi";
 import { addPlaceOrderHandler } from "./addPlaceOrders";
 import { getAllOrdersHandler } from "./getAllOrders";
 import { cancelOrdersHandler } from "./cancelOrder";
-import { sendAdminStatusHandler } from "./sendAdminStatus";
-import { getAdminOrderStatus } from "./getAdminStatus";
-import { deleteOrderNotificationHandler } from "./deleteOrderNotification";
+import { deleteOrderHandler } from "./deleteOrder";
 
 export const userOrderRoutes: ServerRoute[] = [
   {
@@ -19,17 +17,11 @@ export const userOrderRoutes: ServerRoute[] = [
     handler: getAllOrdersHandler,
   },
 
-  {
-    method: "GET",
-    path: "/order-status",
-    handler: getAdminOrderStatus,
-  },
-
-  {
-    method: "PATCH",
-    path: "/order/status/{id}",
-    handler: sendAdminStatusHandler
-  },
+  // {
+  //   method: "GET",
+  //   path: "/order-status",
+  //   handler: getAdminOrderStatus,
+  // },
 
   {
     method: "PATCH",
@@ -39,7 +31,7 @@ export const userOrderRoutes: ServerRoute[] = [
 
   {
     method: "DELETE",
-    path: "/delete-notification-order/{id}",
-    handler: deleteOrderNotificationHandler,
+    path: "/delete-order/{id}",
+    handler: deleteOrderHandler
   },
 ];

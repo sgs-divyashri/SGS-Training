@@ -1,80 +1,44 @@
-import { AddCart } from "../api/cartItems/addCartItem";
 import { CartItems } from "../models/cartItemsTableDefinition";
 import generateCartItemId from "../services/generateCartItemId";
 import { Product } from "../models/productTableDefinition";
 import { ProductItems } from "../types/productItems";
+import { CartItemsPayload } from "../types/cartItemsPayload";
 
 export const cartItemsRepository = {
-  addCartItem: async (payload: AddCart): Promise<CartItems> => {
-    const { userId, items } = payload;
-    const existingCart = await CartItems.findOne({ where: { userId } });
+  addCartItem: async (payload: Pick<CartItemsPayload, "productId" | "quantity">, userId: number): Promise<CartItems> => {
+    const { productId, quantity = 1 } = payload;
+    const existing = await CartItems.findOne({ where: { userId, productId: payload.productId } });
 
-    const productIds = items.map(i => i.productId);
-    const products = await Product.findAll({
-      where: { productId: productIds },
-      attributes: ["productId", "p_name", "p_description", "price"]
+    const product = await Product.findOne({
+      where: { productId },
+      attributes: ["productId", "p_name", "p_description", "price", "qty"],
     });
 
-    if (products.length !== items.length) {
-      throw new Error("One or more productIds not found");
+    const stock = Number(product!.qty ?? 0);
+
+    if (existing) {
+      existing.quantity = Number(existing.quantity) + Number(quantity);
+      existing.prodName = product!.p_name;
+      existing.prodDescription = product!.p_description;
+      existing.price = Number(product!.price);
+      existing.total_quantity = stock
+
+      await existing.save();
+      return existing;
     }
 
-    const enriched: ProductItems[] = items.map(it => {
-      const p = products.find(p => p.productId === it.productId)!;
-      return {
-        productId: it.productId,
-        prodName: p.p_name,
-        prodDescription: p.p_description,
-        price: Number(p.price),
-        quantity: 1,
-      };
+    const newCartItem = await CartItems.create({
+      cartId: generateCartItemId(),
+      userId,
+      productId,
+      prodName: product!.p_name,
+      prodDescription: product!.p_description,
+      price: Number(product!.price),
+      quantity: Number(quantity),
+      total_quantity: stock,
     });
 
-
-    if (!existingCart) {
-      const fresh: ProductItems[] = [];
-      for (const inc of enriched) {
-        const match = fresh.find(i => i.productId === inc.productId);
-        if (match) {
-          match.quantity += 1;
-        } else {
-          fresh.push({ ...inc });
-        }
-      }
-
-      return await CartItems.create({
-        cartId: generateCartItemId(),
-        userId,
-        items: fresh,
-      });
-    }
-
-    const updatedItems: ProductItems[] = Array.isArray(existingCart.items)
-      ? [...(existingCart.items as ProductItems[])]
-      : [];
-
-
-    for (const inc of enriched) {
-      const found = updatedItems.find(i => i.productId === inc.productId);
-
-      if (found) {
-        const prevQty = Number(found.quantity || 0);
-        found.quantity = prevQty + 1;
-        if (inc.prodName != null) found.prodName = inc.prodName;
-        if (inc.prodDescription != null) found.prodDescription = inc.prodDescription;
-        if (inc.price != null) found.price = inc.price;
-      } else {
-        updatedItems.push({ ...inc, quantity: 1 });
-      }
-    }
-
-
-    // existingCart.set('items', updatedItems);
-    // await existingCart.save()
-    await existingCart.update({ items: updatedItems }, { returning: true });
-    await existingCart.reload();
-    // await existingCart.update({ items: updatedItems });
-    return existingCart;
+    return newCartItem;
   },
 
   getAllCartItems: async (authUserId: number) => {
@@ -88,30 +52,17 @@ export const cartItemsRepository = {
     };
   },
 
-  editCartItems: async (
-    id: string,
-    userId: number,
-    payload: Pick<ProductItems, "quantity" | "productId">
-  ) => {
+  editCartItems: async (id: string, userId: number, payload: Pick<ProductItems, "quantity" | "productId">) => {
     const cart = await CartItems.findOne({
       where: { cartId: id, userId: userId },
     });
     if (!cart) return null;
 
-    const { productId, quantity } = payload
-
-    const items = (cart.get("items") as ProductItems[]) ?? [];
-    const idx = items.findIndex((i) => i.productId === productId);
-
-    if (idx === -1) {
-      return cart.get();
-    }
-
-    if (quantity <= 0) {
-      items.splice(idx, 1);
+    if (payload.quantity <= 0) {
+      await CartItems.destroy({ where: { cartId: id } })
     } else {
-      const current = items[idx]!;
-      items[idx] = { ...current, quantity: current.quantity + Number(quantity) };
+      if (payload.quantity !== undefined)
+        cart.set("quantity", payload.quantity);
     }
 
     await cart.save();

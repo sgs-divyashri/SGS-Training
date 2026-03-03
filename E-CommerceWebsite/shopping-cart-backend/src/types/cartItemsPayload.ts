@@ -2,9 +2,12 @@ import { ProductItems } from "./productItems";
 
 export interface CartItemsPayload {
   cartId: string;
-  items: ProductItems[];
   userId: number;
-  // total_quantity?: number;
-  // totalCount?: number;
+  productId: string;
+  prodName: string;
+  prodDescription: string;
+  price: number;
+  quantity: number;
+  total_quantity: number;
   addedAt?: Date;
 }

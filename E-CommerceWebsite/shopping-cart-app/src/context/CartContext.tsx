@@ -58,17 +58,15 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         const res = await api.get("/cart-items");
         const raw = res.data.cartItems;
 
-        const cart = raw[0]; // most recent cart for this user
-        if (!cart) { setItems([]); return; }
-
-        const next: CartItem[] = (cart.items ?? []).map((x: any) => ({
-          cartId: cart.cartId,
-          userId: cart.userId,
+        const next: CartItem[] = raw.map((x: any) => ({
+          cartId: x.cartId,
+          userId: x.userId,
           prodId: x.productId,
           prodName: x.prodName ?? "",
+          prodDescription: x.prodDescription ?? "",
           price: Number(x.price ?? 0),
           quantity: Number(x.quantity ?? 0),
-          total_quantity: Number(cart.total_quantity ?? 0),
+          total_quantity: Number(x.total_quantity ?? 0),
         }));
         setItems(next);
       } catch {
@@ -81,60 +79,42 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   }, [role]);
 
   const addToCart = useCallback(
-    async ({ product, quantity = 1 }: AddToCartInput) => {
+    async ({ product, quantity = 1 }: { product: Product, quantity?: number }) => {
       const claims = decodeToken();
       if (!claims?.userId || !claims?.email) {
         throw new Error("Missing user identity in token");
       }
 
-      const prodId = product.productId;
-
       const payload = {
         userId: claims.userId,
-        items: [{ productId: prodId, quantity }],
+        productId: product.productId,
+        quantity,
       };
-
-      // const prodName = product.p_name;
-      // const prodDescription = product.p_description;
-      // const priceNum = Number(String(product.price).replace(/[^\d.-]/g, ""));
-
-      // if (
-      //   !prodId ||
-      //   !prodName ||
-      //   !prodDescription ||
-      //   !Number.isFinite(priceNum)
-      // ) {
-      //   throw new Error("Invalid product data");
-      // }
-
-      // const payload = {
-      //   prodId,
-      //   prodName,
-      //   prodDescription,
-      //   price: priceNum,
-      //   userId: claims.userId,
-      //   userEmail: claims.email,
-      //   total_quantity: product.qty,
-      //   qty: quantity,
-      // };
 
       const res = await api.post("/cart/add", payload);
 
       const cart = res.data?.cart;
 
+      setItems((curr) => {
+        const idx = curr.findIndex((x) => x.cartId === cart.cartId);
+        const mapped: CartItem = {
+          cartId: cart.cartId,
+          userId: cart.userId,
+          prodId: cart.productId,
+          prodName: cart.prodName ?? "",
+          prodDescription: cart.prodDescription ?? "",
+          price: Number(cart.price ?? 0),
+          quantity: Number(cart.quantity ?? 0),
+          total_quantity: Number(cart.total_quantity ?? 0),
+        };
 
-      const next: CartItem[] = (cart?.items ?? []).map((x: any) => ({
-        cartId: cart.cartId,             // same cartId for all items (user-cart model)
-        userId: cart.userId,
-        prodId: x.productId,
-        prodName: x.prodName,
-        prodDescription: "",             // not provided by API; fill if needed
-        price: Number(x.price),
-        quantity: Number(x.quantity),
-        total_quantity: Number(cart.total_quantity ?? 0), // this is "total items in cart", not stock
-      }));
-
-      setItems(next);
+        if (idx >= 0) {
+          const next = [...curr];
+          next[idx] = mapped;
+          return next;
+        }
+        return [mapped, ...curr];
+      });
     },
     [],
   );
@@ -165,7 +145,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       const raw = updatedCart.data?.cartItems ?? [];
       const next = raw.map((x: any) => ({
         ...x,
-        quantity: x.quantity ?? x.qty ?? 0,
+        quantity: x.quantity,
       }));
 
       setItems(next);
@@ -204,7 +184,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         const raw = updatedCart.data?.cartItems ?? [];
         const next = raw.map((x: any) => ({
           ...x,
-          quantity: x.quantity ?? x.qty ?? 0,
+          quantity: x.quantity,
         }));
 
         setItems(next);
@@ -222,7 +202,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       if (!item) return;
 
       const max = Number(item.total_quantity ?? Infinity);
-      const prev = items;
 
       if (newQty > max) {
         toast.error(`Only ${max} item${max === 1 ? "" : "s"} in stock.`);
@@ -242,10 +221,10 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         if (newQty <= 0) {
           await api.delete(`/cart-item/${cartId}`);
         } else {
-          await api.patch(`/cart/edit/${cartId}/${userId}`, { qty: newQty });
+          await api.patch(`/cart/edit/${cartId}/${userId}`, { quantity: newQty });
         }
       } catch (err) {
-        setItems(prev);
+        setItems(items);
         throw err;
       }
     },
@@ -269,7 +248,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         return;
       }
 
-      await saveQuantity(cartId, userId, item.quantity + 1);
+      await saveQuantity(cartId, userId, next);
     },
     [items, saveQuantity],
   );

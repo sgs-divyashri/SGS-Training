@@ -12,24 +12,7 @@ import { ProductItems } from "../types/productItems";
 import { OrderItems } from "../types/orderItems";
 
 export const placeOrderRepository = {
-  addPlaceOrder: async (
-    payload: Pick<PlaceOrdersPayload, "orderedBy" | "items">
-  ) => {
-    // 1) Basic validation (unchanged logic)
-    if (
-      !payload?.orderedBy ||
-      !Array.isArray(payload.items) ||
-      payload.items.length === 0
-    ) {
-      throw new Error("Invalid payload");
-    }
-
-    const invalid = payload.items.some(
-      (i) => !i.productId || !i.quantity || i.quantity <= 0,
-    );
-    if (invalid) throw new Error("Invalid item in payload");
-
-    // 2) Bulk load product data ONCE
+  addPlaceOrder: async (payload: Pick<PlaceOrdersPayload, "items">, orderedBy: number) => {
     const productIds = payload.items.map((i) => i.productId);
     const products = await Product.findAll({
       where: { productId: { [Op.in]: productIds } },
@@ -37,7 +20,6 @@ export const placeOrderRepository = {
     });
     const prodMap = new Map(products.map(p => [String(p.get("productId")), p]));
 
-    // 3) Enrich each item (prodName, price) and normalize quantity
     const detailedItems: ProductItems[] = payload.items.map(({ productId, quantity }) => {
       const prod = prodMap.get(String(productId));
       if (!prod) throw new Error(`Product ${productId} not found`);
@@ -46,19 +28,16 @@ export const placeOrderRepository = {
         prodName: String(prod.get("p_name")),
         price: Number(prod.get("price")),
         quantity: Number(quantity),
-        // total_quantity: Number(prod.get("qty"))
       };
     });
 
-    // 4) Compute totalAmount (authoritative in service)
     const totalAmount = detailedItems.reduce(
       (sum, it) => sum + Number(it.price) * Number(it.quantity),
       0,
     );
 
-    // 5) Stock check & decrement (unchanged logic, centralized)
     for (const item of detailedItems) {
-      const prod = prodMap.get(item.productId)!; // exists by validation above
+      const prod = prodMap.get(item.productId)!; 
       const currentQty = Number(prod.get("qty"));
       const newQty = currentQty - item.quantity;
       if (newQty < 0) {
@@ -70,13 +49,12 @@ export const placeOrderRepository = {
       );
     }
 
-    // 6) Persist order + view order
     const orderId = generateOrderId();
     const viewOrderId = generateViewOrderId();
 
     await Orders.create({
       orderId,
-      orderedBy: payload.orderedBy,
+      orderedBy,
       items: detailedItems,
       totalAmount,
       status: "ORDERED",
@@ -85,14 +63,13 @@ export const placeOrderRepository = {
     const viewOrder = await ViewOrders.create({
       viewOrderId,
       orderId,
-      orderedBy: payload.orderedBy,
+      orderedBy,
       items: detailedItems,
       totalAmount,
       status: "",
       userStatus: "ORDERED",
     });
 
-    // 7) Return summary
     return {
       orderId,
       viewOrderId: viewOrder.get("viewOrderId"),
@@ -101,69 +78,11 @@ export const placeOrderRepository = {
     };
   },
 
-
   getAllOrders: async () => {
     const { rows } = await Orders.findAndCountAll({
       order: [["placedAt", "DESC"]],
     });
     return { items: rows };
-  },
-
-  sendAdminStatus: async (
-    viewOrderId: string,
-    payload: Pick<ViewOrdersPayload, "status">,
-  ) => {
-    const orderView = await ViewOrders.findOne({ where: { viewOrderId } });
-    if (!orderView) return null;
-
-    const orderId = orderView.get("orderId");
-
-    const order = await Orders.findOne({ where: { orderId } });
-    if (!order) return null;
-
-    const items = order.get("items");
-
-    if (payload.status !== undefined) {
-      // await Orders.update(
-      //   { adminStatus: payload.status! },
-      //   { where: { orderId } },
-      // );
-      console.log("NotifyUserOrders table:", (NotifyUserOrders as any).getTableName());
-
-      await ViewOrders.update(
-        { status: payload.status! },
-        { where: { viewOrderId } },
-      );
-    }
-
-    const created = await NotifyUserOrders.create({
-      notifyId: generateUserNotificationId(),
-      orderId,
-      items,                
-      adminStatus: payload.status!,  
-      receivedAt: new Date()
-    });
-
-    return {
-      viewOrderId,
-      orderId,
-      status: payload.status,
-    };
-  },
-
-  getAdminStatus: async (userId: number) => {
-    const rows = await Orders.findAll({
-      where: { orderedBy: userId },
-      attributes: [
-        "orderId",
-        "items",
-        "totalAmount",
-        "placedAt",
-        "status",
-      ],
-      order: [["placedAt", "DESC"]],
-    });
-    return rows;
   },
 
   cancelOrder: async (orderId: string) => {
@@ -174,7 +93,7 @@ export const placeOrderRepository = {
 
     if (!order) return undefined;
 
-    const currentStatus = String(order.get("status") || "");
+    const currentStatus = String(order.status || "");
     const restockableStatuses = new Set(["ORDERED", "CANCELLED"]);
     const shouldRestock = restockableStatuses.has(currentStatus);
 
@@ -192,7 +111,7 @@ export const placeOrderRepository = {
     }
 
     if (shouldRestock) {
-      const items = (order.get("items") as any[]) || [];
+      const items = (order.items as any[]) || [];
       for (const it of items) {
         const productId = String(it.productId);
         const qtyToAdd = Number(it.quantity) || 0;
@@ -205,7 +124,7 @@ export const placeOrderRepository = {
 
         if (!prod) continue;
 
-        const currentQty = Number(prod.get("qty")) || 0;
+        const currentQty = Number(prod.qty) || 0;
         const newQty = currentQty + qtyToAdd;
 
         await Product.update(
@@ -221,12 +140,8 @@ export const placeOrderRepository = {
     return affected1 + affected2 > 0 ? orderId : undefined;
   },
 
-  deleteOrderNotification: async (id: string) => {
-    const viewOrderCount = await ViewOrders.destroy({
-      where: { orderId: id },
-    });
-
-    const userCount = await Orders.destroy({ where: { orderId: id } });
-    return userCount + viewOrderCount > 0 ? id : undefined;
-  },
+  deleteOrder: async (id: string) => {
+    const delOrder = await Orders.destroy({ where: { orderId: id}})
+    return delOrder;
+  }
 };

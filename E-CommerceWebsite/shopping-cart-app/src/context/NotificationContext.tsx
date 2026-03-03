@@ -1,4 +1,3 @@
-// NotificationContext.tsx
 import React, {
   createContext,
   useContext,
@@ -7,14 +6,13 @@ import React, {
   useState,
 } from "react";
 import { api } from "../axios/axiosClient";
-// import { ViewOrderItemRow } from "../types/viewOrders";
 import toast from "react-hot-toast";
 import { getRole } from "../auth/auth";
 import { OrderNotificationRow } from "../types/orderNotification";
 
 type NotificationContextValue = {
-  orders: OrderNotificationRow[]; // only accepted/rejected orders
-  cnt: number; // count of filtered orders
+  orders: OrderNotificationRow[]; 
+  cnt: number; 
   removeFromNotifications: (id: string) => Promise<void>;
   clearAll: () => Promise<void>;
 };

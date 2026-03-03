@@ -41,7 +41,6 @@ const create = async (): Promise<Server> => {
         headers: ["Authorization", "Content-Type"],
         credentials: true,
       },
-      // cors: true
     },
   });
 
@@ -64,5 +63,11 @@ const create = async (): Promise<Server> => {
 
   return server;
 };
+
+export const init_test = async () => {
+    let s: Server = await create()
+    await s.initialize()
+    return s
+}
 
 init();

@@ -5,7 +5,6 @@ import { joiResolver } from "@hookform/resolvers/joi";
 import { SignInForm, RegisterForm, ForgotForm } from "../types/authPage";
 import { api } from "../axios/axiosClient";
 import { useNavigate } from "react-router-dom";
-// import { useSetEmail } from "../context/EmailContext";
 import { jwtDecode } from "jwt-decode";
 
 type Mode = "signin" | "register" | "forgot";
@@ -75,7 +74,6 @@ const forgotSchema = Joi.object({
 
 interface LoginResponse {
   data: { accessToken: string };
-  // token: string;
 }
 interface RegisterResponse {
   userId: number;
@@ -85,7 +83,6 @@ interface ForgotResponse {
 }
 
 export const AuthPage = () => {
-  // const setEmail = useSetEmail();
   const [mode, setMode] = useState<Mode>("signin");
   const [serverMessage, setServerMessage] = useState<string | null>(null);
   const isSignIn = mode === "signin";
@@ -146,11 +143,6 @@ export const AuthPage = () => {
         localStorage.setItem("token", accessToken);
 
         const decoded: any = jwtDecode(accessToken);
-
-        // const data = res.data;
-
-        // localStorage.setItem("token", data.token);
-        // const decoded: any = jwtDecode(data.token);
         const role = decoded.role;
 
         if (role === "Admin") {

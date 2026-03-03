@@ -6,7 +6,6 @@ import {
   useCallback,
 } from "react";
 import { api } from "../axios/axiosClient";
-import type { Product } from "../types/product";
 import { OrderItemRow } from "../types/orders";
 import toast from "react-hot-toast";
 
@@ -14,6 +13,7 @@ type OrderContextValue = {
   items: OrderItemRow[];
   count: number;
   total: number;
+  deleteOrder: (orderId: string) => Promise<void>;
   cancelOrder: (orderId: string) => Promise<void>;
   fetchOrders: () => Promise<void>;
 };
@@ -53,12 +53,21 @@ export const OrdersProvider = ({ children }: { children: React.ReactNode }) => {
 
       try {
         await api.patch(`/cancel-order/${row.orderId}`, payload);
+        setItems(prev =>
+          prev.map(r =>
+            r.orderId === orderId ? { ...r, status: "CANCELLED" } : r
+          )
+        );
 
-        await api.delete(`/delete-notification-order/${row.orderId}`);
         toast.success(`Order ${row.orderId} cancelled.`);
-
-        setItems((prev) => prev.filter((r) => r.orderId !== orderId));
       } catch (err: any) {
+
+        setItems(prev =>
+          prev.map(r =>
+            r.orderId === orderId ? { ...r, status: row.status } : r
+          )
+        );
+
         console.error(err);
         if (err.response.status === 401) {
           return;
@@ -70,6 +79,23 @@ export const OrdersProvider = ({ children }: { children: React.ReactNode }) => {
     },
     [items],
   );
+
+  const deleteOrder = async (orderId: string) => {
+    const row = items.find((r) => r.orderId === orderId);
+    if (!row) return;
+    try {
+      await api.delete(`delete-order/${row.orderId}`)
+      setItems((prev) => prev.filter((r) => r.orderId !== orderId));
+    }
+    catch (err: any) {
+      if (err.response.status === 401) {
+        return;
+      }
+      const message =
+        err?.response?.data?.error || err?.message || "Request failed";
+      toast.error(message);
+    }
+  }
 
   const count = items.reduce(
     (sum, order) =>
@@ -93,6 +119,7 @@ export const OrdersProvider = ({ children }: { children: React.ReactNode }) => {
         items,
         count,
         total,
+        deleteOrder,
         cancelOrder,
         fetchOrders,
       }}

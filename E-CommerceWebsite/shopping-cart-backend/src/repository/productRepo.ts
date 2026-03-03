@@ -6,15 +6,11 @@ import { Category } from "../models/prodCategoryTableDefinition";
 import Sequelize from "sequelize";
 
 export const productRepository = {
-  createProduct: async (
-    payload: Pick<
-      ProductPayload,
-      "p_name" | "p_description" | "categoryId" | "price" | "qty" | "addedBy"
-    >,
-  ): Promise<Product> => {
+  createProduct: async (payload: Pick<ProductPayload, "p_name" | "p_description" | "categoryId" | "price" | "qty">, adminId: number): Promise<Product> => {
     const newUser = await Product.create({
       ...payload,
       productId: generateSimpleId(),
+      addedBy: adminId
     });
     return newUser;
   },
@@ -34,13 +30,7 @@ export const productRepository = {
     return products
   },
 
-  editProduct: async (
-    id: string,
-    payload: Pick<
-      Partial<Product>,
-      "p_name" | "p_description" | "categoryId" | "price" | "qty"
-    >,
-  ): Promise<ProductPayload | null> => {
+  editProduct: async (id: string, payload: Pick<Partial<Product>, "p_name" | "p_description" | "categoryId" | "price" | "qty">): Promise<ProductPayload | null> => {
     const product = await Product.findOne({ where: { productId: id } });
     if (!product) return null;
 
@@ -77,8 +67,6 @@ export const productRepository = {
       (product.get("inStock") as string | null) ?? "Out of Stock";
 
     const nextInStock = currentRaw === "In Stock" ? "Out of Stock" : "In Stock";
-
-    const notification = nextInStock === "In Stock";
 
     const [activeRows] = await Product.update(
       { inStock: nextInStock },

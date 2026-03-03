@@ -3,17 +3,12 @@ import { Category } from "../models/prodCategoryTableDefinition";
 import { CategoryPayload } from "../types/categoryPayload";
 
 export const productCategoryServices = {
-  addProdCategory: async (
-    payload: Pick<CategoryPayload, "prod_category">,
-  ): Promise<Category> => {
+  addProdCategory: async (payload: Pick<CategoryPayload, "prod_category">): Promise<Category> => {
     const category = await productCategoryRepository.addProdCategory(payload);
     return category;
   },
 
-  editProductCategory: async (
-    id: string,
-    payload: Pick<CategoryPayload, "prod_category">,
-  ) => {
+  editProductCategory: async (id: string, payload: Pick<CategoryPayload, "prod_category">) => {
     return await productCategoryRepository.editProductCategory(id, payload);
   },
 

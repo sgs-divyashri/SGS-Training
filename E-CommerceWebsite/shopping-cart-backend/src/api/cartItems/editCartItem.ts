@@ -13,7 +13,7 @@ export const editCartItemHandler = async (
     const payload = request.payload as Pick<ProductItems, "productId" | "quantity">;
 
     const cartItems = await CartItems.findOne({ where: { cartId: id } });
-    if (!cartItems) return h.response({ error: "Product not found" }).code(404);
+    if (!cartItems) return h.response({ error: "Cart Item not found" }).code(404);
 
     const cart = await cartItemsServices.editCartItems(id, userId, payload);
 

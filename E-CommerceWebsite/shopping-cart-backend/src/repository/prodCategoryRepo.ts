@@ -3,9 +3,7 @@ import { CategoryPayload } from "../types/categoryPayload";
 import generateCategoryId from "../services/generateCategoryId";
 
 export const productCategoryRepository = {
-  addProdCategory: async (
-    payload: Pick<CategoryPayload, "prod_category">,
-  ): Promise<Category> => {
+  addProdCategory: async (payload: Pick<CategoryPayload, "prod_category">): Promise<Category> => {
     const category = await Category.create({
       ...payload,
       categoryId: generateCategoryId(),
@@ -13,10 +11,7 @@ export const productCategoryRepository = {
     return category;
   },
 
-  editProductCategory: async (
-    id: string,
-    payload: Pick<CategoryPayload, "prod_category">,
-  ) => {
+  editProductCategory: async (id: string, payload: Pick<CategoryPayload, "prod_category">) => {
     const product = await Category.findOne({ where: { categoryId: id } });
     if (!product) return null;
 

@@ -2,6 +2,7 @@ import { DataTypes, Model, Optional, Sequelize } from "sequelize";
 import { User } from "./userTableDefinition";
 import { CartItemsPayload } from "../types/cartItemsPayload";
 import { ProductItems } from "../types/productItems";
+import { Product } from "./productTableDefinition";
 
 export interface UserCreationAttributes extends Optional<
   CartItemsPayload,
@@ -12,10 +13,13 @@ export class CartItems
   extends Model<CartItemsPayload, UserCreationAttributes>
   implements CartItemsPayload {
   public cartId!: string;
-  public items!: ProductItems[];
   public userId!: number;
-  // public total_quantity!: number;
-  // public totalCount!: number;
+  public productId!: string;
+  public prodName!: string;
+  public prodDescription!: string;
+  public price!: number;
+  public quantity!: number;
+  public total_quantity!: number;
   public readonly addedAt!: Date;
 }
 
@@ -32,19 +36,31 @@ export default (sequelize: Sequelize) => {
         allowNull: false,
         references: { model: "users", key: "userId" },
       },
-      items: {
-        type: DataTypes.JSONB,
+      productId: {
+        type: DataTypes.STRING,
         allowNull: false,
-        defaultValue: [],
+        references: { model: "products", key: "productId"}
       },
-      // total_quantity: {
-      //   type: DataTypes.INTEGER,
-      //   allowNull: false,
-      // },
-      // totalCount: {
-      //   type: DataTypes.INTEGER,
-      //   allowNull: false,
-      // },
+      prodName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      prodDescription: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      price: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+      },
+      quantity: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+      },
+      total_quantity: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+      }
     },
     {
       sequelize,
@@ -61,6 +77,10 @@ export default (sequelize: Sequelize) => {
       CartItems.belongsTo(User, {
         foreignKey: "userId",
         as: 'user'
+      })
+      CartItems.belongsTo(Product, {
+        foreignKey: "productId",
+        as: "products"
       })
     },
   };

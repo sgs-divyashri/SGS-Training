@@ -9,9 +9,9 @@ export const orderNotificationRoutes: ServerRoute[] = [
     handler: getAllOrderNotificationsHandler,
   },
 
-    {
-      method: "DELETE",
-      path: "/notify-orders/{id}",
-      handler: deleteOrderNotificationHandler,
-    },
+  {
+    method: "DELETE",
+    path: "/notify-orders/{id}",
+    handler: deleteOrderNotificationHandler,
+  },
 ];

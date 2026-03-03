@@ -5,8 +5,10 @@
     "test": "lab -v --typescript test"
   },
   "dependencies": {
+    "@hapi/code": "^9.0.3",
     "@hapi/hapi": "^21.4.4",
     "@hapi/jwt": "^3.2.3",
+    "@hapi/lab": "^26.0.0",
     "@hapi/nes": "^14.0.1",
     "bcrypt": "^6.0.0",
     "dotenv": "^17.2.3",

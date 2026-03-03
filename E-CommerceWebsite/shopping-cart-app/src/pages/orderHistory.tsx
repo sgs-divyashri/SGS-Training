@@ -1,9 +1,9 @@
+import { CloseRounded } from "@mui/icons-material";
 import { useOrder } from "../context/OrdersContext";
 import { useState } from "react";
 
 export const OrdersPage = () => {
-  const { items, total, cancelOrder } = useOrder();
-  const [busyId, setBusyId] = useState<string | null>(null);
+  const { items, total, cancelOrder, deleteOrder } = useOrder();
 
   return (
     <div className="mt-10">
@@ -19,7 +19,6 @@ export const OrdersPage = () => {
             {items.map((it) => {
               const id = it.rowId;
               const isCancelled = it.status === "CANCELLED";
-              const isBusy = busyId === it.orderId;
               return (
                 <li
                   key={id}
@@ -38,19 +37,20 @@ export const OrdersPage = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <button
-                      className={`ml-3 px-2 py-1 border rounded ${
-                        isCancelled
-                          ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                          : "bg-red-500 hover:bg-red-700 text-white hover:bg-red-700"
-                      }`}
+                      className={`ml-3 px-2 py-1 border rounded ${isCancelled
+                        ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                        : "bg-red-500 hover:bg-red-700 text-white hover:bg-red-700"
+                        }`}
                       disabled={isCancelled}
-                      onClick={() => {
-                        if (isCancelled || isBusy) return;
-                        setBusyId(it.orderId);
-                        cancelOrder(it.orderId);
+                      onClick={async () => {
+                        // if (isCancelled) return;
+                        await cancelOrder(it.orderId);
                       }}
                     >
                       {isCancelled ? "Cancelled" : "Cancel Order"}
+                    </button>
+                    <button onClick={() => deleteOrder(it.orderId)}>
+                      <CloseRounded />
                     </button>
                     <div></div>
                   </div>
@@ -63,9 +63,6 @@ export const OrdersPage = () => {
             <div className="text-lg font-semibold">
               Total: ₹ {total.toFixed(2)}
             </div>
-            {/* <button className="px-4 py-2 rounded bg-gray-700 text-white hover:bg-gray-900" onClick={clear}>
-              Clear Cart
-            </button> */}
           </div>
         </>
       )}

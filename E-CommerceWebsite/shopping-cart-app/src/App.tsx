@@ -41,7 +41,6 @@ function App() {
         }}
         reverseOrder={false}
       />
-      {/* <SessionPopup /> */}
       <section>
         <Routes>
           <Route element={<AuthLayout />}>
