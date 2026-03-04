@@ -6,7 +6,7 @@ export interface ViewOrdersPayload {
   orderedBy: number;
   items: ProductItems[];
   totalAmount: number;
-  status: string;
+  // status: string;
   userStatus: string;
   receivedAt?: Date;
 }

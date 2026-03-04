@@ -1,5 +1,4 @@
 export type SignInForm = {
-  role: 'Admin' | 'User' | '';
   email: string;
   password: string;
 };

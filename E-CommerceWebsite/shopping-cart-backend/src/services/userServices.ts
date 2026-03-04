@@ -11,7 +11,7 @@ export const userServices = {
     return await userRepository.createUser(payload);
   },
 
-  loginUser: async (loginData: Pick<UserPayload, "email" | "password" | "role">): Promise<User | null> => {
+  loginUser: async (loginData: Pick<UserPayload, "email" | "password">): Promise<User | null> => {
     return await userRepository.loginUser(loginData)
   },
 

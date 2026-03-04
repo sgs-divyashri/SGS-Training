@@ -1,8 +1,7 @@
 import { Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
 import { Product } from "../../models/productTableDefinition";
 import { productServices } from "../../services/productServices";
-import { Category } from "../../models/prodCategoryTableDefinition";
-import { Op } from "sequelize";
+import { JWTPayload } from "../../authentication/authentication";
 
 export const editProductHandler = async (
   request: Request,
@@ -12,17 +11,13 @@ export const editProductHandler = async (
     const id = request.params.id;
     const payload = request.payload as Pick<
       Partial<Product>,
-      "p_name" | "p_description" | "categoryId" | "price" | "qty"
+      "p_name" | "p_description" | "categoryId" | "price" | "total_quantity"
     >;
-    const role = String(request.auth.credentials.role ?? "")
-      .trim()
-      .toLowerCase();
+    const { userId, role } = request.auth.credentials as Pick<JWTPayload, "userId" | "role">;
+    const isAdmin = String(role ?? "").trim().toLowerCase() === "admin";
+    if (!isAdmin) return h.response({ error: "Insufficient permissions" }).code(403);
 
-    if (role !== "admin") {
-      return h.response({ error: "Insufficient permissions" }).code(403);
-    }
-
-    const prod = await Product.findOne({ where: { productId: id } });
+    const prod = await Product.findOne({ where: { productId: id, addedBy: userId } });
     if (!prod) return h.response({ error: "Product not found" }).code(404);
 
     if (payload.price !== undefined) {
@@ -37,7 +32,7 @@ export const editProductHandler = async (
       payload.price = priceNum;
     }
 
-    const product = await productServices.editProduct(id, payload);
+    const product = await productServices.editProduct(id, payload, userId);
 
     return h
       .response({

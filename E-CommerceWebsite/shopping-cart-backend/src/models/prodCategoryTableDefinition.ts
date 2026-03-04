@@ -9,6 +9,7 @@ export class Category extends Model<CategoryPayload, CategoryCreationAttributes>
   implements CategoryPayload {
   public categoryId!: string;
   public prod_category!: string;
+  public addedBy!: number;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -25,7 +26,12 @@ export default (sequelize: Sequelize) => {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true
-      }
+      },
+      addedBy: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: { model: "users", key: "userId" },
+      },
     },
     {
       sequelize,

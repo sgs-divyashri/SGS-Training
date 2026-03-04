@@ -254,8 +254,8 @@ export const Home = () => {
         valueFormatter: (p) => `₹ ${Number(p.value).toFixed(2)}`,
       },
       {
-        field: "qty",
-        headerName: "Quantity",
+        field: "total_quantity",
+        headerName: "Total Quantity",
         filter: "agNumberColumnFilter",
         sortable: true,
         editable: editableForAdmin,

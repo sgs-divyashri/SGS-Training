@@ -58,16 +58,20 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         const res = await api.get("/cart-items");
         const raw = res.data.cartItems;
 
-        const next: CartItem[] = raw.map((x: any) => ({
-          cartId: x.cartId,
-          userId: x.userId,
-          prodId: x.productId,
-          prodName: x.prodName ?? "",
-          prodDescription: x.prodDescription ?? "",
-          price: Number(x.price ?? 0),
-          quantity: Number(x.quantity ?? 0),
-          total_quantity: Number(x.total_quantity ?? 0),
-        }));
+        const next: CartItem[] = raw.map((x: any) => {
+          const p = x.products ?? {};
+
+          return {
+            cartId: x.cartId,
+            userId: x.userId,
+            prodId: x.productId,
+            prodName: p.p_name,
+            prodDescription: p.p_description,
+            price: Number(p.price),
+            quantity: x.quantity,
+            total_quantity: p.total_quantity,
+          };
+        })
         setItems(next);
       } catch {
         setItems([]);
@@ -91,30 +95,52 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         quantity,
       };
 
-      const res = await api.post("/cart/add", payload);
+      await api.post("/cart/add", payload);
 
-      const cart = res.data?.cart;
+      const res = await api.get("/cart-items");
+      const raw = res.data?.cartItems ?? [];
 
-      setItems((curr) => {
-        const idx = curr.findIndex((x) => x.cartId === cart.cartId);
-        const mapped: CartItem = {
-          cartId: cart.cartId,
-          userId: cart.userId,
-          prodId: cart.productId,
-          prodName: cart.prodName ?? "",
-          prodDescription: cart.prodDescription ?? "",
-          price: Number(cart.price ?? 0),
-          quantity: Number(cart.quantity ?? 0),
-          total_quantity: Number(cart.total_quantity ?? 0),
+      const next: CartItem[] = raw.map((x: any) => {
+        const p = x.products ?? {};
+        return {
+          cartId: x.cartId,
+          userId: x.userId,
+          prodId: x.productId,
+          prodName: p.p_name,
+          prodDescription: p.p_description,
+          price: Number(p.price),
+          quantity: x.quantity,
+          total_quantity: p.total_quantity,
         };
-
-        if (idx >= 0) {
-          const next = [...curr];
-          next[idx] = mapped;
-          return next;
-        }
-        return [mapped, ...curr];
       });
+
+      setItems(next);
+
+
+      // const cart = res.data?.cart;
+      // const prod = cart.products;
+
+      // const mapped: CartItem = {
+      //   cartId: cart.cartId,
+      //   userId: cart.userId,
+      //   prodId: cart.productId,
+      //   prodName: prod.prodName ?? "",
+      //   prodDescription: prod.prodDescription ?? "",
+      //   price: Number(prod.price ?? 0),
+      //   quantity: Number(cart.quantity ?? 0),
+      //   total_quantity: Number(prod.total_quantity ?? 0),
+      // };
+
+      // setItems((curr) => {
+      //   const idx = curr.findIndex((x) => x.cartId === mapped.cartId);
+
+      //   if (idx >= 0) {
+      //     const next = [...curr];
+      //     next[idx] = mapped;
+      //     return next;
+      //   }
+      //   return [mapped, ...curr];
+      // });
     },
     [],
   );

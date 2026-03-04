@@ -9,7 +9,7 @@ export const addProductHandler = async (
   h: ResponseToolkit,
 ): Promise<ResponseObject> => {
   try {
-    const payload = request.payload as Pick<ProductPayload, "p_name" | "p_description" | "categoryId" | "price" | "qty">;
+    const payload = request.payload as Pick<ProductPayload, "p_name" | "p_description" | "categoryId" | "price" | "total_quantity">;
 
     const { userId, role } = request.auth.credentials as Pick<JWTPayload, "userId" | "role">;
     const isAdmin = String(role ?? "").trim().toLowerCase() === "admin";
@@ -20,7 +20,7 @@ export const addProductHandler = async (
       !payload.p_description ||
       !payload.categoryId ||
       !payload.price || 
-      !payload.qty
+      !payload.total_quantity
     ) {
       return h.response({ error: "Bad Request" }).code(400);
     }
@@ -41,7 +41,7 @@ export const addProductHandler = async (
       p_description: payload.p_description,
       categoryId: category.categoryId,
       price: payload.price,
-      qty: payload.qty,
+      total_quantity: payload.total_quantity,
     }, userId);
 
     return h

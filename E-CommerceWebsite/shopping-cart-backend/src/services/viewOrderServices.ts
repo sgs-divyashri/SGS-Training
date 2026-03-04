@@ -7,8 +7,8 @@ export const viewOrderServices = {
     return orders;
   },
 
-  sendAdminStatus: async (id: string, payload: Pick<ViewOrdersPayload, "status">) => {
-    const adminStatus = await viewOrderRepository.sendAdminStatus(id, payload);
+  sendAdminStatus: async (orderId: string, productId: string, status: "" | "ACCEPTED" | "REJECTED") => {
+    const adminStatus = await viewOrderRepository.sendAdminStatus(orderId, productId, status);
     return adminStatus;
   },
 

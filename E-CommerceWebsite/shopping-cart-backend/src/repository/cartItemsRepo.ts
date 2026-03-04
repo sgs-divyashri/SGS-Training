@@ -11,17 +11,11 @@ export const cartItemsRepository = {
 
     const product = await Product.findOne({
       where: { productId },
-      attributes: ["productId", "p_name", "p_description", "price", "qty"],
+      attributes: ["productId", "p_name", "p_description", "price", "total_quantity"],
     });
-
-    const stock = Number(product!.qty ?? 0);
 
     if (existing) {
       existing.quantity = Number(existing.quantity) + Number(quantity);
-      existing.prodName = product!.p_name;
-      existing.prodDescription = product!.p_description;
-      existing.price = Number(product!.price);
-      existing.total_quantity = stock
 
       await existing.save();
       return existing;
@@ -31,11 +25,7 @@ export const cartItemsRepository = {
       cartId: generateCartItemId(),
       userId,
       productId,
-      prodName: product!.p_name,
-      prodDescription: product!.p_description,
-      price: Number(product!.price),
       quantity: Number(quantity),
-      total_quantity: stock,
     });
 
     return newCartItem;
@@ -45,6 +35,14 @@ export const cartItemsRepository = {
     const { rows } = await CartItems.findAndCountAll({
       where: { userId: authUserId },
       order: [["addedAt", "DESC"]],
+      include: [
+        {
+          model: Product,
+          as: 'products',
+          attributes: ["p_name", "p_description", "price", "total_quantity"],
+          required: true
+        }
+      ]
     });
 
     return {
@@ -52,9 +50,9 @@ export const cartItemsRepository = {
     };
   },
 
-  editCartItems: async (id: string, userId: number, payload: Pick<ProductItems, "quantity" | "productId">) => {
+  editCartItems: async (id: string, adminId: number, payload: Pick<ProductItems, "quantity" | "productId">) => {
     const cart = await CartItems.findOne({
-      where: { cartId: id, userId: userId },
+      where: { cartId: id, userId: adminId },
     });
     if (!cart) return null;
 

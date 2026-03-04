@@ -20,7 +20,7 @@ export class Product
   public p_description!: string;
   public categoryId!: string;
   public price!: number;
-  public qty!: number;
+  public total_quantity!: number;
   public inStock!: string;
   public addedBy!: number;
   public readonly createdAt!: Date;
@@ -52,7 +52,7 @@ export default (sequelize: Sequelize) => {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
       },
-      qty: {
+      total_quantity: {
         type: DataTypes.INTEGER,
         allowNull: false
       },

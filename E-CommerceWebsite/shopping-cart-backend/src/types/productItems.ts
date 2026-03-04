@@ -5,4 +5,5 @@ export interface ProductItems {
   price?: number;
   quantity: number;
   total_quantity?: number;
+  status?: "ACCEPTED" | "REJECTED" | ""
 }

@@ -3,17 +3,17 @@ import { Category } from "../../models/prodCategoryTableDefinition";
 import { CategoryPayload } from "../../types/categoryPayload";
 import { productCategoryServices } from "../../services/prodCategoryServices";
 import { Op } from "sequelize";
+import { JWTPayload } from "../../authentication/authentication";
 
 export const addProductCategoryHandler = async (
   request: Request,
   h: ResponseToolkit,
 ): Promise<ResponseObject> => {
   try {
-    const role = String(request.auth.credentials.role ?? "").trim().toLowerCase()
+    const { userId, role } = request.auth.credentials as Pick<JWTPayload, "userId" | "role">;
+    const isAdmin = String(role ?? "").trim().toLowerCase() === "admin";
 
-    if (role !== "admin") {
-      return h.response({ error: "Insufficient permissions" }).code(403);
-    }
+    if (!isAdmin) return h.response({ error: "Insufficient permissions" }).code(403);
 
     const payload = request.payload as Pick<CategoryPayload, "prod_category">;
     if (!payload.prod_category) {
@@ -35,7 +35,7 @@ export const addProductCategoryHandler = async (
 
     const newCategory = await productCategoryServices.addProdCategory({
       prod_category: payload.prod_category,
-    });
+    }, userId);
 
     return h
       .response({

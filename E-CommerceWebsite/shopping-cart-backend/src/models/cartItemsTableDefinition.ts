@@ -15,11 +15,7 @@ export class CartItems
   public cartId!: string;
   public userId!: number;
   public productId!: string;
-  public prodName!: string;
-  public prodDescription!: string;
-  public price!: number;
   public quantity!: number;
-  public total_quantity!: number;
   public readonly addedAt!: Date;
 }
 
@@ -41,23 +37,7 @@ export default (sequelize: Sequelize) => {
         allowNull: false,
         references: { model: "products", key: "productId"}
       },
-      prodName: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      prodDescription: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      price: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-      },
       quantity: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-      },
-      total_quantity: {
         type: DataTypes.INTEGER,
         allowNull: false
       }

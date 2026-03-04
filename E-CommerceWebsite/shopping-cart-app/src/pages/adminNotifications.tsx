@@ -18,41 +18,43 @@ export const AdminNotificationsPage = () => {
             {orders.map((p) => (
               <li
                 key={p.orderId}
-                className="border rounded p-3 flex items-center justify-between"
+                className="border rounded p-4"
               >
                 <div className="mt-2 space-y-2">
-                  {p.items.map((it, idx) => (
-                    <div key={idx}>
+                  {p.items.map((it) => (
+                    <div key={it.productId}>
                       <div className="font-medium">Product Name: <span className="text-sm font-medium">{it.prodName}</span></div>
                       <div className="text-sm font-semibold">
                         Price: ₹ {it.price.toFixed(2)}
                       </div>
                       <div className="text-sm">Quantity: {it.quantity}</div>
-                      <div className="text-sm">Status: <span className={p.status === 'ACCEPTED' ? "text-green-600 font-semibold" : "text-red-600 font-semibold"}>{p.status}</span></div>
+                      <div className="text-sm">Status: <span className={it.status === 'ACCEPTED' ? "text-green-600 font-semibold" : "text-red-600 font-semibold"}>{it.status}</span></div>
+
+                      <div className="flex flex-col items-end">
+                        <div className="col-span-4 flex gap-3">
+                          <button
+                            className="px-2 py-1 border rounded bg-green-500 hover:bg-green-700"
+                            onClick={() => acceptOrder(p.orderId, it.productId)}
+                          >
+                            <DoneRounded />
+                            Accept
+                          </button>
+                          <button
+                            className="px-2 py-1 border rounded bg-red-500 hover:bg-red-700"
+                            onClick={() => rejectOrder(p.orderId, it.productId)}
+                          >
+                            <CloseRounded />
+                            Reject
+                          </button>
+                          <button
+                            onClick={() => removeNotifications(p.viewOrderId)}
+                          >
+                            <CloseSharp />
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   ))}
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <button
-                    className="px-2 py-1 border rounded bg-green-500 hover:bg-green-700"
-                    onClick={() => acceptOrder(p.viewOrderId)}
-                  >
-                    <DoneRounded/>
-                    Accept
-                  </button>
-                  <button
-                    className="px-2 py-1 border rounded bg-red-500 hover:bg-red-700"
-                    onClick={() => rejectOrder(p.viewOrderId)}
-                  >
-                    <CloseRounded/>
-                    Reject
-                  </button>
-                  <button
-                    onClick={() => removeNotifications(p.viewOrderId)}
-                  >
-                    <CloseSharp/>
-                  </button>
                 </div>
               </li>
             ))}

@@ -9,13 +9,18 @@ export const sendAdminStatusHandler = async (
   h: ResponseToolkit,
 ): Promise<ResponseObject> => {
   try {
-    const id = request.params.id;
-    const payload = request.payload as Pick<ViewOrdersPayload, "status">;
+    const { orderId, productId } = request.params as { orderId: string; productId: string };
+    const role = String(request.auth.credentials.role ?? "").trim().toLowerCase()
 
-    const category = await ViewOrders.findOne({ where: { viewOrderId: id } });
-    if (!category) return h.response({ error: "Product not found" }).code(404);
+    if (role !== "admin") {
+      return h.response({ error: "Insufficient permissions"}).code(403);
+    }
+    const {status} = request.payload as {status: "" | "ACCEPTED" | "REJECTED"};
 
-    const product = await viewOrderServices.sendAdminStatus(id, payload);
+    const ord = await ViewOrders.findOne({ where: { orderId } });
+    if (!ord) return h.response({ error: "Order not found" }).code(404);
+
+    const product = await viewOrderServices.sendAdminStatus(orderId, productId, status);
 
     return h
       .response({

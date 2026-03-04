@@ -4,6 +4,6 @@ export interface NotifyOrdersPayload {
   notifyId: string;
   orderId: string;
   items: ProductItems[];
-  adminStatus: string;
+  // adminStatus: string;
   receivedAt?: Date;
 }

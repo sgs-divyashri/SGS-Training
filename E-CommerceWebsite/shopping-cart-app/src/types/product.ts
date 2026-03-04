@@ -4,7 +4,7 @@ export interface Product {
   p_description: string;
   prod_category: string;
   price: number | string;
-  qty?: number | string;
+  total_quantity?: number | string;
   inStock: string;
   isNotification: boolean;
   createdAt?: string;

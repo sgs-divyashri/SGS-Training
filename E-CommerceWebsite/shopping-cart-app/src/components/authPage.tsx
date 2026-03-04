@@ -10,11 +10,6 @@ import { jwtDecode } from "jwt-decode";
 type Mode = "signin" | "register" | "forgot";
 
 const signInSchema = Joi.object({
-  role: Joi.string().valid("Admin", "User").required().messages({
-    "any.only": "Select a Valid role",
-    "string.empty": "Role is Required",
-    "any.required": "Role is Required",
-  }),
   email: Joi.string()
     .email({ tlds: { allow: false } })
     .required()
@@ -98,7 +93,7 @@ export const AuthPage = () => {
   } = useForm<SignInForm | RegisterForm>({
     resolver: joiResolver(isSignIn ? signInSchema : registerSchema),
     defaultValues: isSignIn
-      ? { role: "", email: "", password: "" }
+      ? { email: "", password: "" }
       : { name: "", role: "", email: "", password: "", confirmPassword: "" },
     mode: "onBlur",
   });
@@ -118,7 +113,7 @@ export const AuthPage = () => {
     setMode(next);
     setServerMessage(null);
     if (next === "signin") {
-      reset({ role: "", email: "", password: "" });
+      reset({ email: "", password: "" });
     } else if (next === "register") {
       reset({
         name: "",
@@ -206,22 +201,20 @@ export const AuthPage = () => {
               <button
                 type="button"
                 onClick={() => switchMode("signin")}
-                className={`flex-1 p-2 rounded-md text-sm font-medium transition ${
-                  isSignIn
-                    ? "bg-white text-blue-600 shadow"
-                    : "text-gray-600 hover:text-gray-800"
-                }`}
+                className={`flex-1 p-2 rounded-md text-sm font-medium transition ${isSignIn
+                  ? "bg-white text-blue-600 shadow"
+                  : "text-gray-600 hover:text-gray-800"
+                  }`}
               >
                 Sign In
               </button>
               <button
                 type="button"
                 onClick={() => switchMode("register")}
-                className={`flex-1 py-2 rounded-md text-sm font-medium transition ${
-                  isRegister
-                    ? "bg-white text-blue-600 shadow"
-                    : "text-gray-600 hover:text-gray-800"
-                }`}
+                className={`flex-1 py-2 rounded-md text-sm font-medium transition ${isRegister
+                  ? "bg-white text-blue-600 shadow"
+                  : "text-gray-600 hover:text-gray-800"
+                  }`}
               >
                 Register
               </button>
@@ -259,17 +252,19 @@ export const AuthPage = () => {
               </Field>
             )}
 
-            <Field
-              id="role"
-              label="Role"
-              error={(errors as any)?.role?.message}
-            >
-              <select id="role" className={inputClass} {...register("role")}>
-                <option value="">Select a Role</option>
-                <option value="Admin">Admin</option>
-                <option value="User">User</option>
-              </select>
-            </Field>
+            {!isSignIn && (
+              <Field
+                id="role"
+                label="Role"
+                error={(errors as any)?.role?.message}
+              >
+                <select id="role" className={inputClass} {...register("role")}>
+                  <option value="">Select a Role</option>
+                  <option value="Admin">Admin</option>
+                  <option value="User">User</option>
+                </select>
+              </Field>
+            )}
 
             <Field
               id="email"

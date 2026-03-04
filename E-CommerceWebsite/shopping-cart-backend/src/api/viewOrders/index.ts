@@ -19,7 +19,7 @@ export const viewOrderRoutes: ServerRoute[] = [
 
   {
     method: "PATCH",
-    path: "/order/status/{id}",
+    path: "/order/status/{orderId}/{productId}",
     handler: sendAdminStatusHandler
   },
 

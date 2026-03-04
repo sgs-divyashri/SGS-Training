@@ -4,7 +4,7 @@ export interface ProductPayload {
   p_description: string;
   categoryId: string;
   price: number;
-  qty: number;
+  total_quantity: number;
   inStock: string;
   addedBy?: number;
   createdAt?: Date;

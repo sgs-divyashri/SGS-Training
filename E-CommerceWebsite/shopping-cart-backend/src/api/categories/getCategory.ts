@@ -1,5 +1,5 @@
 import type { Request, ResponseToolkit, ResponseObject } from "@hapi/hapi";
-import { productServices } from "../../services/productServices";
+import { JWTPayload } from "../../authentication/authentication";
 import { productCategoryServices } from "../../services/prodCategoryServices";
 
 export const getCategoryHandler = async (
@@ -7,8 +7,10 @@ export const getCategoryHandler = async (
   h: ResponseToolkit,
 ): Promise<ResponseObject> => {
   try {
-    
-    const result = await productCategoryServices.getProductCategories();
+    const { userId, role } = request.auth.credentials as Pick<JWTPayload, "userId" | "role">;
+    const isAdmin = String(role ?? "").trim().toLowerCase() === "admin";
+
+    const result = await productCategoryServices.getProductCategories(isAdmin, userId);
 
     return h
       .response({

@@ -15,7 +15,7 @@ export const userRepository = {
     return newUser;
   },
 
-  loginUser: async (loginData: Pick<UserPayload, "email" | "password" | "role">): Promise<User | null> => {
+  loginUser: async (loginData: Pick<UserPayload, "email" | "password">): Promise<User | null> => {
     const user = await User.findOne({
       where: { email: loginData.email},
       attributes: { include: ["password"] },
@@ -29,9 +29,6 @@ export const userRepository = {
       hashedPassword,
     );
     if (!isValidPassword) return null;
-
-    const isRole: string = user.role;
-    if (isRole !== loginData.role) return null;
 
     return user;
   },

@@ -8,8 +8,8 @@ type AdminNotificationContextValue = {
   orders: ViewOrderItemRow[];
   adminCount: number;
   addOrder: (row: ViewOrderItemRow) => void;
-  acceptOrder: (viewOrderId: string) => void;
-  rejectOrder: (viewOrderId: string) => void;
+  acceptOrder: (orderId: string, productId: string) => void;
+  rejectOrder: (orderId: string, productId: string) => void;
   removeNotifications: (viewOrderId: string) => void
   clear: () => void;
 };
@@ -31,14 +31,13 @@ export const AdminNotificationProvider = ({
 
   useEffect(() => {
     if (role !== "Admin") return;
+    let initialized = false;
 
     const fetchOrders = async () => {
       try {
         const res = await api.get("/orders/view");
 
-        const apiOrders = Array.isArray(res.data?.orders)
-          ? res.data.orders
-          : [];
+        const apiOrders = Array.isArray(res.data?.orders) ? res.data.orders : [];
 
         const rows: ViewOrderItemRow[] = apiOrders.map((ord: any) => {
           const items = Array.isArray(ord.items) ? ord.items : [];
@@ -50,32 +49,32 @@ export const AdminNotificationProvider = ({
 
           return {
             orderId: String(ord.orderId),
-            viewOrderId: String(ord.viewOrderId ?? ord.orderId),
+            viewOrderId: String(ord.viewOrderId),
             items: items.map((it: any) => ({
               prodName: it.prodName,
               price: it.price,
               quantity: it.quantity,
+              status: it.status
             })),
-            status: ord.status,
+            // status: ord.status,
             total,
           };
         });
 
-        if (role === "Admin") {
-          const prevIds = knownIdsRef.current;
-          if (initializedRef.current) {
-            rows.forEach((o) => {
-              if (!prevIds.has(o.viewOrderId)) {
-                const name = o.items?.[0]?.prodName;
+        setOrders(prev => {
+          if (initialized) {
+            const prevSet = new Set(prev.map(o => o.viewOrderId));
+            rows.forEach(o => {
+              if (!prevSet.has(o.viewOrderId)) {
+                const name = o.items[0]?.prodName;
                 toast(`New order received: ${name} (ID: ${o.viewOrderId})`);
               }
             });
           } else {
-            initializedRef.current = true;
+            initialized = true;
           }
-        }
-        knownIdsRef.current = new Set(rows.map((r) => r.viewOrderId));
-        setOrders(rows);
+          return rows;
+        })
       } catch (err: any) {
         console.error(err);
         if (err.response.status === 401) {
@@ -96,24 +95,24 @@ export const AdminNotificationProvider = ({
     );
   };
 
-  const setStatus = (viewOrderId: string, status: "ACCEPTED" | "REJECTED") => {
+  const setStatus = (orderId: string, productId: string, status: "ACCEPTED" | "REJECTED") => {
     setOrders((prev) =>
-      prev.map((r) => (r.viewOrderId === viewOrderId ? { ...r, status } : r)),
+      prev.map((r) => (r.orderId === orderId ? { ...r, status } : r)),
     );
   };
 
-  const acceptOrder = async (viewOrderId: string) => {
-    setStatus(viewOrderId, "ACCEPTED");
+  const acceptOrder = async (orderId: string, productId: string) => {
+    setStatus(orderId, productId, "ACCEPTED");
 
     try {
-      await api.patch(`/order/status/${viewOrderId}`, { status: "ACCEPTED" });
+      await api.patch(`/order/status/${orderId}/${productId}`, { status: "ACCEPTED" });
     } catch (e) { }
   };
 
-  const rejectOrder = async (viewOrderId: string) => {
-    setStatus(viewOrderId, "REJECTED");
+  const rejectOrder = async (orderId: string, productId: string) => {
+    setStatus(orderId, productId, "REJECTED");
     try {
-      await api.patch(`/order/status/${viewOrderId}`, { status: "REJECTED" });
+      await api.patch(`/order/status/${orderId}/${productId}`, { status: "REJECTED" });
     } catch (e) {
       throw e;
     }

@@ -17,7 +17,7 @@ export class ViewOrders
   public orderedBy!: number;
   public orderId!: string;
   public items!: ProductItems[];
-  public status!: string;
+  // public status!: string;
   public userStatus!: string;
   public totalAmount!: number;
   public readonly receivedAt!: Date;
@@ -52,11 +52,11 @@ export default (sequelize: Sequelize) => {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
       },
-      status: {
-        type: DataTypes.ENUM("ACCEPTED", "REJECTED", ""),
-        allowNull: false,
-        defaultValue: ""
-      },
+      // status: {
+      //   type: DataTypes.ENUM("ACCEPTED", "REJECTED", ""),
+      //   allowNull: false,
+      //   defaultValue: ""
+      // },
       userStatus: {
         type: DataTypes.ENUM("ORDERED", "CANCELLED"),
         allowNull: false,

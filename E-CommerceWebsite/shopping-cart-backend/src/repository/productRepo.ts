@@ -6,7 +6,7 @@ import { Category } from "../models/prodCategoryTableDefinition";
 import Sequelize from "sequelize";
 
 export const productRepository = {
-  createProduct: async (payload: Pick<ProductPayload, "p_name" | "p_description" | "categoryId" | "price" | "qty">, adminId: number): Promise<Product> => {
+  createProduct: async (payload: Pick<ProductPayload, "p_name" | "p_description" | "categoryId" | "price" | "total_quantity">, adminId: number): Promise<Product> => {
     const newUser = await Product.create({
       ...payload,
       productId: generateSimpleId(),
@@ -30,8 +30,8 @@ export const productRepository = {
     return products
   },
 
-  editProduct: async (id: string, payload: Pick<Partial<Product>, "p_name" | "p_description" | "categoryId" | "price" | "qty">): Promise<ProductPayload | null> => {
-    const product = await Product.findOne({ where: { productId: id } });
+  editProduct: async (id: string, payload: Pick<Partial<Product>, "p_name" | "p_description" | "categoryId" | "price" | "total_quantity">, adminId: number): Promise<ProductPayload | null> => {
+    const product = await Product.findOne({ where: { productId: id, addedBy: adminId } });
     if (!product) return null;
 
     if (payload.p_name !== undefined) product.set("p_name", payload.p_name);
@@ -53,7 +53,7 @@ export const productRepository = {
       product.set("categoryId", category!.categoryId);
     }
     if (payload.price !== undefined) product.set("price", payload.price);
-    if (payload.qty !== undefined) product.set("qty", payload.qty)
+    if (payload.total_quantity !== undefined) product.set("total_quantity", payload.total_quantity)
 
     await product.save();
     return product.get();
@@ -78,8 +78,8 @@ export const productRepository = {
     return await Product.findOne({ where: { productId: id } });
   },
 
-  deleteProduct: async (id: string): Promise<string | undefined> => {
-    const count = await Product.destroy({ where: { productId: id } });
+  deleteProduct: async (id: string, adminId: number): Promise<string | undefined> => {
+    const count = await Product.destroy({ where: { productId: id, addedBy: adminId } });
     return count > 0 ? id : undefined;
   },
 };

@@ -16,7 +16,7 @@ export const placeOrderRepository = {
     const productIds = payload.items.map((i) => i.productId);
     const products = await Product.findAll({
       where: { productId: { [Op.in]: productIds } },
-      attributes: ["productId", "p_name", "price", "qty"],
+      attributes: ["productId", "p_name", "price", "total_quantity"],
     });
     const prodMap = new Map(products.map(p => [String(p.get("productId")), p]));
 
@@ -38,13 +38,13 @@ export const placeOrderRepository = {
 
     for (const item of detailedItems) {
       const prod = prodMap.get(item.productId)!; 
-      const currentQty = Number(prod.get("qty"));
+      const currentQty = Number(prod.get("total_quantity"));
       const newQty = currentQty - item.quantity;
       if (newQty < 0) {
         throw new Error(`Insufficient stock for ${item.productId}`);
       }
       await Product.update(
-        { qty: newQty, inStock: newQty > 0 ? "In Stock" : "Out of Stock" },
+        { total_quantity: newQty, inStock: newQty > 0 ? "In Stock" : "Out of Stock" },
         { where: { productId: item.productId } },
       );
     }
@@ -66,7 +66,6 @@ export const placeOrderRepository = {
       orderedBy,
       items: detailedItems,
       totalAmount,
-      status: "",
       userStatus: "ORDERED",
     });
 
@@ -119,17 +118,17 @@ export const placeOrderRepository = {
 
         const prod = await Product.findOne({
           where: { productId },
-          attributes: ["productId", "qty"],
+          attributes: ["productId", "total_quantity"],
         });
 
         if (!prod) continue;
 
-        const currentQty = Number(prod.qty) || 0;
+        const currentQty = Number(prod.total_quantity) || 0;
         const newQty = currentQty + qtyToAdd;
 
         await Product.update(
           {
-            qty: newQty,
+            total_quantity: newQty,
             inStock: newQty > 0 ? "In Stock" : "Out of Stock",
           },
           { where: { productId } },

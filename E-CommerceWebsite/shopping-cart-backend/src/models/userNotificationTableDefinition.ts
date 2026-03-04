@@ -14,7 +14,7 @@ export class NotifyUserOrders
   public notifyId!: string;
   public orderId!: string;
   public items!: ProductItems[];
-  public adminStatus!: string;
+  // public adminStatus!: string;
   public readonly receivedAt!: Date;
 }
 
@@ -36,11 +36,11 @@ export default (sequelize: Sequelize) => {
         allowNull: false,
         defaultValue: [],
       },
-      adminStatus: {
-        type: DataTypes.ENUM("ACCEPTED", "REJECTED", ""),
-        allowNull: true,
-        defaultValue: ""
-      },
+      // adminStatus: {
+      //   type: DataTypes.ENUM("ACCEPTED", "REJECTED", ""),
+      //   allowNull: true,
+      //   defaultValue: ""
+      // },
     },
     {
       sequelize,

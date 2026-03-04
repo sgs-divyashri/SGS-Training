@@ -12,12 +12,12 @@ export const loginUserHandler = async (
   try {
     const payload = request.payload as Pick<
       UserPayload,
-      "email" | "password" | "role"
+      "email" | "password"
     >;
 
-    if (!payload.email || !payload.password || !payload.role) {
+    if (!payload.email || !payload.password) {
       return h
-        .response({ error: "Email, password and role are required" })
+        .response({ error: "Email and password are required" })
         .code(400);
     }
 

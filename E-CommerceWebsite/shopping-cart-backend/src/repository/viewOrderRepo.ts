@@ -32,36 +32,39 @@ export const viewOrderRepository = {
     return { items: rows };
   },
 
-  sendAdminStatus: async (viewOrderId: string, payload: Pick<ViewOrdersPayload, "status">) => {
-    const orderView = await ViewOrders.findOne({ where: { viewOrderId } });
+  sendAdminStatus: async (orderId: string, productId: string, status: "" | "ACCEPTED" | "REJECTED") => {
+    const orderView = await ViewOrders.findOne({ where: { orderId } });
     if (!orderView) return null;
 
-    const orderId = orderView.get("orderId");
+    const items = orderView.get("items");
+    const updated = items.map(it =>
+      String(it.productId) === String(productId)
+        ? { ...it, status }
+        : it
+    );
 
-    const order = await Orders.findOne({ where: { orderId } });
-    if (!order) return null;
-
-    const items = order.get("items");
-
-    if (payload.status !== undefined) {
+    if (status !== undefined) {
       await ViewOrders.update(
-        { status: payload.status! },
-        { where: { viewOrderId } },
+        { items: updated },
+        { where: { orderId } },
       );
     }
+
+    const updatedItem = updated.find((it) => String(it.productId) === String(productId));
 
     await NotifyUserOrders.create({
       notifyId: generateUserNotificationId(),
       orderId,
-      items,                
-      adminStatus: payload.status!,  
+      items: [updatedItem!],
+      // adminStatus: payload.status!,
       receivedAt: new Date()
     });
 
     return {
-      viewOrderId,
       orderId,
-      status: payload.status,
+      productId,
+      status,
+      updatedItem
     };
   },
 
