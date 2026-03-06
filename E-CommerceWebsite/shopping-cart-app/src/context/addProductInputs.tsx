@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { api } from "../axios/axiosClient";
 import { Product } from "../types/product";
@@ -6,20 +6,18 @@ import { Product } from "../types/product";
 type FormValues = {
   p_name: string;
   p_description: string;
-  prod_category: string; 
+  prod_category: string;
   price: string;
-  qty: string;
+  total_quantity: string;
 };
 
 type Option = { value: string; label: string };
 
-export function AddProductInputs({
-  categoryOptions,
-  onSuccess,
+export function AddProducts({
+  // onSuccess,
   onCancel,
 }: {
-  categoryOptions: Option[];
-  onSuccess: () => void;
+  // onSuccess: () => void;
   onCancel: () => void;
 }) {
   const [values, setValues] = useState<FormValues>({
@@ -27,10 +25,34 @@ export function AddProductInputs({
     p_description: "",
     prod_category: "",
     price: "",
-    qty: "",
+    total_quantity: "",
   });
   const [product, setProduct] = useState<Product[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const [categoryOptions, setCategoryOptions] = useState<Option[]>([])
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await api.get("/categories");
+        const normalized = res.data?.categories ?? [];
+        const opts = (normalized || []).map((c: any) => ({
+          value: String(c.prod_category),
+          label: String(c.prod_category),
+        }));
+        setCategoryOptions(opts);
+      } catch (err: any) {
+        if (err?.response?.status === 401) return;
+        const message =
+          err?.response?.data?.message ||
+          err?.response?.data?.error ||
+          err?.message ||
+          "Failed to load categories";
+        toast.error(message);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const set = (key: keyof FormValues) => (v: string) =>
     setValues((prev) => ({ ...prev, [key]: v }));
@@ -38,14 +60,14 @@ export function AddProductInputs({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const { p_name, p_description, prod_category, price, qty } = values;
+    const { p_name, p_description, prod_category, price, total_quantity } = values;
 
     if (
       !p_name.trim() ||
       !p_description.trim() ||
       !prod_category.trim() ||
       !price.trim() ||
-      !qty.trim()
+      !total_quantity.trim()
     ) {
       toast.error("Please fill in all fields.");
       return;
@@ -57,7 +79,7 @@ export function AddProductInputs({
       return;
     }
 
-    const qtyNum = Number(qty);
+    const qtyNum = Number(total_quantity);
     if (!Number.isFinite(qtyNum) || qtyNum < 0) {
       toast.error("Enter a valid quantity.");
       return;
@@ -69,18 +91,27 @@ export function AddProductInputs({
       const payload = {
         p_name: p_name.trim(),
         p_description: p_description.trim(),
-        categoryId: prod_category.trim(), // backend expects categoryId here in your code
+        categoryId: prod_category.trim(),
         price: priceNum,
-        qty: qtyNum,
+        total_quantity: qtyNum,
       };
 
+      console.log(payload)
+
       const res = await api.post("/add", payload);
-       const createdProduct = res.data;
+      const createdProduct = res.data;
 
       setProduct((prev) => [createdProduct, ...prev]);
 
       toast.success("Product added");
-      onSuccess(); 
+
+      setValues({
+        p_name: "",
+        p_description: "",
+        prod_category: "",
+        price: "",
+        total_quantity: "",
+      })
     } catch (err: any) {
       const message =
         err?.response?.data?.message ||
@@ -156,8 +187,8 @@ export function AddProductInputs({
             <input
               type="number"
               className="mt-1 w-full rounded border px-3 py-2"
-              value={values.qty}
-              onChange={(e) => set("qty")(e.target.value)}
+              value={values.total_quantity}
+              onChange={(e) => set("total_quantity")(e.target.value)}
               placeholder="Enter quantity"
               min={0}
             />

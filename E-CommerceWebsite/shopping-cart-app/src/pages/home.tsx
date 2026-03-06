@@ -177,7 +177,7 @@ export const Home = () => {
       console.log('sample product', res.data?.products?.[0]);
       setProducts(res.data?.products || []);
     });
-  }, []);
+  }, [products]);
 
   useEffect(() => {
     let active = true;

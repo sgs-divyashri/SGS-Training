@@ -11,9 +11,9 @@ import { AddToQueue } from "@mui/icons-material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { getRole } from "../auth/auth";
 import { useOptionalAdminNotification } from "../context/adminNotificationContext";
-import { AddProduct } from "../pages/addProducts";
 import { AddCategoryForm } from "../context/addCategoriesForm";
-import { AddProductCategories } from "../pages/addProdCategories";
+import { AddProducts } from "../context/addProductInputs";
+import { Modal } from "../modal/modal";
 
 const navClasses = ({ isActive }: { isActive: boolean }) =>
   isActive
@@ -28,6 +28,8 @@ export const NavBar = () => {
   const navigate = useNavigate();
   const role = getRole();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [categoryOpen, setCategoryOpen] = useState(false);
+  const [addProductOpen, setAddProductOpen] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -157,20 +159,16 @@ export const NavBar = () => {
               {role === "Admin" ? (
                 <Menu>
                   <MenuItem
-                    component={
-                      <AddProduct />
-                    }
+                    icon={<AddToQueue fontSize="small" className="!align-middle" />}
+                    onClick={() => setAddProductOpen(true)}
                   >
                     Add Products
                   </MenuItem>
                   <MenuItem
-                    icon={<CategoryOutlinedIcon />}
-                    component={
-                      <AddProductCategories/>
-                      // <NavLink to="/categories" className={navClasses} />
-                    }
+                    icon={<CategoryOutlinedIcon fontSize="small" className="!align-middle" />}
+                    onClick={() => setCategoryOpen(true)}
                   >
-                    Add Categories
+                    Add Category
                   </MenuItem>
                 </Menu>
               ) : (
@@ -197,6 +195,18 @@ export const NavBar = () => {
           <Outlet />
         </main>
       </div>
+
+      <Modal open={addProductOpen} onClose={() => setAddProductOpen(false)}>
+        <AddProducts
+          // onSuccess={() => setAddProductOpen(false)}
+          onCancel={() => setAddProductOpen(false)}
+        />
+      </Modal>
+
+      <Modal open={categoryOpen} onClose={() => setCategoryOpen(false)}>
+        <AddCategoryForm onClose={() => setCategoryOpen(false)} />
+      </Modal>
+
     </>
   );
 };

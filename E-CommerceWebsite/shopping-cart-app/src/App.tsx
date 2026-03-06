@@ -3,13 +3,12 @@ import { Route, Routes, useNavigate } from "react-router-dom";
 import { Home } from "./pages/home";
 import { AuthPage } from "./components/authPage";
 import { AuthLayout } from "./components/authLayouts";
-import { AddProduct } from "./pages/addProducts";
 import { CartPage } from "./pages/cart";
 import { ResetPassword } from "./components/resetPassword";
 import { NotificationsPage } from "./pages/notifications";
 import { AdminNotificationsPage } from "./pages/adminNotifications";
 import RoleLayout from "./auth/roleLayout";
-import { AddProductCategories } from "./pages/addProdCategories";
+// import { AddProductCategories } from "./pages/addProdCategories";
 import { OrdersPage } from "./pages/orderHistory";
 import { Toaster } from "react-hot-toast";
 import RequireAuth from "./auth/requireAuth";
@@ -62,7 +61,7 @@ function App() {
               <Route path="/home" element={<Home />} />
               <Route path="/cart" element={<CartPage />} />
               <Route path="/notification" element={<NotificationsPage />} />
-              <Route path="/categories" element={<AddProductCategories />} />
+              {/* <Route path="/categories" element={<AddProductCategories />} /> */}
               <Route path="/orders" element={<OrdersPage />} />
               {/* <Route path="/add-products" element={<AddProduct />} /> */}
               <Route
