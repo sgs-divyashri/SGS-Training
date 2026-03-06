@@ -140,11 +140,11 @@ export const AuthPage = () => {
         const decoded: any = jwtDecode(accessToken);
         const role = decoded.role;
 
-        if (role === "Admin") {
-          navigate("/add-products");
-        } else {
+        // if (role === "Admin") {
+        //   navigate("/add-products");
+        // } else {
           navigate("/home");
-        }
+        // }
       } else {
         const body = values as RegisterForm;
         const res = await api.post<RegisterResponse>("/users/register", body);

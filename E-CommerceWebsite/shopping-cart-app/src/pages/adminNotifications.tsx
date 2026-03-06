@@ -20,6 +20,13 @@ export const AdminNotificationsPage = () => {
                 key={p.orderId}
                 className="border rounded p-4"
               >
+                <div className="flex justify-end">
+                  <button
+                    onClick={() => removeNotifications(p.viewOrderId)}
+                  > 
+                    <CloseSharp />
+                  </button>
+                </div>
                 <div className="mt-2 space-y-2">
                   {p.items.map((it) => (
                     <div key={it.productId}>
@@ -45,11 +52,6 @@ export const AdminNotificationsPage = () => {
                           >
                             <CloseRounded />
                             Reject
-                          </button>
-                          <button
-                            onClick={() => removeNotifications(p.viewOrderId)}
-                          >
-                            <CloseSharp />
                           </button>
                         </div>
                       </div>

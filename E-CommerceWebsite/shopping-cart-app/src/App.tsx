@@ -6,7 +6,6 @@ import { AuthLayout } from "./components/authLayouts";
 import { AddProduct } from "./pages/addProducts";
 import { CartPage } from "./pages/cart";
 import { ResetPassword } from "./components/resetPassword";
-import RequireRole from "./auth/requireRole";
 import { NotificationsPage } from "./pages/notifications";
 import { AdminNotificationsPage } from "./pages/adminNotifications";
 import RoleLayout from "./auth/roleLayout";
@@ -14,12 +13,10 @@ import { AddProductCategories } from "./pages/addProdCategories";
 import { OrdersPage } from "./pages/orderHistory";
 import { Toaster } from "react-hot-toast";
 import RequireAuth from "./auth/requireAuth";
-import { Outlet } from "react-router-dom";
 import { CartProvider } from "./context/CartContext";
 import { OrdersProvider } from "./context/OrdersContext";
 import { AdminNotificationProvider } from "./context/adminNotificationContext";
 import { NotificationProvider } from "./context/NotificationContext";
-// import { SessionPopup } from "./components/sessionPopup";
 
 export let globalNavigate: ReturnType<typeof useNavigate>;
 
@@ -54,7 +51,9 @@ function App() {
                 <CartProvider>
                   <OrdersProvider>
                     <NotificationProvider>
-                      <RoleLayout />
+                      <AdminNotificationProvider> 
+                        <RoleLayout />
+                      </AdminNotificationProvider>
                     </NotificationProvider>
                   </OrdersProvider>
                 </CartProvider>
@@ -65,22 +64,13 @@ function App() {
               <Route path="/notification" element={<NotificationsPage />} />
               <Route path="/categories" element={<AddProductCategories />} />
               <Route path="/orders" element={<OrdersPage />} />
+              {/* <Route path="/add-products" element={<AddProduct />} /> */}
               <Route
-                element={
-                  <AdminNotificationProvider>
-                    <Outlet />
-                  </AdminNotificationProvider>
-                }
-              >
-                <Route path="/add-products" element={<AddProduct />} />
-                <Route
-                  path="/admin-notification"
-                  element={<AdminNotificationsPage />}
-                />
-              </Route>
+                path="/admin-notification"
+                element={<AdminNotificationsPage />}
+              />
             </Route>
           </Route>
-          {/* </Route> */}
         </Routes>
       </section>
     </>

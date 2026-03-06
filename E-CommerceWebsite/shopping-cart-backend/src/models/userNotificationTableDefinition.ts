@@ -14,7 +14,6 @@ export class NotifyUserOrders
   public notifyId!: string;
   public orderId!: string;
   public items!: ProductItems[];
-  // public adminStatus!: string;
   public readonly receivedAt!: Date;
 }
 

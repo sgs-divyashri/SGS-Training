@@ -26,9 +26,6 @@ export const AdminNotificationProvider = ({
   const [orders, setOrders] = useState<ViewOrderItemRow[]>([]);
   const role = getRole();
 
-  const knownIdsRef = useRef<Set<string>>(new Set());
-  const initializedRef = useRef(false);
-
   useEffect(() => {
     if (role !== "Admin") return;
     let initialized = false;
@@ -51,12 +48,12 @@ export const AdminNotificationProvider = ({
             orderId: String(ord.orderId),
             viewOrderId: String(ord.viewOrderId),
             items: items.map((it: any) => ({
+              productId: String(it.productId),
               prodName: it.prodName,
-              price: it.price,
+              price: Number(it.price),
               quantity: it.quantity,
               status: it.status
             })),
-            // status: ord.status,
             total,
           };
         });
@@ -67,7 +64,7 @@ export const AdminNotificationProvider = ({
             rows.forEach(o => {
               if (!prevSet.has(o.viewOrderId)) {
                 const name = o.items[0]?.prodName;
-                toast(`New order received: ${name} (ID: ${o.viewOrderId})`);
+                toast.success(`New order received: ${name} (ID: ${o.viewOrderId})`);
               }
             });
           } else {
@@ -97,7 +94,13 @@ export const AdminNotificationProvider = ({
 
   const setStatus = (orderId: string, productId: string, status: "ACCEPTED" | "REJECTED") => {
     setOrders((prev) =>
-      prev.map((r) => (r.orderId === orderId ? { ...r, status } : r)),
+      prev.map(o =>
+        o.orderId !== orderId ? o : {
+          ...o, items: o.items.map(it =>
+            String(it.productId) === String(productId) ? { ...it, status } : it
+          ),
+        }
+      )
     );
   };
 

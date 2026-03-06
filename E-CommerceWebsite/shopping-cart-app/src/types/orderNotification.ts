@@ -1,6 +1,6 @@
 export type OrderNotificationRow = {
   notifyId: string;
   orderId: string;
-  items: Array<{ prodName: string; price: number; quantity: number }>;
-  adminStatus: "ACCEPTED" | "REJECTED"
+  items: Array<{ productId: string; prodName: string; price: number; quantity: number, status: "ACCEPTED" | "REJECTED" }>;
+  total: number;
 };

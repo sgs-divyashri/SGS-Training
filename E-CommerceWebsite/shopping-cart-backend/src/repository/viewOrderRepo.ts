@@ -1,9 +1,7 @@
 import { Op } from "sequelize";
 import { ViewOrders } from "../models/adminViewOrderNotifyTableDefinition";
-import { ViewOrdersPayload } from "../types/viewOrdersPayload";
 import { Product } from "../models/productTableDefinition";
 import { NotifyUserOrders } from "../models/userNotificationTableDefinition";
-import { Orders } from "../models/ordersTableDefinition";
 import generateUserNotificationId from "../services/generateUserNotificationID";
 
 export const viewOrderRepository = {
@@ -52,13 +50,20 @@ export const viewOrderRepository = {
 
     const updatedItem = updated.find((it) => String(it.productId) === String(productId));
 
-    await NotifyUserOrders.create({
-      notifyId: generateUserNotificationId(),
-      orderId,
-      items: [updatedItem!],
-      // adminStatus: payload.status!,
-      receivedAt: new Date()
-    });
+    const existing = await NotifyUserOrders.findOne({ where: { orderId, items: { [Op.contains]: [{ productId }] } as any, } });
+    if (existing) {
+      await existing.update({
+        items: [updatedItem!],
+        receivedAt: new Date()
+      })
+    } else {
+      await NotifyUserOrders.create({
+        notifyId: generateUserNotificationId(),
+        orderId,
+        items: [updatedItem!],
+        receivedAt: new Date()
+      });
+    }
 
     return {
       orderId,

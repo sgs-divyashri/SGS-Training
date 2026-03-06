@@ -30,7 +30,7 @@ export const NotificationsPage = () => {
                         Price: ₹ {it.price.toFixed(2)}
                       </div>
                       <div className="text-sm">Quantity: {it.quantity}</div>
-                      <div className="text-sm">Status: <span className={p.adminStatus === 'ACCEPTED' ? "text-green-600 font-semibold" : "text-red-600 font-semibold"}>{p.adminStatus}</span></div>
+                      <div className="text-sm">Status: <span className={it.status === 'ACCEPTED' ? "text-green-600 font-semibold" : "text-red-600 font-semibold"}>{it.status}</span></div>
                     </div>
                   ))}
                 </div>

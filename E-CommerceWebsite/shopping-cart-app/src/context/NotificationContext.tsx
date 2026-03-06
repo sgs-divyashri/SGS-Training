@@ -11,8 +11,8 @@ import { getRole } from "../auth/auth";
 import { OrderNotificationRow } from "../types/orderNotification";
 
 type NotificationContextValue = {
-  orders: OrderNotificationRow[]; 
-  cnt: number; 
+  orders: OrderNotificationRow[];
+  cnt: number;
   removeFromNotifications: (id: string) => Promise<void>;
   clearAll: () => Promise<void>;
 };
@@ -33,68 +33,57 @@ export const NotificationProvider = ({
 
   useEffect(() => {
     if (role !== "User") return;
+    let initialized = false;
+
     const fetchOrders = async () => {
       try {
         const res = await api.get("/notify-orders");
 
-        const list = Array.isArray(res.data?.notifications)
-          ? res.data.notifications
-          : [];
+        const list = Array.isArray(res.data?.notifications) ? res.data.notifications : [];
 
-        const nextOrders: OrderNotificationRow[] = list
-          .map((ord: any) => {
-            const items = Array.isArray(ord.items) ? ord.items : [];
-            const total = items.reduce(
-              (sum: number, it: any) =>
-                sum + Number(it.price ?? 0) * Number(it.quantity ?? 0),
-              0,
-            );
+        const mapped: OrderNotificationRow[] = list.map((ord: any) => {
+          const items = Array.isArray(ord.items) ? ord.items : [];
+          // const total = items.reduce(
+          //   (sum: number, it: any) =>
+          //     sum + Number(it.price ?? 0) * Number(it.quantity ?? 0),
+          //   0,
+          // );
 
-            return {
-              notifyId: String(ord.notifyId),
-              OrderId: String(ord.orderId),
-              items: items.map((it: any) => ({
-                prodName: String(it.prodName ?? ""),
-                price: Number(it.price ?? 0),
-                quantity: Number(it.quantity ?? 0),
-              })),
-              adminStatus: String(ord.adminStatus ?? "").toUpperCase(),
-            };
-          })
-          .filter(
-            (o: OrderNotificationRow) =>
-              o.adminStatus === "ACCEPTED" || o.adminStatus === "REJECTED",
-          );
+          return {
+            notifyId: String(ord.notifyId),
+            OrderId: String(ord.orderId),
+            items: items.map((it: any) => ({
+              productId: String(it.productId),
+              prodName: String(it.prodName),
+              price: Number(it.price),
+              quantity: Number(it.quantity),
+              status: (it.status)
+            })),
+          };
+        })
 
-        const prevMap = lastStatusesRef.current;
+        setOrders(prev => {
+          if (initialized) {
+            const prevSet = new Set(prev.map(o => o.notifyId));
 
-        if (initializedRef.current) {
-          nextOrders.forEach((o) => {
-            const prev = prevMap[o.orderId];
-            const curr = o.adminStatus;
-
-            if (prev !== curr && (curr === "ACCEPTED" || curr === "REJECTED")) {
-              const productName = o.items[0].prodName;
-              const baseMsg = `${productName} (Order #${o.notifyId})`;
-
-              if (curr === "ACCEPTED") {
-                toast.success(`${baseMsg} has been ACCEPTED`);
-              } else {
-                toast.error(`${baseMsg} has been REJECTED`);
+            mapped.forEach(o => {
+              if (!prevSet.has(o.notifyId)) {
+                const name = o.items[0]?.prodName;
+                const status = o.items[0]?.status?.toUpperCase();
+                if (status === 'ACCEPTED') {
+                  toast.success(`${name} has been ACCEPTED.`)
+                }
+                else if (status === 'REJECTED') {
+                  toast.error(`${name} has been REJECTED.`)
+                }
               }
-            }
-          });
-        } else {
-          initializedRef.current = true;
-        }
+            })
+          } else {
+            initialized = true;
+          }
 
-        setOrders(nextOrders);
-
-        const nextMap: Record<string, string> = {};
-        nextOrders.forEach((o) => {
-          nextMap[o.orderId] = o.adminStatus;
+          return mapped;
         });
-        lastStatusesRef.current = nextMap;
       } catch (e) {
         console.error(e);
       }

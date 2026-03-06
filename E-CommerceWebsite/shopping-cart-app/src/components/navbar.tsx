@@ -11,6 +11,9 @@ import { AddToQueue } from "@mui/icons-material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { getRole } from "../auth/auth";
 import { useOptionalAdminNotification } from "../context/adminNotificationContext";
+import { AddProduct } from "../pages/addProducts";
+import { AddCategoryForm } from "../context/addCategoriesForm";
+import { AddProductCategories } from "../pages/addProdCategories";
 
 const navClasses = ({ isActive }: { isActive: boolean }) =>
   isActive
@@ -154,9 +157,8 @@ export const NavBar = () => {
               {role === "Admin" ? (
                 <Menu>
                   <MenuItem
-                    icon={<AddToQueue />}
                     component={
-                      <NavLink to="/add-products" className={navClasses} />
+                      <AddProduct />
                     }
                   >
                     Add Products
@@ -164,7 +166,8 @@ export const NavBar = () => {
                   <MenuItem
                     icon={<CategoryOutlinedIcon />}
                     component={
-                      <NavLink to="/categories" className={navClasses} />
+                      <AddProductCategories/>
+                      // <NavLink to="/categories" className={navClasses} />
                     }
                   >
                     Add Categories

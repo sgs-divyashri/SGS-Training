@@ -115,32 +115,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       });
 
       setItems(next);
-
-
-      // const cart = res.data?.cart;
-      // const prod = cart.products;
-
-      // const mapped: CartItem = {
-      //   cartId: cart.cartId,
-      //   userId: cart.userId,
-      //   prodId: cart.productId,
-      //   prodName: prod.prodName ?? "",
-      //   prodDescription: prod.prodDescription ?? "",
-      //   price: Number(prod.price ?? 0),
-      //   quantity: Number(cart.quantity ?? 0),
-      //   total_quantity: Number(prod.total_quantity ?? 0),
-      // };
-
-      // setItems((curr) => {
-      //   const idx = curr.findIndex((x) => x.cartId === mapped.cartId);
-
-      //   if (idx >= 0) {
-      //     const next = [...curr];
-      //     next[idx] = mapped;
-      //     return next;
-      //   }
-      //   return [mapped, ...curr];
-      // });
     },
     [],
   );

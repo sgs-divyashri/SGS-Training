@@ -146,7 +146,7 @@ export const CartPage = () => {
                       {it.prodDescription}
                     </div>
                     <div className="text-sm text-gray-600">
-                      Price: ₹ {(it.price).toFixed(2)}
+                      Price: ₹ {Number(it.price).toFixed(2)}
                     </div>
                     <div className="text-sm text-gray-600">
                       Total Available Quantity: {it.total_quantity}

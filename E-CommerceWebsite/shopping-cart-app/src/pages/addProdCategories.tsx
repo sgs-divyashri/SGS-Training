@@ -8,9 +8,15 @@ import Button from "@mui/material/Button";
 import SaveIcon from "@mui/icons-material/Save";
 import CloseIcon from "@mui/icons-material/Close";
 import toast from "react-hot-toast";
+import { AddToQueue } from "@mui/icons-material";
+import { MenuItem } from "react-pro-sidebar";
+import { Modal } from "../modal/modal";
+import { AddCategoryForm } from "../context/addCategoriesForm";
+
 
 export const AddProductCategories = () => {
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [values, setValues] = useState({
     prod_category: "",
@@ -50,6 +56,13 @@ export const AddProductCategories = () => {
   useEffect(() => {
     fetchCategories();
   }, []);
+
+  const openModal = () => setOpen(true);
+  const closeModal = () => setOpen(false);
+
+  const handleSuccess = () => {
+    closeModal();
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,147 +152,163 @@ export const AddProductCategories = () => {
     try {
       await api.delete(`/category/${categoryId}`);
       setCategories((prev) => prev.filter((c) => c.categoryId !== categoryId));
-    } catch {}
+    } catch { }
   };
 
   return (
     <div className="max-w-6xl mx-auto">
-      <div className="mx-auto my-3 max-w-3xl m-12 grid grid-cols-1">
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white rounded-xl shadow-md p-6 border border-violet-300 mx-auto w-full"
-        >
-          <h1 className="mb-4 text-center font-bold text-xl">
-            Add Product Categories
-          </h1>
-          <div className="flex items-center gap-3">
-            <label className="font-semibold w-20">Category: </label>
-            <input
-              type="text"
-              className="p-2 m-3 border-2 w-full mx-2 rounded-xl"
-              placeholder="Enter a product category..."
-              value={values.prod_category ?? ""}
-              onChange={(e) => handleChange("prod_category", e.target.value)}
-            />
-          </div>
-
-          <div className="flex justify-center gap-3 m-3">
-            <button
-              type="submit"
-              className="text-white bg-pink-400 border-2 px-3 py-2 rounded-xl hover:bg-pink-600"
-            >
-              Add Product
-            </button>
-          </div>
-        </form>
-
-        <div className="my-5">
-          <table className="min-w-full border-collapse border border-gray-200">
-            <thead>
-              <tr>
-                <th>S.no</th>
-                <th>Categories List</th>
-                <th>Edit Categories</th>
-                <th>Delete Categories</th>
-              </tr>
-            </thead>
-            <tbody>
-              {categories.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={4}
-                    className="border border-gray-200 px-3 py-4 text-center text-gray-500"
-                  >
-                    "No categories yet."
-                  </td>
-                </tr>
-              ) : (
-                categories.map((c, idx) => {
-                  const rowIsEditing = editingRowId === c.categoryId;
-                  return (
-                    <tr
-                      key={c.categoryId}
-                      className="odd:bg-white even:bg-gray-50"
-                    >
-                      <td className="border border-gray-200 px-3 py-2">
-                        {idx + 1}
-                      </td>
-                      <td className="border border-gray-200 px-3 py-2 font-medium">
-                        {rowIsEditing ? (
-                          <input
-                            type="text"
-                            value={editingValue}
-                            onChange={(e) => setEditingValue(e.target.value)}
-                            className="border rounded px-2 py-1 w-full"
-                            autoFocus
-                          />
-                        ) : (
-                          c.prod_category
-                        )}
-                      </td>
-                      <td>
-                        <div>
-                          {!rowIsEditing ? (
-                            <div className="flex justify-center align-center">
-                              <Button
-                                variant="outlined"
-                                color="secondary"
-                                size="small"
-                                startIcon={<EditIcon fontSize="small" />}
-                                onClick={() =>
-                                  startEditRow(c.categoryId, c.prod_category)
-                                }
-                              >
-                                Edit
-                              </Button>
-                            </div>
-                          ) : (
-                            <div className="flex justify-center align-center gap-3">
-                              <Button
-                                variant="contained"
-                                color="primary"
-                                size="small"
-                                startIcon={<SaveIcon fontSize="small" />}
-                                onClick={saveRow}
-                              >
-                                Save
-                              </Button>
-
-                              <Button
-                                variant="outlined"
-                                color="inherit"
-                                size="small"
-                                startIcon={<CloseIcon fontSize="small" />}
-                                onClick={cancelEditRow}
-                              >
-                                Cancel
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                      </td>
-
-                      <td className="border border-gray-200 px-3 py-2">
-                        <div className="flex justify-center align-center">
-                          <Button
-                            variant="outlined"
-                            size="small"
-                            startIcon={<DeleteIcon fontSize="small" />}
-                            onClick={() => handleDelete(c.categoryId)}
-                            color="error"
-                          >
-                            Delete
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
+      <div className="flex justify-between items-center mb-4">
+        <MenuItem onClick={openModal} className="inline-flex items-center gap-2 px-3 py-2 text-gray-800 hover:text-black whitespace-nowrap leading-none">
+          <AddToQueue />
+          Add Product
+        </MenuItem>
+      </div>
+      {/* <div className="mx-auto my-3 max-w-3xl m-12 grid grid-cols-1"> */}
+      <Modal
+        open={open}
+        onClose={closeModal}
+      >
+        <AddCategoryForm
+          // categoryOptions={categoryOptions}
+          onSuccess={handleSuccess}
+          onCancel={closeModal}
+        />
+      </Modal>
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white rounded-xl shadow-md p-6 border border-violet-300 mx-auto w-full"
+      >
+        <h1 className="mb-4 text-center font-bold text-xl">
+          Add Product Categories
+        </h1>
+        <div className="flex items-center gap-3">
+          <label className="font-semibold w-20">Category: </label>
+          <input
+            type="text"
+            className="p-2 m-3 border-2 w-full mx-2 rounded-xl"
+            placeholder="Enter a product category..."
+            value={values.prod_category ?? ""}
+            onChange={(e) => handleChange("prod_category", e.target.value)}
+          />
         </div>
+
+        <div className="flex justify-center gap-3 m-3">
+          <button
+            type="submit"
+            className="text-white bg-pink-400 border-2 px-3 py-2 rounded-xl hover:bg-pink-600"
+          >
+            Add Product
+          </button>
+        </div>
+      </form>
+
+      <div className="my-5">
+        <table className="min-w-full border-collapse border border-gray-200">
+          <thead>
+            <tr>
+              <th>S.no</th>
+              <th>Categories Name</th>
+              <th>Edit</th>
+              <th>Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            {categories.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={4}
+                  className="border border-gray-200 px-3 py-4 text-center text-gray-500"
+                >
+                  "No categories yet."
+                </td>
+              </tr>
+            ) : (
+              categories.map((c, idx) => {
+                const rowIsEditing = editingRowId === c.categoryId;
+                return (
+                  <tr
+                    key={c.categoryId}
+                    className="odd:bg-white even:bg-gray-50"
+                  >
+                    <td className="border border-gray-200 px-3 py-2">
+                      {idx + 1}
+                    </td>
+                    <td className="border border-gray-200 px-3 py-2 font-medium">
+                      {rowIsEditing ? (
+                        <input
+                          type="text"
+                          value={editingValue}
+                          onChange={(e) => setEditingValue(e.target.value)}
+                          className="border rounded px-2 py-1 w-full"
+                          autoFocus
+                        />
+                      ) : (
+                        c.prod_category
+                      )}
+                    </td>
+                    <td>
+                      <div>
+                        {!rowIsEditing ? (
+                          <div className="flex justify-center align-center">
+                            <Button
+                              variant="outlined"
+                              color="secondary"
+                              size="small"
+                              startIcon={<EditIcon fontSize="small" />}
+                              onClick={() =>
+                                startEditRow(c.categoryId, c.prod_category)
+                              }
+                            >
+                              Edit
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="flex justify-center align-center gap-3">
+                            <Button
+                              variant="contained"
+                              color="primary"
+                              size="small"
+                              startIcon={<SaveIcon fontSize="small" />}
+                              onClick={saveRow}
+                            >
+                              Save
+                            </Button>
+
+                            <Button
+                              variant="outlined"
+                              color="inherit"
+                              size="small"
+                              startIcon={<CloseIcon fontSize="small" />}
+                              onClick={cancelEditRow}
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </td>
+
+                    <td className="border border-gray-200 px-3 py-2">
+                      <div className="flex justify-center align-center">
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          startIcon={<DeleteIcon fontSize="small" />}
+                          onClick={() => handleDelete(c.categoryId)}
+                          color="error"
+                        >
+                          Delete
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
+    // </div>
   );
 };
